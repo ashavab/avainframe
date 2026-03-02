@@ -2,14 +2,17 @@ import { Heart, Users, Baby, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 const services = [
-  { icon: Heart, title: "Weddings", desc: "Capturing every magical moment.", rate: 250, min: 4, max: 12 },
-  { icon: Users, title: "Portraits", desc: "Professional studio or outdoor sessions.", rate: 200, min: 1, max: 6 },
-  { icon: Baby, title: "Newborn", desc: "Gentle photography celebrating new life.", rate: 200, min: 1, max: 4 },
-  { icon: Sparkles, title: "Events", desc: "Coverage for parties and celebrations.", rate: 200, min: 2, max: 10 }
+  { icon: Heart, title: "Weddings", desc: "Capturing every magical moment.", rate: 250, min: 4, max: 12, tiered: false },
+  { icon: Users, title: "Portraits", desc: "Professional studio or outdoor sessions.", rate: 200, extra: 100, min: 1, max: 6, tiered: true },
+  { icon: Baby, title: "Newborn", desc: "Gentle photography celebrating new life.", rate: 200, extra: 100, min: 1, max: 4, tiered: true },
+  { icon: Sparkles, title: "Events", desc: "Coverage for parties and celebrations.", rate: 200, min: 2, max: 10, tiered: false }
 ];
 
 function ServiceCard({ service }: { service: any }) {
   const [hours, setHours] = useState(service.min);
+  const total = service.tiered && hours > 1 
+    ? service.rate + (hours - 1) * service.extra 
+    : hours * service.rate;
 
   return (
     <div className="bg-white p-8 rounded-2xl border border-gray-100 hover:border-black transition-all duration-300 group flex flex-col justify-between">
@@ -24,8 +27,8 @@ function ServiceCard({ service }: { service: any }) {
         <div className="flex justify-between items-baseline">
           <span className="text-sm font-medium">{hours} Hour{hours > 1 ? 's' : ''}</span>
           <div className="text-right">
-            <span className="text-xl font-bold">${hours * service.rate}</span>
-            <span className="text-xs text-gray-400 ml-1">+ travel</span>
+            <span className="text-xl font-bold">${total}</span>
+            <span className="text-[10px] text-gray-400 ml-1 uppercase">CAD + travel</span>
           </div>
         </div>
         <input 
