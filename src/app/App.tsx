@@ -2,6 +2,7 @@ import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
 import { About } from "./components/About";
 import { Services } from "./components/Services";
+import { FAQ } from "./components/FAQ";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 
@@ -27,10 +28,10 @@ export default function App() {
     <div className="min-h-screen">
       <Navigation />
       <Hero heroImage="/window.jpeg" />
-      <About aboutImage="/ashleigh.jpg" 
-      profileImage="/avana.jpg"/>
+      <About aboutImage="/ashleigh.jpg" profileImage="/avana.jpg"/>
       <Services />
       <Portfolio />
+      <FAQ />
       <Contact />
       <Footer />
     </div>

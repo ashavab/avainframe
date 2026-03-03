@@ -2,10 +2,10 @@ import { Heart, Users, Baby, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 const services = [
-  { icon: Heart, title: "Weddings", desc: "Capturing every magical moment.", rate: 250, min: 4, max: 12, tiered: false },
+  { icon: Heart, title: "Weddings", desc: "Capturing every magical moment. (free in person consultation)", rate: 250, min: 4, max: 12, tiered: false },
   { icon: Users, title: "Portraits", desc: "Professional studio or outdoor sessions.", rate: 200, extra: 100, min: 1, max: 6, tiered: true },
   { icon: Baby, title: "Newborn", desc: "Gentle photography celebrating new life.", rate: 200, extra: 100, min: 1, max: 4, tiered: true },
-  { icon: Sparkles, title: "Events", desc: "Coverage for parties and celebrations.", rate: 200, min: 2, max: 10, tiered: false }
+  { icon: Sparkles, title: "Events", desc: "Coverage for parties and celebrations. (free in person consultation)", rate: 200, min: 2, max: 10, tiered: false }
 ];
 
 function ServiceCard({ service }: { service: any }) {
