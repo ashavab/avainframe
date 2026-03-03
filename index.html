@@ -1,16 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <title>Ava in Frame | Toronto Lifestyle & Wedding Photographer</title>
+    <meta name="description" content="Professional photography in the GTA capturing weddings, portraits, and precious moments with an artistic touch.">
+    <meta property="og:image" content="https://avainframe.com/preview-shot.jpg" />
+    <meta property="og:title" content="Ava in Frame | Photography" />
+    <meta property="og:type" content="website" />
+    <img 
+  src="/wedding-shot.jpg" 
+  alt="Candid wedding photography in Toronto - Ava in Frame" 
+  className="rounded-lg shadow-lg"
+/>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="icon" type="image/png" href="/logo.png" />
-      <title>Ava in Frame</title>
-    </head>
+    <script>
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "PhotographyBusiness",
+        "name": "Ava in Frame",
+        "image": "https://avainframe.com/logo.png",
+        "url": "https://avainframe.com",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Toronto",
+          "addressRegion": "ON",
+          "addressCountry": "CA"
+        },
+        "priceRange": "$"
+      }
+    </script>
+  </head>
+
+  <body class="bg-white dark:bg-black transition-colors duration-1000">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
