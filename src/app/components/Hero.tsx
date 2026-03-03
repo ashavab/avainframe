@@ -28,19 +28,22 @@ export function Hero({ heroImage }: HeroProps) {
           transform: `translateY(${offset}px)` 
         }}
       >
-        <div className="absolute inset-0 bg-white/30 dark:bg-black/40 backdrop-blur-[2px] transition-colors duration-1000" />
+        <div className="absolute inset-0 bg-white/40 dark:bg-black/50 backdrop-blur-[1px] transition-colors duration-1000" />
       </div>
       
       <div className="relative z-10 text-center px-4">
         <div className="flex justify-center mb-12">
-          <img 
-            src="/logo.png" 
-            alt="Ava In Frame Logo" 
-            className="h-48 md:h-72 w-auto object-contain transition-all duration-700 hover:scale-105 brightness-0 saturate-100 invert-[58%] sepia-[9%] saturate-[545%] hue-rotate-[85deg] dark:brightness-0 dark:invert" 
-          />
+          <div className="relative flex items-center justify-center p-16">
+            <div className="absolute inset-0 rounded-full bg-[#819184]/25 blur-[80px] scale-150" />
+            <img 
+              src="/logo.png" 
+              alt="Ava In Frame Logo" 
+              className="relative h-48 md:h-72 w-auto object-contain transition-all duration-700 hover:scale-105 [filter:invert(61%)_sepia(12%)_saturate(405%)_hue-rotate(84deg)_brightness(94%)_contrast(82%)]" 
+            />
+          </div>
         </div>
         
-        <p className="text-2xl md:text-3xl mb-12 max-w-2xl mx-auto tracking-wide text-gray-800 dark:text-white font-medium drop-shadow-md transition-colors">
+        <p className="text-2xl md:text-3xl mb-12 max-w-2xl mx-auto tracking-wide text-gray-900 dark:text-white font-medium drop-shadow-md transition-colors">
           Capturing life's precious moments with artistry and passion
         </p>
 
