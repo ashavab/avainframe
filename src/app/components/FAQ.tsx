@@ -1,21 +1,31 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
-const faqs = [
+const defaultFaqs = [
   { q: "What is your turnaround time?", a: "Standard delivery is 2-3 weeks for portraits and 6-8 weeks for weddings." },
   { q: "Do you travel outside the GTA?", a: "Yes! Travel fees apply for locations outside my standard radius." },
   { q: "How many photos will I receive?", a: "You'll get all high-resolution edited images from our session via a private gallery." },
   { q: "How do I book a session?", a: "Use the contact form below or reach out via WhatsApp to secure your date." }
 ];
 
-export function FAQ() {
+type FaqItem = { q: string; a: string };
+type FAQProps = { faqs?: Array<{ question: string; answer: string }> };
+
+export function FAQ({ faqs }: FAQProps = {}) {
   const [active, setActive] = useState<number | null>(null);
+  // Normalize faqs prop to match internal format
+  let displayFaqs: FaqItem[];
+  if (faqs && faqs.length > 0) {
+    displayFaqs = faqs.map(f => ({ q: f.question, a: f.answer }));
+  } else {
+    displayFaqs = defaultFaqs;
+  }
 
   // FAQPage schema for SEO
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqs.map(f => ({
+    "mainEntity": displayFaqs.map(f => ({
       "@type": "Question",
       "name": f.q,
       "acceptedAnswer": {
@@ -30,7 +40,7 @@ export function FAQ() {
       <div className="max-w-3xl mx-auto">
         <h2 className="text-4xl font-serif text-center mb-12 text-gray-900 dark:text-white">Common Questions</h2>
         <div className="space-y-2 border-t border-gray-100 dark:border-white/10">
-          {faqs.map((f, i) => (
+          {displayFaqs.map((f, i) => (
             <div key={i} className="border-b border-gray-100 dark:border-white/10">
               <button 
                 onClick={() => setActive(active === i ? null : i)} 
