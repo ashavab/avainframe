@@ -52,14 +52,19 @@ export function Services() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((s, index) => <ServiceCard key={index} service={s} />)}
         </div>
-        <div className="mt-12 rounded-2xl border border-gray-100 dark:border-white/10 bg-white/80 dark:bg-black/40 p-6 md:p-10 shadow-lg">
-          <h3 className="font-serif text-2xl mb-3 dark:text-white text-center">Explore Service Guides</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-7 text-center max-w-2xl mx-auto">
-            Discover detailed guides for every photography service we offer. Click below to learn more about each specialty and find the perfect fit for your needs.
+        {/* Redesigned Service Guides Box */}
+        <div className="mt-12 rounded-2xl border border-gray-100 dark:border-white/10 bg-gradient-to-br from-white/90 via-[#f6f8f6]/80 to-[#eaf1ea]/80 dark:from-black/70 dark:via-black/60 dark:to-[#1a1e1a]/80 p-6 md:p-12 shadow-2xl">
+          <h3 className="font-serif text-3xl mb-6 dark:text-white text-center tracking-tight">Explore Our Service Guides</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-10 text-center max-w-2xl mx-auto text-lg">
+            Find the perfect photography service for your needs. Browse our detailed guides by category below.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <h4 className="font-semibold text-[#819184] mb-2">People & Events</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* People & Events */}
+            <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-[#819184] text-lg">People & Events</h4>
+              </div>
               <ul className="space-y-2">
                 <li><a href="/#/weddings" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Wedding Photography</a></li>
                 <li><a href="/#/engagements" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Engagement Sessions</a></li>
@@ -68,15 +73,23 @@ export function Services() {
                 <li><a href="/#/boudoir" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Boudoir Photography</a></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-[#819184] mb-2">Commercial & Pets</h4>
+            {/* Commercial & Pets */}
+            <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-4">
+                <Sparkles className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-[#819184] text-lg">Commercial & Pets</h4>
+              </div>
               <ul className="space-y-2">
                 <li><a href="/#/real-estate" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Real Estate Photography</a></li>
                 <li><a href="/#/pets" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Pet Photography</a></li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-[#819184] mb-2">Creative & Travel</h4>
+            {/* Creative & Travel */}
+            <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-4">
+                <Heart className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-[#819184] text-lg">Creative & Travel</h4>
+              </div>
               <ul className="space-y-2">
                 <li><a href="/#/travel" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Travel & Destination</a></li>
                 <li><a href="/#/landscape" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Landscape Photography</a></li>

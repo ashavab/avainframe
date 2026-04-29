@@ -4,9 +4,20 @@ import { Instagram, Phone, MessageCircle } from "lucide-react";
 
 export default function ConsultationModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
+  // Handler for overlay click
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only close if the user clicked directly on the overlay, not inside the modal
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-white dark:bg-black rounded-2xl shadow-xl max-w-lg w-full p-8 relative">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      onClick={handleOverlayClick}
+    >
+      <div className="bg-white dark:bg-black rounded-2xl shadow-xl max-w-md w-[95vw] sm:w-full p-6 sm:p-8 relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-black dark:hover:text-white text-2xl"
@@ -14,7 +25,14 @@ export default function ConsultationModal({ open, onClose }: { open: boolean; on
         >
           ×
         </button>
-        <h2 className="text-2xl font-serif mb-4 dark:text-white">Book a Free Consultation</h2>
+        <button
+          onClick={onClose}
+          className="absolute top-4 left-4 text-gray-400 hover:text-black dark:hover:text-white text-xl px-2 py-1 rounded-full border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-black/40"
+          aria-label="Back"
+        >
+          ← Back
+        </button>
+        <h2 className="text-2xl font-serif mb-4 dark:text-white text-center">Book a Free Consultation</h2>
         <Contact />
         <div className="mt-6 flex flex-col gap-3">
           <a href="https://wa.me/16477104734" target="_blank" className="flex items-center gap-2 text-[#25D366] hover:underline">
