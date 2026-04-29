@@ -58,6 +58,22 @@ export function FamilyService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
+        <section className="max-w-4xl mx-auto mb-12">
+          <h1 className="text-5xl font-serif mb-6 dark:text-black">Toronto Family & Portrait Photography</h1>
+          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Relaxed, Documentary Family Photographer in Toronto & GTA</h2>
+          <p className="mb-6 text-lg">Capture your family’s unique story with natural, heartfelt images. Our Toronto family photography sessions are fun, relaxed, and tailored to your loved ones.</p>
+          <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li>Sessions for families, children, and individuals</li>
+            <li>Flexible locations: home, studio, or outdoors in Toronto</li>
+            <li>All images professionally edited and delivered in a private online gallery</li>
+          </ul>
+          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
+          <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li>10+ years of experience in Toronto family photography</li>
+            <li>Personalized approach for every family</li>
+            <li>Fast turnaround and transparent pricing</li>
+          </ul>
+        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}

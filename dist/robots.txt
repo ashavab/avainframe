@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /studio-vault
+Disallow: /clients
+
+Sitemap: https://avainframe.com/sitemap.xml
+Sitemap: https://avainframe.com/sitemap-images.xml

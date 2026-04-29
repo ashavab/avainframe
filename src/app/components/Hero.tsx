@@ -38,7 +38,7 @@ export function Hero({ heroImage }: HeroProps) {
             <div className="absolute inset-0 rounded-full bg-[#819184]/25 blur-[80px] scale-150" />
             <img 
               src="/logo.png" 
-              alt="Ava In Frame Logo" 
+              alt="Ava In Frame Photography logo, stylized text" 
               className="relative h-48 md:h-72 w-auto object-contain transition-all duration-700 hover:scale-105 [filter:invert(61%)_sepia(12%)_saturate(405%)_hue-rotate(84deg)_brightness(94%)_contrast(82%)]" 
             />
           </div>

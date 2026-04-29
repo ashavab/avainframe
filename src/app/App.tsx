@@ -7,6 +7,8 @@ import { StaggerReveal } from "./components/StaggerReveal";
 import { About } from "./components/About";
 import { Services } from "./components/Services";
 import { FAQ } from "./components/FAQ";
+import { Reviews } from "./components/Reviews";
+import { BlogTips } from "./components/BlogTips";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { ImmichAccess } from "./components/ImmichAccess";
@@ -48,7 +50,8 @@ function Portfolio() {
           <iframe 
             src="https://widgets.sociablekit.com/instagram-feed/iframe/25659098" 
             className="w-full border-0 h-[600px] md:h-[800px] bg-white"
-            title="Instagram Feed"
+            title="Instagram Feed: Ava in Frame portfolio highlights"
+            aria-label="Instagram Feed: Ava in Frame portfolio highlights"
           />
         </div>
       </div>
@@ -124,6 +127,7 @@ export default function App() {
           canonicalPath="/weddings"
           type="article"
           keywords="Toronto wedding photographer, GTA wedding photography, candid wedding photography"
+          imagePath="/DSC06596.jpg"
         />
         <WeddingsService />
       </>
@@ -139,6 +143,7 @@ export default function App() {
           canonicalPath="/engagements"
           type="article"
           keywords="Toronto engagement photographer, engagement photography Toronto, GTA couple photos"
+          imagePath="/DSC07060.jpg"
         />
         <EngagementsService />
       </>
@@ -154,6 +159,7 @@ export default function App() {
           canonicalPath="/family"
           type="article"
           keywords="Toronto family photographer, family photos Toronto, portrait photographer GTA"
+          imagePath="/IMG_0158.jpeg"
         />
         <FamilyService />
       </>
@@ -192,7 +198,9 @@ export default function App() {
       <div className="space-y-0 bg-transparent">
         <StaggerReveal><About aboutImage="/ashleigh.jpg" profileImage="/avana.jpg"/></StaggerReveal>
         <Services />
+        <StaggerReveal><Reviews /></StaggerReveal>
         <StaggerReveal><Portfolio /></StaggerReveal>
+        <StaggerReveal><BlogTips /></StaggerReveal>
         <StaggerReveal><FAQ /></StaggerReveal>
         <Contact />
       </div>

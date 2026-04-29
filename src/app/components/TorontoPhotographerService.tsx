@@ -68,6 +68,22 @@ export function TorontoPhotographerService() {
       </script>
 
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
+        <section className="max-w-4xl mx-auto mb-12">
+          <h1 className="text-5xl font-serif mb-6 dark:text-black">Toronto Photographer</h1>
+          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Wedding, Engagement, Family & Lifestyle Photography in Toronto & GTA</h2>
+          <p className="mb-6 text-lg">Ava in Frame offers a full range of photography services in Toronto, including weddings, engagements, family portraits, and lifestyle sessions. We blend candid moments with editorial artistry for timeless results.</p>
+          <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li>Experienced Toronto photographer for all occasions</li>
+            <li>Flexible packages and transparent pricing</li>
+            <li>All images professionally edited and delivered in a private online gallery</li>
+          </ul>
+          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
+          <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li>10+ years of experience in Toronto photography</li>
+            <li>Personalized approach for every client</li>
+            <li>Fast turnaround and exceptional service</li>
+          </ul>
+        </section>
         <div className="mx-auto max-w-4xl pt-20">
           <button
             onClick={() => (window.location.hash = "/")}

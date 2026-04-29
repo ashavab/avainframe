@@ -24,11 +24,18 @@ export function Contact() {
       title: "New Photography Inquiry",
       reply_to: 'avainframe@proton.me'
     };
-    
+
     try {
+      // 1. Send business notification (Contact Us template)
       await emailjs.send(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        "template_6zly35q",
+        templateParams
+      );
+      // 2. Send user auto-reply (Auto-Reply template)
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        "template_c9nrxip",
         templateParams
       );
       setMessage("Message sent! Ashleigh & Avana will get back to you soon.");
