@@ -19,6 +19,7 @@ import { FamilyService } from "./components/FamilyService";
 import { TorontoPhotographerService } from "./components/TorontoPhotographerService";
 import { SeoHead } from "./components/SeoHead";
 import { HowToBookSchema } from "./components/HowToBookSchema";
+import { BlogPage } from "./components/BlogPage";
 import { useEffect, useState } from "react";
 
 const IMMICH_HIDDEN_PATH = import.meta.env.VITE_IMMICH_HIDDEN_PATH || "/studio-vault";
@@ -127,6 +128,10 @@ export default function App() {
   const isEngagementsPath = path === engagementsPath || hash === engagementsPath;
   const isFamilyPath = path === familyPath || hash === familyPath;
   const isTorontoPath = path === torontoPath || hash === torontoPath;
+  const isBlogPath = hash === "/blog";
+  if (isBlogPath) {
+    return <BlogPage />;
+  }
 
   if (isImmichPath) {
     return (
