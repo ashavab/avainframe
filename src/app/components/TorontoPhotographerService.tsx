@@ -2,80 +2,39 @@ import { Camera, MapPin, Heart, Users } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
 
 export function TorontoPhotographerService() {
-            {
-              "@type": "Question",
-              "name": "What types of photography do you offer in Toronto?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We offer wedding photography, engagement sessions, family portraits, and lifestyle photography across Toronto and the GTA."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Do you travel across the GTA for sessions?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes, we photograph sessions across Toronto, Markham, Vaughan, Richmond Hill, Mississauga, and nearby regions."
-              }
+  return (
+    <>
+      {/* FAQPage Schema - keep for SEO, but outside JSX */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What types of photography do you offer in Toronto?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "We offer wedding photography, engagement sessions, family portraits, and lifestyle photography across Toronto and the GTA."
             }
           },
-          "areaServed": [
-            { "@type": "AdministrativeArea", "name": "Toronto" },
-            { "@type": "AdministrativeArea", "name": "Greater Toronto Area" },
-            {"@type": "ServiceArea", "name": "Markham"},
-            {"@type": "ServiceArea", "name": "Richmond Hill"},
-            {"@type": "ServiceArea", "name": "Vaughan"},
-            {"@type": "ServiceArea", "name": "Mississauga"}
-          ],
-          "url": "https://avainframe.com/toronto-photographer",
-          "priceRange": "$",
-          "review": serviceReviews.map(r => ({
-            "@type": "Review",
-            "author": r.author,
-            "reviewBody": r.text,
-            "reviewRating": { "@type": "Rating", "ratingValue": r.rating || 5 },
-            ...(r.date ? { datePublished: r.date } : {})
-          })),
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "5",
-            "reviewCount": serviceReviews.length
-          }
-        })}
-      </script>
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "What types of photography do you offer in Toronto?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "We offer wedding photography, engagement sessions, family portraits, and lifestyle photography across Toronto and the GTA."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "Do you travel across the GTA for sessions?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Yes, we photograph sessions across Toronto, Markham, Vaughan, Richmond Hill, Mississauga, and nearby regions."
-              }
-            },
-            {
-              "@type": "Question",
-              "name": "How quickly are edited photos delivered?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Portrait and engagement sessions are typically delivered in 2-3 weeks, while weddings are delivered in 6-8 weeks."
-              }
+          {
+            "@type": "Question",
+            "name": "Do you travel across the GTA for sessions?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, we photograph sessions across Toronto, Markham, Vaughan, Richmond Hill, Mississauga, and nearby regions."
             }
-          ]
-        })}
-      </script>
-
+          },
+          {
+            "@type": "Question",
+            "name": "How quickly are edited photos delivered?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Portrait and engagement sessions are typically delivered in 2-3 weeks, while weddings are delivered in 6-8 weeks."
+            }
+          }
+        ]
+      }) }} />
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
         <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
         <section className="max-w-4xl mx-auto mb-12">

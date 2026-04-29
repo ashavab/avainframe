@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
-import SeoHead from "./SeoHead";
-import FAQ from "./FAQ";
+import { SeoHead } from "./SeoHead";
+import { FAQ } from "./FAQ";
 import { BreadcrumbListSchema, ServiceAreaSchema } from "./schemaUtils";
 
 const faqs = [
