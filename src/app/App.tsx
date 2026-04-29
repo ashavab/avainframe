@@ -9,6 +9,24 @@ import { Services } from "./components/Services";
 import { FAQ } from "./components/FAQ";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
+import { ImmichAccess } from "./components/ImmichAccess";
+import { ClientGalleryAccess } from "./components/ClientGalleryAccess";
+import { useEffect, useState } from "react";
+
+const IMMICH_HIDDEN_PATH = import.meta.env.VITE_IMMICH_HIDDEN_PATH || "/studio-vault";
+const IMMICH_CLIENT_PATH = import.meta.env.VITE_IMMICH_CLIENT_PATH || "/clients";
+
+function normalizePath(path: string) {
+  return path.replace(/\/+$/, "") || "/";
+}
+
+function getRouteCandidates() {
+  const path = normalizePath(window.location.pathname);
+  const rawHash = window.location.hash.replace(/^#/, "");
+  const hashPath = rawHash ? (rawHash.startsWith("/") ? rawHash : `/${rawHash}`) : "/";
+  const hash = normalizePath(hashPath);
+  return { path, hash };
+}
 
 function Portfolio() {
   return (
@@ -28,6 +46,36 @@ function Portfolio() {
 }
 
 export default function App() {
+  const [routeVersion, setRouteVersion] = useState(0);
+
+  useEffect(() => {
+    const handleRouteChange = () => setRouteVersion((value) => value + 1);
+    window.addEventListener("hashchange", handleRouteChange);
+    window.addEventListener("popstate", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleRouteChange);
+      window.removeEventListener("popstate", handleRouteChange);
+    };
+  }, []);
+
+  // Read current location on every route-version change.
+  void routeVersion;
+  const { path, hash } = getRouteCandidates();
+  const hiddenPath = normalizePath(IMMICH_HIDDEN_PATH);
+  const clientPath = normalizePath(IMMICH_CLIENT_PATH);
+
+  const isImmichPath = path === hiddenPath || hash === hiddenPath;
+  const isClientPath = path === clientPath || hash === clientPath;
+
+  if (isImmichPath) {
+    return <ImmichAccess />;
+  }
+
+  if (isClientPath) {
+    return <ClientGalleryAccess />;
+  }
+
   return (
     <div className="min-h-screen relative transition-colors duration-1000 dark:text-white text-gray-900">
       <ThemeScroller />

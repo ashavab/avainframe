@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const clientPath = import.meta.env.VITE_IMMICH_CLIENT_PATH || "/clients";
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -49,6 +50,12 @@ export function Navigation() {
     }
   };
 
+  const goToClients = () => {
+    const normalized = clientPath.startsWith("/") ? clientPath : `/${clientPath}`;
+    window.location.hash = normalized;
+    setIsOpen(false);
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-md z-50 border-b border-gray-100 dark:border-white/10 font-sans transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,6 +68,7 @@ export function Navigation() {
             <button onClick={() => scrollToSection("home")} className="hover:text-[#7a8d7d]">Home</button>
             <button onClick={() => scrollToSection("about")} className="hover:text-[#7a8d7d]">About</button>
             <button onClick={() => scrollToSection("portfolio")} className="hover:text-[#7a8d7d]">Portfolio</button>
+            <button onClick={goToClients} className="hover:text-[#7a8d7d]">Gallery</button>
             <button onClick={toggleDarkMode} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
               {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -81,6 +89,7 @@ export function Navigation() {
           <button onClick={() => scrollToSection("home")} className="block w-full">Home</button>
           <button onClick={() => scrollToSection("about")} className="block w-full">About</button>
           <button onClick={() => scrollToSection("portfolio")} className="block w-full">Portfolio</button>
+          <button onClick={goToClients} className="block w-full">Gallery</button>
           <button onClick={() => scrollToSection("contact")} className="block w-full bg-[#7a8d7d] text-white py-4 rounded-full">Contact</button>
         </div>
       )}

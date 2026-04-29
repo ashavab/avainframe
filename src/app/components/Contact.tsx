@@ -45,7 +45,7 @@ export function Contact() {
           </form>
           <div className="space-y-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-4"><Mail className="w-5 h-5" /> <p>hello@avainframe</p></div>
+              <div className="flex items-center gap-4"><Mail className="w-5 h-5" /> <p>hello@avainframe.com</p></div>
               <div className="flex items-center gap-4"><Phone className="w-5 h-5" /> <p>+1 (647) 710-4734</p></div>
               <div className="flex items-center gap-4"><MapPin className="w-5 h-5" /> <p>Markham, ON</p></div>
             </div>
