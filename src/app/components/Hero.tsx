@@ -32,6 +32,7 @@ export function Hero({ heroImage }: HeroProps) {
       </div>
       
       <div className="relative z-10 text-center px-4">
+        <h1 className="sr-only">Candid wedding photography in Toronto by Ava in Frame</h1>
         <div className="flex justify-center mb-12">
           <div className="relative flex items-center justify-center p-16">
             <div className="absolute inset-0 rounded-full bg-[#819184]/25 blur-[80px] scale-150" />
