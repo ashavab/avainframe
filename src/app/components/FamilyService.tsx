@@ -63,6 +63,7 @@ export function FamilyService() {
           <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Relaxed, Documentary Family Photographer in Toronto & GTA</h2>
           <p className="mb-6 text-lg">Capture your family’s unique story with natural, heartfelt images. Our Toronto family photography sessions are fun, relaxed, and tailored to your loved ones.</p>
           <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li><a href="/#/blog" className="text-[#819184] hover:underline">Family photo tips & advice</a></li>
             <li>Sessions for families, children, and individuals</li>
             <li>Flexible locations: home, studio, or outdoors in Toronto</li>
             <li>All images professionally edited and delivered in a private online gallery</li>

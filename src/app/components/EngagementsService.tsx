@@ -63,6 +63,7 @@ export function EngagementsService() {
           <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Natural, Candid Engagement Photographer in Toronto & GTA</h2>
           <p className="mb-6 text-lg">Celebrate your love story with a relaxed, fun engagement session. We capture genuine moments in Toronto’s most beautiful locations, perfect for save-the-dates and wedding announcements.</p>
           <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li><a href="/#/blog" className="text-[#819184] hover:underline">Read engagement session tips</a></li>
             <li>Flexible session locations across Toronto and the GTA</li>
             <li>Guidance on outfits and posing for natural results</li>
             <li>All images professionally edited and delivered in a private online gallery</li>

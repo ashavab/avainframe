@@ -9,7 +9,7 @@ export function About({ aboutImage, profileImage }: AboutProps) {
       <div className="max-w-6xl mx-auto space-y-24">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="relative group">
-            <img src={aboutImage} alt="Portrait of Ashleigh, lead photographer" className="w-full h-[500px] object-cover rounded-2xl shadow-lg transition-transform duration-700 group-hover:scale-[1.02]" />
+            <img src={aboutImage} alt="Portrait of Ashleigh, lead photographer" loading="lazy" className="w-full h-[500px] object-cover rounded-2xl shadow-lg transition-transform duration-700 group-hover:scale-[1.02]" />
             <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
           </div>
           <div>
@@ -30,7 +30,7 @@ export function About({ aboutImage, profileImage }: AboutProps) {
             </div>
           </div>
           <div className="relative group order-1 md:order-2">
-            <img src={profileImage} alt="Portrait of Avana, client coordinator" className="w-full h-[500px] object-cover rounded-2xl shadow-lg transition-transform duration-700 group-hover:scale-[1.02]" />
+            <img src={profileImage} alt="Portrait of Avana, client coordinator" loading="lazy" className="w-full h-[500px] object-cover rounded-2xl shadow-lg transition-transform duration-700 group-hover:scale-[1.02]" />
             <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
           </div>
         </div>

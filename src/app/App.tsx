@@ -18,6 +18,7 @@ import { EngagementsService } from "./components/EngagementsService";
 import { FamilyService } from "./components/FamilyService";
 import { TorontoPhotographerService } from "./components/TorontoPhotographerService";
 import { SeoHead } from "./components/SeoHead";
+import { HowToBookSchema } from "./components/HowToBookSchema";
 import { useEffect, useState } from "react";
 
 const IMMICH_HIDDEN_PATH = import.meta.env.VITE_IMMICH_HIDDEN_PATH || "/studio-vault";
@@ -191,6 +192,7 @@ export default function App() {
         keywords="Toronto wedding photographer, GTA photographer, candid wedding photography, engagement photography, portrait photography"
       />
       <ThemeScroller />
+      <HowToBookSchema />
       <ScrollProgress />
       <Navigation />
       <Hero heroImage="/window.jpeg" />

@@ -26,6 +26,11 @@ export function BlogTips() {
     <section id="blog" className="py-20 px-4 bg-transparent transition-colors duration-1000">
       <div className="max-w-4xl mx-auto">
         <h2 className="text-4xl font-serif text-center mb-12 text-gray-900 dark:text-white">Photography Tips & Blog</h2>
+        <div className="text-center mb-8">
+          <a href="/#/weddings" className="text-[#819184] hover:underline mx-2">Wedding Photography</a>
+          <a href="/#/engagements" className="text-[#819184] hover:underline mx-2">Engagements</a>
+          <a href="/#/family" className="text-[#819184] hover:underline mx-2">Family Sessions</a>
+        </div>
         <div className="grid md:grid-cols-3 gap-8">
           {posts.map((post, i) => (
             <article key={i} className="bg-white/80 dark:bg-black/40 p-8 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm">

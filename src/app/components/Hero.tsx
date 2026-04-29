@@ -39,6 +39,7 @@ export function Hero({ heroImage }: HeroProps) {
             <img 
               src="/logo.png" 
               alt="Ava In Frame Photography logo, stylized text" 
+              loading="lazy"
               className="relative h-48 md:h-72 w-auto object-contain transition-all duration-700 hover:scale-105 [filter:invert(61%)_sepia(12%)_saturate(405%)_hue-rotate(84deg)_brightness(94%)_contrast(82%)]" 
             />
           </div>

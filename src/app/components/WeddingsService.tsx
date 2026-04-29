@@ -63,6 +63,7 @@ export function WeddingsService() {
           <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Candid, Editorial, and Documentary Wedding Photographer in Toronto & GTA</h2>
           <p className="mb-6 text-lg">Capture your love story with timeless, authentic images. Our Toronto wedding photography blends candid moments with editorial artistry, ensuring every emotion and detail is preserved.</p>
           <ul className="list-disc pl-6 mb-6 text-gray-700">
+            <li><a href="/#/blog" className="text-[#819184] hover:underline">See our latest wedding tips</a></li>
             <li>Full-day and half-day wedding coverage</li>
             <li>Pre-wedding engagement sessions available</li>
             <li>All images professionally edited and delivered in a private online gallery</li>

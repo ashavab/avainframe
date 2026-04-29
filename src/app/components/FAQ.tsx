@@ -11,6 +11,20 @@ const faqs = [
 export function FAQ() {
   const [active, setActive] = useState<number | null>(null);
 
+  // FAQPage schema for SEO
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(f => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": f.a
+      }
+    }))
+  };
+
   return (
     <section id="faq" className="py-20 px-4 bg-transparent transition-colors duration-1000">
       <div className="max-w-3xl mx-auto">
@@ -33,6 +47,8 @@ export function FAQ() {
             </div>
           ))}
         </div>
+        {/* FAQPage schema for SEO */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       </div>
     </section>
   );
