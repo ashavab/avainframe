@@ -58,18 +58,16 @@ export function Services() {
             Browse dedicated pages for Toronto wedding photography, engagement sessions, and family portrait photography.
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <a href="/#/weddings" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
-              Toronto Wedding Photography Packages
-            </a>
-            <a href="/#/engagements" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
-              Toronto Engagement Photography Sessions
-            </a>
-            <a href="/#/family" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
-              Toronto Family and Portrait Photography
-            </a>
-            <a href="/#/toronto-photographer" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
-              Toronto Photographer Service Area
-            </a>
+            <a href="/#/weddings" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Toronto Wedding Photography Packages</a>
+            <a href="/#/engagements" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Toronto Engagement Photography Sessions</a>
+            <a href="/#/family" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Toronto Family and Portrait Photography</a>
+            <a href="/#/toronto-photographer" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Toronto Photographer Service Area</a>
+            <a href="/#/real-estate" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Real Estate Photography</a>
+            <a href="/#/headshots" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Professional Headshots</a>
+            <a href="/#/pets" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Pet Photography</a>
+            <a href="/#/boudoir" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Boudoir Photography</a>
+            <a href="/#/travel" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Travel & Destination Photography</a>
+            <a href="/#/landscape" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">Landscape Photography</a>
           </div>
         </div>
       </div>

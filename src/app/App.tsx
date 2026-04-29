@@ -17,6 +17,12 @@ import { WeddingsService } from "./components/WeddingsService";
 import { EngagementsService } from "./components/EngagementsService";
 import { FamilyService } from "./components/FamilyService";
 import { TorontoPhotographerService } from "./components/TorontoPhotographerService";
+import RealEstateService from "./components/RealEstateService";
+import HeadshotsService from "./components/HeadshotsService";
+import PetsService from "./components/PetsService";
+import BoudoirService from "./components/BoudoirService";
+import TravelService from "./components/TravelService";
+import LandscapeService from "./components/LandscapeService";
 import { SeoHead } from "./components/SeoHead";
 import { HowToBookSchema } from "./components/HowToBookSchema";
 import { BlogPage } from "./components/BlogPage";
@@ -28,7 +34,13 @@ const SERVICES_PATHS = {
   weddings: "/weddings",
   engagements: "/engagements",
   family: "/family",
-  toronto: "/toronto-photographer"
+  toronto: "/toronto-photographer",
+  realEstate: "/real-estate",
+  headshots: "/headshots",
+  pets: "/pets",
+  boudoir: "/boudoir",
+  travel: "/travel",
+  landscape: "/landscape"
 };
 
 function normalizePath(path: string) {
@@ -121,6 +133,12 @@ export default function App() {
   const engagementsPath = normalizePath(SERVICES_PATHS.engagements);
   const familyPath = normalizePath(SERVICES_PATHS.family);
   const torontoPath = normalizePath(SERVICES_PATHS.toronto);
+  const realEstatePath = normalizePath(SERVICES_PATHS.realEstate);
+  const headshotsPath = normalizePath(SERVICES_PATHS.headshots);
+  const petsPath = normalizePath(SERVICES_PATHS.pets);
+  const boudoirPath = normalizePath(SERVICES_PATHS.boudoir);
+  const travelPath = normalizePath(SERVICES_PATHS.travel);
+  const landscapePath = normalizePath(SERVICES_PATHS.landscape);
 
   const isImmichPath = path === hiddenPath || hash === hiddenPath;
   const isClientPath = path === clientPath || hash === clientPath;
@@ -128,7 +146,31 @@ export default function App() {
   const isEngagementsPath = path === engagementsPath || hash === engagementsPath;
   const isFamilyPath = path === familyPath || hash === familyPath;
   const isTorontoPath = path === torontoPath || hash === torontoPath;
+  const isRealEstatePath = path === realEstatePath || hash === realEstatePath;
+  const isHeadshotsPath = path === headshotsPath || hash === headshotsPath;
+  const isPetsPath = path === petsPath || hash === petsPath;
+  const isBoudoirPath = path === boudoirPath || hash === boudoirPath;
+  const isTravelPath = path === travelPath || hash === travelPath;
+  const isLandscapePath = path === landscapePath || hash === landscapePath;
   const isBlogPath = hash === "/blog";
+    if (isRealEstatePath) {
+      return <RealEstateService />;
+    }
+    if (isHeadshotsPath) {
+      return <HeadshotsService />;
+    }
+    if (isPetsPath) {
+      return <PetsService />;
+    }
+    if (isBoudoirPath) {
+      return <BoudoirService />;
+    }
+    if (isTravelPath) {
+      return <TravelService />;
+    }
+    if (isLandscapePath) {
+      return <LandscapeService />;
+    }
   if (isBlogPath) {
     return <BlogPage />;
   }
