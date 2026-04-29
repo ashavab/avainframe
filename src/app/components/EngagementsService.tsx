@@ -1,4 +1,5 @@
 import { Sparkles, MapPin, Camera, Clock } from "lucide-react";
+import { serviceReviews } from "./serviceReviews";
 
 export function EngagementsService() {
   return (
@@ -20,9 +21,28 @@ export function EngagementsService() {
           "name": "Engagement Photography",
           "description": "Intimate engagement sessions in Toronto's most beautiful locations",
           "provider": {"@type": "LocalBusiness", "name": "Ava in Frame", "url": "https://avainframe.com", "telephone": "+1-647-710-4734", "email": "hello@avainframe.com"},
-          "areaServed": [{"@type": "AdministrativeArea", "name": "Toronto"}, {"@type": "AdministrativeArea", "name": "Greater Toronto Area"}],
+          "areaServed": [
+            {"@type": "AdministrativeArea", "name": "Toronto"},
+            {"@type": "AdministrativeArea", "name": "Greater Toronto Area"},
+            {"@type": "ServiceArea", "name": "Markham"},
+            {"@type": "ServiceArea", "name": "Richmond Hill"},
+            {"@type": "ServiceArea", "name": "Vaughan"},
+            {"@type": "ServiceArea", "name": "Mississauga"}
+          ],
           "priceRange": "$",
-          "url": "https://avainframe.com/engagements"
+          "url": "https://avainframe.com/engagements",
+          "review": serviceReviews.map(r => ({
+            "@type": "Review",
+            "author": r.author,
+            "reviewBody": r.text,
+            "reviewRating": { "@type": "Rating", "ratingValue": r.rating || 5 },
+            ...(r.date ? { datePublished: r.date } : {})
+          })),
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "reviewCount": serviceReviews.length
+          }
         })}
       </script>
       <script type="application/ld+json">

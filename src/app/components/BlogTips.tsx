@@ -38,6 +38,16 @@ export function BlogTips() {
                 <h3 className="text-xl font-serif mb-2 dark:text-white">{post.title}</h3>
                 <time className="text-xs text-gray-400 dark:text-gray-500">{post.date}</time>
               </header>
+              {/* Example blog image with alt text and schema */}
+              <img src="/DSC06596.jpg" alt="Sample blog post: Toronto wedding photography" loading="lazy" className="rounded-lg mb-4" />
+              <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ImageObject",
+                "contentUrl": "https://avainframe.com/DSC06596.jpg",
+                "author": { "@type": "Person", "name": "Ashleigh Boudier" },
+                "description": `Blog post image for: ${post.title}`,
+                "license": "https://avainframe.com"
+              }) }} />
               <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">{post.excerpt}</p>
               <a href={post.url} className="text-[#819184] hover:underline text-sm font-medium">Read More</a>
             </article>

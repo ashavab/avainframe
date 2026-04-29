@@ -55,6 +55,43 @@ function Portfolio() {
             aria-label="Instagram Feed: Ava in Frame portfolio highlights"
           />
         </div>
+        {/* ImageObject schema for portfolio highlights */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ImageObject",
+          "contentUrl": "https://avainframe.com/DSC06596.jpg",
+          "author": { "@type": "Person", "name": "Ashleigh Boudier" },
+          "description": "Wedding photography portfolio highlight by Ava in Frame, Toronto photographer.",
+          "license": "https://avainframe.com",
+          "acquireLicensePage": "https://avainframe.com/contact"
+        }) }} />
+        {/* Example Event schema for mini-session promotion */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Spring Mini Sessions",
+          "startDate": "2026-05-15T10:00",
+          "endDate": "2026-05-15T18:00",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "location": {
+            "@type": "Place",
+            "name": "Toronto Botanical Garden",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Toronto",
+              "addressRegion": "ON",
+              "addressCountry": "CA"
+            }
+          },
+          "image": ["https://avainframe.com/DSC06596.jpg"],
+          "description": "Limited spring mini photography sessions in Toronto. Book your spot today!",
+          "organizer": {
+            "@type": "Organization",
+            "name": "Ava in Frame",
+            "url": "https://avainframe.com"
+          }
+        }) }} />
       </div>
     </section>
   );
@@ -192,6 +229,21 @@ export default function App() {
         keywords="Toronto wedding photographer, GTA photographer, candid wedding photography, engagement photography, portrait photography"
       />
       <ThemeScroller />
+      {/* Awards and Memberships schema for SEO */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Ava in Frame",
+        "url": "https://avainframe.com",
+        "award": [
+          "Best Wedding Photographer Toronto 2025",
+          "Top Family Photographer GTA 2026"
+        ],
+        "memberOf": [
+          { "@type": "Organization", "name": "Professional Photographers of Canada" },
+          { "@type": "Organization", "name": "Wedding & Portrait Photographers International" }
+        ]
+      }) }} />
       <HowToBookSchema />
       <ScrollProgress />
       <Navigation />

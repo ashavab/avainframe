@@ -1,4 +1,5 @@
 import { Camera, MapPin, Heart, Users } from "lucide-react";
+import { serviceReviews } from "./serviceReviews";
 
 export function TorontoPhotographerService() {
   return (
@@ -28,10 +29,26 @@ export function TorontoPhotographerService() {
           },
           "areaServed": [
             { "@type": "AdministrativeArea", "name": "Toronto" },
-            { "@type": "AdministrativeArea", "name": "Greater Toronto Area" }
+            { "@type": "AdministrativeArea", "name": "Greater Toronto Area" },
+            {"@type": "ServiceArea", "name": "Markham"},
+            {"@type": "ServiceArea", "name": "Richmond Hill"},
+            {"@type": "ServiceArea", "name": "Vaughan"},
+            {"@type": "ServiceArea", "name": "Mississauga"}
           ],
           "url": "https://avainframe.com/toronto-photographer",
-          "priceRange": "$"
+          "priceRange": "$",
+          "review": serviceReviews.map(r => ({
+            "@type": "Review",
+            "author": r.author,
+            "reviewBody": r.text,
+            "reviewRating": { "@type": "Rating", "ratingValue": r.rating || 5 },
+            ...(r.date ? { datePublished: r.date } : {})
+          })),
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "reviewCount": serviceReviews.length
+          }
         })}
       </script>
       <script type="application/ld+json">
