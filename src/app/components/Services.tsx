@@ -52,6 +52,26 @@ export function Services() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((s, index) => <ServiceCard key={index} service={s} />)}
         </div>
+        <div className="mt-12 rounded-2xl border border-gray-100 dark:border-white/10 bg-white/70 dark:bg-black/30 p-6 md:p-8">
+          <h3 className="font-serif text-2xl mb-3 dark:text-white">Explore Service Guides</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-5">
+            Browse dedicated pages for Toronto wedding photography, engagement sessions, and family portrait photography.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <a href="/#/weddings" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
+              Toronto Wedding Photography Packages
+            </a>
+            <a href="/#/engagements" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
+              Toronto Engagement Photography Sessions
+            </a>
+            <a href="/#/family" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
+              Toronto Family and Portrait Photography
+            </a>
+            <a href="/#/toronto-photographer" className="rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-black/5 dark:border-white/15 dark:hover:bg-white/10">
+              Toronto Photographer Service Area
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );

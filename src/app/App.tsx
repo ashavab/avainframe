@@ -14,6 +14,8 @@ import { ClientGalleryAccess } from "./components/ClientGalleryAccess";
 import { WeddingsService } from "./components/WeddingsService";
 import { EngagementsService } from "./components/EngagementsService";
 import { FamilyService } from "./components/FamilyService";
+import { TorontoPhotographerService } from "./components/TorontoPhotographerService";
+import { SeoHead } from "./components/SeoHead";
 import { useEffect, useState } from "react";
 
 const IMMICH_HIDDEN_PATH = import.meta.env.VITE_IMMICH_HIDDEN_PATH || "/studio-vault";
@@ -21,7 +23,8 @@ const IMMICH_CLIENT_PATH = import.meta.env.VITE_IMMICH_CLIENT_PATH || "/clients"
 const SERVICES_PATHS = {
   weddings: "/weddings",
   engagements: "/engagements",
-  family: "/family"
+  family: "/family",
+  toronto: "/toronto-photographer"
 };
 
 function normalizePath(path: string) {
@@ -75,35 +78,112 @@ export default function App() {
   const weddingsPath = normalizePath(SERVICES_PATHS.weddings);
   const engagementsPath = normalizePath(SERVICES_PATHS.engagements);
   const familyPath = normalizePath(SERVICES_PATHS.family);
+  const torontoPath = normalizePath(SERVICES_PATHS.toronto);
 
   const isImmichPath = path === hiddenPath || hash === hiddenPath;
   const isClientPath = path === clientPath || hash === clientPath;
   const isWeddingsPath = path === weddingsPath || hash === weddingsPath;
   const isEngagementsPath = path === engagementsPath || hash === engagementsPath;
   const isFamilyPath = path === familyPath || hash === familyPath;
+  const isTorontoPath = path === torontoPath || hash === torontoPath;
 
   if (isImmichPath) {
-    return <ImmichAccess />;
+    return (
+      <>
+        <SeoHead
+          title="Private Studio Vault | Ava in Frame"
+          description="Private gallery access page."
+          canonicalPath="/studio-vault"
+          robots="noindex, nofollow, noarchive"
+        />
+        <ImmichAccess />
+      </>
+    );
   }
 
   if (isClientPath) {
-    return <ClientGalleryAccess />;
+    return (
+      <>
+        <SeoHead
+          title="Client Gallery Access | Ava in Frame"
+          description="Private client gallery access for delivered photography sessions."
+          canonicalPath="/clients"
+          robots="noindex, nofollow, noarchive"
+        />
+        <ClientGalleryAccess />
+      </>
+    );
   }
 
   if (isWeddingsPath) {
-    return <WeddingsService />;
+    return (
+      <>
+        <SeoHead
+          title="Toronto Wedding Photographer | Ava in Frame"
+          description="Candid and editorial wedding photography in Toronto and across the GTA. Full-day wedding coverage with timeless storytelling."
+          canonicalPath="/weddings"
+          type="article"
+          keywords="Toronto wedding photographer, GTA wedding photography, candid wedding photography"
+        />
+        <WeddingsService />
+      </>
+    );
   }
 
   if (isEngagementsPath) {
-    return <EngagementsService />;
+    return (
+      <>
+        <SeoHead
+          title="Toronto Engagement Photographer | Ava in Frame"
+          description="Natural engagement photography sessions in Toronto. Perfect for save-the-dates, pre-wedding memories, and candid couple portraits."
+          canonicalPath="/engagements"
+          type="article"
+          keywords="Toronto engagement photographer, engagement photography Toronto, GTA couple photos"
+        />
+        <EngagementsService />
+      </>
+    );
   }
 
   if (isFamilyPath) {
-    return <FamilyService />;
+    return (
+      <>
+        <SeoHead
+          title="Toronto Family Photographer | Ava in Frame"
+          description="Family and portrait photography in Toronto with a relaxed documentary style. Sessions for families, children, and personal portraits."
+          canonicalPath="/family"
+          type="article"
+          keywords="Toronto family photographer, family photos Toronto, portrait photographer GTA"
+        />
+        <FamilyService />
+      </>
+    );
+  }
+
+  if (isTorontoPath) {
+    return (
+      <>
+        <SeoHead
+          title="Toronto Photographer | Ava in Frame"
+          description="Toronto photographer for weddings, engagements, and family portraits. Candid storytelling sessions across Toronto and the GTA."
+          canonicalPath="/toronto-photographer"
+          type="article"
+          keywords="Toronto photographer, photographer Toronto, GTA photographer, Toronto portrait photographer"
+          imagePath="/DSC06596.jpg"
+        />
+        <TorontoPhotographerService />
+      </>
+    );
   }
 
   return (
     <div className="min-h-screen relative transition-colors duration-1000 dark:text-white text-gray-900">
+      <SeoHead
+        title="Ava in Frame | Toronto Lifestyle & Wedding Photographer"
+        description="Candid wedding photography in Toronto and the GTA. Ava in Frame captures weddings, engagements, and portraits with an editorial documentary style."
+        canonicalPath="/"
+        keywords="Toronto wedding photographer, GTA photographer, candid wedding photography, engagement photography, portrait photography"
+      />
       <ThemeScroller />
       <ScrollProgress />
       <Navigation />

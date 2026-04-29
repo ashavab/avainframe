@@ -25,6 +25,38 @@ export function FamilyService() {
           "url": "https://avainframe.com/family"
         })}
       </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What should we wear for a family photo session?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Neutral, coordinated tones and comfortable outfits photograph best. We provide guidance before your Toronto family session."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can grandparents and extended family join?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Multi-generational family portraits are welcome and can be planned within your session timing."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How many images are included in family sessions?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Most family and portrait sessions include 150-250 professionally edited images in a private online gallery."
+              }
+            }
+          ]
+        })}
+      </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
         <div className="mx-auto max-w-4xl pt-20">
         <button
@@ -166,6 +198,24 @@ export function FamilyService() {
               <p className="text-gray-600">
                 <strong>WhatsApp:</strong> Message us directly at +1 (647) 710-4734
               </p>
+            </div>
+          </section>
+
+          <section className="border-t pt-8">
+            <h2 className="font-serif text-2xl mb-4">Toronto Family Photography FAQs</h2>
+            <div className="space-y-4 text-gray-700">
+              <div>
+                <h3 className="font-medium">What should we wear for family photos?</h3>
+                <p>Coordinated neutrals and simple textures work best. We'll help you choose outfits before your session.</p>
+              </div>
+              <div>
+                <h3 className="font-medium">Can extended family join the session?</h3>
+                <p>Yes, we can include grandparents and multi-generational portraits with a clear shot list.</p>
+              </div>
+              <div>
+                <h3 className="font-medium">How many edited photos do we receive?</h3>
+                <p>Most Toronto family sessions receive 150-250 edited images delivered in a private online gallery.</p>
+              </div>
             </div>
           </section>
         </article>

@@ -25,6 +25,38 @@ export function WeddingsService() {
           "url": "https://avainframe.com/weddings"
         })}
       </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How far in advance should we book wedding photography in Toronto?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Most couples book 8-14 months in advance, especially for peak summer and fall weekends in Toronto."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you cover weddings outside Toronto and the GTA?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. We regularly travel beyond the GTA, and travel fees are quoted based on location and schedule."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How many edited wedding photos will we receive?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You receive a full gallery of high-resolution edited images with private online delivery, typically within 6-8 weeks."
+              }
+            }
+          ]
+        })}
+      </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
         <div className="mx-auto max-w-4xl pt-20">
         <button
@@ -174,6 +206,24 @@ export function WeddingsService() {
               <p className="text-gray-600">
                 <strong>WhatsApp:</strong> Message us directly at +1 (647) 710-4734
               </p>
+            </div>
+          </section>
+
+          <section className="border-t pt-8">
+            <h2 className="font-serif text-2xl mb-4">Toronto Wedding Photography FAQs</h2>
+            <div className="space-y-4 text-gray-700">
+              <div>
+                <h3 className="font-medium">How far in advance should we book?</h3>
+                <p>Most Toronto couples book 8-14 months ahead, especially for popular summer and fall weekends.</p>
+              </div>
+              <div>
+                <h3 className="font-medium">Do you travel beyond Toronto?</h3>
+                <p>Yes, we serve the GTA and destination weddings, with travel costs shared clearly during planning.</p>
+              </div>
+              <div>
+                <h3 className="font-medium">When will our wedding gallery be delivered?</h3>
+                <p>Final edited wedding galleries are typically delivered in 6-8 weeks through a private online gallery.</p>
+              </div>
             </div>
           </section>
         </article>

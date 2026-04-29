@@ -3,26 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="Ava in Frame" />
     <link rel="icon" type="image/png" href="/logo.png" />
-    <link rel="canonical" href="https://avainframe.com/" />
     <title>Ava in Frame | Toronto Lifestyle & Wedding Photographer</title>
-    <meta name="description" content="Candid wedding photography in Toronto and the GTA. Ava in Frame captures weddings, engagements, and portraits with an editorial, documentary style.">
-    <meta name="keywords" content="Toronto wedding photographer, GTA photographer, candid wedding photography, engagement photography, portrait photography, Ava in Frame" />
     <meta name="theme-color" content="#819184" />
-    <meta property="og:locale" content="en_CA" />
-    <meta property="og:site_name" content="Ava in Frame" />
-    <meta property="og:url" content="https://avainframe.com/" />
-    <meta property="og:image" content="https://avainframe.com/preview-shot.jpg" />
-    <meta property="og:image:alt" content="Candid wedding photography in Toronto by Ava in Frame" />
-    <meta property="og:title" content="Ava in Frame | Toronto Lifestyle & Wedding Photographer" />
-    <meta property="og:description" content="Candid wedding photography in Toronto and the GTA with heartfelt, timeless imagery." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ava in Frame | Toronto Lifestyle & Wedding Photographer" />
-    <meta name="twitter:description" content="Candid wedding photography in Toronto and the GTA with heartfelt, timeless imagery." />
-    <meta name="twitter:image" content="https://avainframe.com/preview-shot.jpg" />
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SEBG781ELS"></script>
@@ -45,7 +29,7 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "ProfessionalService",
+        "@type": ["ProfessionalService", "LocalBusiness"],
         "name": "Ava in Frame",
         "description": "Candid wedding photography in Toronto and across the GTA.",
         "image": "https://avainframe.com/logo.png",
@@ -62,11 +46,113 @@
           "addressRegion": "ON",
           "addressCountry": "CA"
         },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 43.8561,
+          "longitude": -79.3370
+        },
         "areaServed": {
           "@type": "AdministrativeArea",
           "name": "Greater Toronto Area"
         },
-        "priceRange": "$"
+        "priceRange": "$",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "09:00",
+            "closes": "20:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "10:00",
+            "closes": "18:00"
+          }
+        ],
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "+1-647-710-4734",
+            "contactType": "customer service",
+            "areaServed": "CA",
+            "availableLanguage": ["en"]
+          }
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Photography Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Wedding Photography",
+                "url": "https://avainframe.com/weddings"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Engagement Photography",
+                "url": "https://avainframe.com/engagements"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Family and Portrait Photography",
+                "url": "https://avainframe.com/family"
+              }
+            }
+          ]
+        }
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Ava in Frame",
+        "url": "https://avainframe.com",
+        "inLanguage": "en-CA",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Ava in Frame",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://avainframe.com/logo.png"
+          }
+        },
+        "mainEntity": [
+          {
+            "@type": "WebPage",
+            "name": "Wedding Photography",
+            "url": "https://avainframe.com/weddings"
+          },
+          {
+            "@type": "WebPage",
+            "name": "Engagement Photography",
+            "url": "https://avainframe.com/engagements"
+          },
+          {
+            "@type": "WebPage",
+            "name": "Family Photography",
+            "url": "https://avainframe.com/family"
+          }
+        ]
       }
     </script>
 

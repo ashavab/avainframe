@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+>
+  <url>
+    <loc>https://avainframe.com/</loc>
+    <lastmod>2026-04-29</lastmod>
+    <image:image>
+      <image:loc>https://avainframe.com/window.jpeg</image:loc>
+      <image:title>Toronto Lifestyle Photography Hero</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://avainframe.com/ashleigh.jpg</image:loc>
+      <image:title>Ava in Frame Photographer Portrait</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://avainframe.com/avana.jpg</image:loc>
+      <image:title>Ava in Frame Team Portrait</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://avainframe.com/logo.png</image:loc>
+      <image:title>Ava in Frame Logo</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://avainframe.com/weddings</loc>
+    <lastmod>2026-04-29</lastmod>
+    <image:image>
+      <image:loc>https://avainframe.com/DSC06596.jpg</image:loc>
+      <image:title>Toronto Wedding Photography Sample</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://avainframe.com/engagements</loc>
+    <lastmod>2026-04-29</lastmod>
+    <image:image>
+      <image:loc>https://avainframe.com/DSC07060.jpg</image:loc>
+      <image:title>Toronto Engagement Photography Sample</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://avainframe.com/family</loc>
+    <lastmod>2026-04-29</lastmod>
+    <image:image>
+      <image:loc>https://avainframe.com/IMG_0158.jpeg</image:loc>
+      <image:title>Toronto Family Photography Sample</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://avainframe.com/toronto-photographer</loc>
+    <lastmod>2026-04-29</lastmod>
+    <image:image>
+      <image:loc>https://avainframe.com/DSC06596.jpg</image:loc>
+      <image:title>Toronto Photographer Service Coverage</image:title>
+    </image:image>
+  </url>
+</urlset>

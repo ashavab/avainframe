@@ -25,6 +25,38 @@ export function EngagementsService() {
           "url": "https://avainframe.com/engagements"
         })}
       </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Where can we do engagement photos in Toronto?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Popular options include Distillery District, High Park, Scarborough Bluffs, and meaningful personal locations around the GTA."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How long is an engagement session?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Most sessions run 2-3 hours, allowing time for outfit changes and one or more locations."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How quickly do we receive our engagement photos?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Edited engagement galleries are typically delivered within 2-3 weeks via private online gallery."
+              }
+            }
+          ]
+        })}
+      </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
         <div className="mx-auto max-w-4xl pt-20">
         <button
@@ -166,6 +198,24 @@ export function EngagementsService() {
               <p className="text-gray-600">
                 <strong>WhatsApp:</strong> Message us directly at +1 (647) 710-4734
               </p>
+            </div>
+          </section>
+
+          <section className="border-t pt-8">
+            <h2 className="font-serif text-2xl mb-4">Toronto Engagement Photography FAQs</h2>
+            <div className="space-y-4 text-gray-700">
+              <div>
+                <h3 className="font-medium">Where should we shoot our engagement photos?</h3>
+                <p>We can shoot at iconic Toronto spots or at a meaningful place that reflects your relationship.</p>
+              </div>
+              <div>
+                <h3 className="font-medium">How long does a session take?</h3>
+                <p>Most engagement sessions are 2-3 hours, giving us enough time for multiple looks and natural storytelling.</p>
+              </div>
+              <div>
+                <h3 className="font-medium">When are the final photos delivered?</h3>
+                <p>Final edited images are usually delivered in 2-3 weeks in a private online gallery.</p>
+              </div>
             </div>
           </section>
         </article>
