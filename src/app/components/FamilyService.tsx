@@ -3,7 +3,7 @@ import { serviceReviews } from "./serviceReviews";
 
 export function FamilyService() {
   return (
-    <>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -251,6 +251,6 @@ export function FamilyService() {
         </article>
       </div>
     </main>
-    </>
+    </div>
   );
 }

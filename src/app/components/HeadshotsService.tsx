@@ -22,7 +22,7 @@ const faqs = [
 export default function HeadshotsService() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <SeoHead
         title="Professional Headshots Toronto | Avainframe Photography"
         description="Business, acting, and personal branding headshots in Toronto. Book your professional headshot session today."

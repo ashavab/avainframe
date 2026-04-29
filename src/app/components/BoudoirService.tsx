@@ -22,7 +22,7 @@ const faqs = [
 export default function BoudoirService() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <SeoHead
         title="Boudoir Photography Toronto | Avainframe Photography"
         description="Empowering boudoir photography in Toronto. Celebrate your confidence with a private, professional session."

@@ -22,7 +22,7 @@ const faqs = [
 export default function RealEstateService() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <SeoHead
         title="Real Estate Photography Toronto | Avainframe Photography"
         description="Professional real estate photography in Toronto for residential and commercial listings. Book your session today."

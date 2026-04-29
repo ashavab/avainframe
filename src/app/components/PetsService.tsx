@@ -22,7 +22,7 @@ const faqs = [
 export default function PetsService() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <SeoHead
         title="Pet Photography Toronto | Avainframe Photography"
         description="Fun and professional pet photography in Toronto. Capture your pet's personality with a custom session."

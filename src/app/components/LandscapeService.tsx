@@ -22,7 +22,7 @@ const faqs = [
 export default function LandscapeService() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <SeoHead
         title="Landscape Photography | Avainframe Photography"
         description="Fine art landscape photography and prints. Commission custom landscape images or license for editorial/commercial use."

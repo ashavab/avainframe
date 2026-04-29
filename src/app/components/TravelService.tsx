@@ -22,7 +22,7 @@ const faqs = [
 export default function TravelService() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
-    <div>
+    <div className="bg-white text-gray-900 dark:bg-[#18181b] dark:text-white">
       <SeoHead
         title="Travel & Destination Photography | Avainframe Photography"
         description="Available for destination weddings, elopements, and travel photography worldwide. Inquire for custom packages."
