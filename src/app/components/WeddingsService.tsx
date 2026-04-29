@@ -65,14 +65,6 @@ export function WeddingsService() {
                 "@type": "Answer",
                 "text": "Yes. We regularly travel beyond the GTA, and travel fees are quoted based on location and schedule."
               }
-            },
-            {
-              "@type": "Question",
-              "name": "How many edited wedding photos will we receive?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "You receive a full gallery of high-resolution edited images with private online delivery, typically within 6-8 weeks."
-              }
             }
           ]
         })}

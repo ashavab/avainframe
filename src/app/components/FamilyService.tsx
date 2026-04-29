@@ -65,14 +65,6 @@ export function FamilyService() {
                 "@type": "Answer",
                 "text": "Yes. Multi-generational family portraits are welcome and can be planned within your session timing."
               }
-            },
-            {
-              "@type": "Question",
-              "name": "How many images are included in family sessions?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Most family and portrait sessions include 150-250 professionally edited images in a private online gallery."
-              }
             }
           ]
         })}

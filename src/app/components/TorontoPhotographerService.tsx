@@ -2,30 +2,22 @@ import { Camera, MapPin, Heart, Users } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
 
 export function TorontoPhotographerService() {
-  return (
-    <>
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://avainframe.com" },
-            { "@type": "ListItem", "position": 2, "name": "Toronto Photographer", "item": "https://avainframe.com/toronto-photographer" }
-          ]
-        })}
-      </script>
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Service",
-          "name": "Toronto Photographer",
-          "description": "Lifestyle, wedding, engagement, and family photography in Toronto and the GTA.",
-          "provider": {
-            "@type": "LocalBusiness",
-            "name": "Ava in Frame",
-            "url": "https://avainframe.com",
-            "telephone": "+1-647-710-4734",
-            "email": "hello@avainframe.com"
+            {
+              "@type": "Question",
+              "name": "What types of photography do you offer in Toronto?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "We offer wedding photography, engagement sessions, family portraits, and lifestyle photography across Toronto and the GTA."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you travel across the GTA for sessions?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, we photograph sessions across Toronto, Markham, Vaughan, Richmond Hill, Mississauga, and nearby regions."
+              }
+            }
           },
           "areaServed": [
             { "@type": "AdministrativeArea", "name": "Toronto" },

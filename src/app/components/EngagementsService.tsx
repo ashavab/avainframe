@@ -65,14 +65,6 @@ export function EngagementsService() {
                 "@type": "Answer",
                 "text": "Most sessions run 2-3 hours, allowing time for outfit changes and one or more locations."
               }
-            },
-            {
-              "@type": "Question",
-              "name": "How quickly do we receive our engagement photos?",
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Edited engagement galleries are typically delivered within 2-3 weeks via private online gallery."
-              }
             }
           ]
         })}
