@@ -78,6 +78,7 @@ export function EngagementsService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
+        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
         <section className="max-w-4xl mx-auto mb-12">
           <h1 className="text-5xl font-serif mb-6 dark:text-black">Toronto Engagement Photography</h1>
           <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Natural, Candid Engagement Photographer in Toronto & GTA</h2>

@@ -252,9 +252,9 @@ export default function App() {
       <div className="space-y-0 bg-transparent">
         <StaggerReveal><About aboutImage="/ashleigh.jpg" profileImage="/avana.jpg"/></StaggerReveal>
         <Services />
-        <StaggerReveal><Reviews /></StaggerReveal>
+        {/* <StaggerReveal><Reviews /></StaggerReveal> */}
         <StaggerReveal><Portfolio /></StaggerReveal>
-        <StaggerReveal><BlogTips /></StaggerReveal>
+        {/* <StaggerReveal><BlogTips /></StaggerReveal> */}
         <StaggerReveal><FAQ /></StaggerReveal>
         <Contact />
       </div>
