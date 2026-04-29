@@ -11,10 +11,18 @@ import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 import { ImmichAccess } from "./components/ImmichAccess";
 import { ClientGalleryAccess } from "./components/ClientGalleryAccess";
+import { WeddingsService } from "./components/WeddingsService";
+import { EngagementsService } from "./components/EngagementsService";
+import { FamilyService } from "./components/FamilyService";
 import { useEffect, useState } from "react";
 
 const IMMICH_HIDDEN_PATH = import.meta.env.VITE_IMMICH_HIDDEN_PATH || "/studio-vault";
 const IMMICH_CLIENT_PATH = import.meta.env.VITE_IMMICH_CLIENT_PATH || "/clients";
+const SERVICES_PATHS = {
+  weddings: "/weddings",
+  engagements: "/engagements",
+  family: "/family"
+};
 
 function normalizePath(path: string) {
   return path.replace(/\/+$/, "") || "/";
@@ -64,9 +72,15 @@ export default function App() {
   const { path, hash } = getRouteCandidates();
   const hiddenPath = normalizePath(IMMICH_HIDDEN_PATH);
   const clientPath = normalizePath(IMMICH_CLIENT_PATH);
+  const weddingsPath = normalizePath(SERVICES_PATHS.weddings);
+  const engagementsPath = normalizePath(SERVICES_PATHS.engagements);
+  const familyPath = normalizePath(SERVICES_PATHS.family);
 
   const isImmichPath = path === hiddenPath || hash === hiddenPath;
   const isClientPath = path === clientPath || hash === clientPath;
+  const isWeddingsPath = path === weddingsPath || hash === weddingsPath;
+  const isEngagementsPath = path === engagementsPath || hash === engagementsPath;
+  const isFamilyPath = path === familyPath || hash === familyPath;
 
   if (isImmichPath) {
     return <ImmichAccess />;
@@ -74,6 +88,18 @@ export default function App() {
 
   if (isClientPath) {
     return <ClientGalleryAccess />;
+  }
+
+  if (isWeddingsPath) {
+    return <WeddingsService />;
+  }
+
+  if (isEngagementsPath) {
+    return <EngagementsService />;
+  }
+
+  if (isFamilyPath) {
+    return <FamilyService />;
   }
 
   return (
