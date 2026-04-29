@@ -2,8 +2,31 @@ import { Heart, MapPin, Calendar, Images } from "lucide-react";
 
 export function WeddingsService() {
   return (
-    <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-      <div className="mx-auto max-w-4xl pt-20">
+    <>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://avainframe.com"},
+            {"@type": "ListItem", "position": 2, "name": "Wedding Photography", "item": "https://avainframe.com/weddings"}
+          ]
+        })}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Wedding Photography",
+          "description": "Candid, editorial-style wedding photography in Toronto and the GTA",
+          "provider": {"@type": "LocalBusiness", "name": "Ava in Frame", "url": "https://avainframe.com", "telephone": "+1-647-710-4734", "email": "hello@avainframe.com"},
+          "areaServed": [{"@type": "AdministrativeArea", "name": "Toronto"}, {"@type": "AdministrativeArea", "name": "Greater Toronto Area"}],
+          "priceRange": "$",
+          "url": "https://avainframe.com/weddings"
+        })}
+      </script>
+      <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
+        <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
           className="mb-8 rounded-full border border-black/15 px-4 py-2 text-sm hover:bg-black/5"
@@ -92,6 +115,20 @@ export function WeddingsService() {
             </div>
           </div>
 
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-serif text-lg mb-4">Other Services</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <button onClick={() => (window.location.hash = "/#/engagements")} className="text-left p-4 border rounded-lg hover:bg-gray-50">
+                <strong>Engagement Photography</strong>
+                <p className="text-sm text-gray-600">2-3 hour sessions in iconic Toronto locations</p>
+              </button>
+              <button onClick={() => (window.location.hash = "/#/family")} className="text-left p-4 border rounded-lg hover:bg-gray-50">
+                <strong>Family & Portraits</strong>
+                <p className="text-sm text-gray-600">Timeless family moments and individual portraits</p>
+              </button>
+            </div>
+          </div>
+
           <section className="border-t pt-8">
             <h2 className="font-serif text-2xl mb-4">What's Included</h2>
             <ul className="grid md:grid-cols-2 gap-4 text-gray-700">
@@ -142,5 +179,6 @@ export function WeddingsService() {
         </article>
       </div>
     </main>
+    </>
   );
 }

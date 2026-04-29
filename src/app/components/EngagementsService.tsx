@@ -2,8 +2,31 @@ import { Sparkles, MapPin, Camera, Clock } from "lucide-react";
 
 export function EngagementsService() {
   return (
-    <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-      <div className="mx-auto max-w-4xl pt-20">
+    <>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://avainframe.com"},
+            {"@type": "ListItem", "position": 2, "name": "Engagement Photography", "item": "https://avainframe.com/engagements"}
+          ]
+        })}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Engagement Photography",
+          "description": "Intimate engagement sessions in Toronto's most beautiful locations",
+          "provider": {"@type": "LocalBusiness", "name": "Ava in Frame", "url": "https://avainframe.com", "telephone": "+1-647-710-4734", "email": "hello@avainframe.com"},
+          "areaServed": [{"@type": "AdministrativeArea", "name": "Toronto"}, {"@type": "AdministrativeArea", "name": "Greater Toronto Area"}],
+          "priceRange": "$",
+          "url": "https://avainframe.com/engagements"
+        })}
+      </script>
+      <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
+        <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
           className="mb-8 rounded-full border border-black/15 px-4 py-2 text-sm hover:bg-black/5"
@@ -92,6 +115,20 @@ export function EngagementsService() {
             </div>
           </div>
 
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-serif text-lg mb-4">Other Services</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <button onClick={() => (window.location.hash = "/#/weddings")} className="text-left p-4 border rounded-lg hover:bg-gray-50">
+                <strong>Wedding Photography</strong>
+                <p className="text-sm text-gray-600">Full-day coverage for your big day</p>
+              </button>
+              <button onClick={() => (window.location.hash = "/#/family")} className="text-left p-4 border rounded-lg hover:bg-gray-50">
+                <strong>Family & Portraits</strong>
+                <p className="text-sm text-gray-600">Timeless family moments and individual portraits</p>
+              </button>
+            </div>
+          </div>
+
           <section className="border-t pt-8">
             <h2 className="font-serif text-2xl mb-4">Perfect For</h2>
             <ul className="grid md:grid-cols-2 gap-4 text-gray-700">
@@ -134,5 +171,6 @@ export function EngagementsService() {
         </article>
       </div>
     </main>
+    </>
   );
 }
