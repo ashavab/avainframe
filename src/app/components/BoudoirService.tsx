@@ -49,7 +49,7 @@ export default function BoudoirService() {
               "name": "Where do boudoir sessions take place?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Sessions can be held in-studio, at your home, or a private location of your choice."
+                "text": "Sessions can be held at your home or a private location of your choice."
               }
             },
             {
@@ -64,24 +64,6 @@ export default function BoudoirService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Boudoir Photography Toronto</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Empowering, Private Portrait Sessions</h2>
-          <p className="mb-6 text-lg">Celebrate your confidence and beauty with a private boudoir session. Professional, empowering, and always confidential. Sessions available in-studio, at home, or at a private location of your choice.</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Empowering, confidence-boosting experience</li>
-            <li>All body types and identities welcome</li>
-            <li>Professional retouching and privacy guaranteed</li>
-            <li>Female photographer, safe and supportive environment</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Experienced, supportive photographer</li>
-            <li>Focus on comfort and empowerment</li>
-            <li>Discreet, professional editing and delivery</li>
-          </ul>
-        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
@@ -123,9 +105,9 @@ export default function BoudoirService() {
               <div className="flex gap-4">
                 <Home className="w-6 h-6 text-[#819184] flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-serif text-xl mb-2">Studio or Home</h3>
+                  <h3 className="font-serif text-xl mb-2">Home or Private Location</h3>
                   <p className="text-gray-600">
-                    Choose a studio, your home, or a private location for your session.
+                    Choose your home or a private location for your session.
                   </p>
                 </div>
               </div>
@@ -146,7 +128,7 @@ export default function BoudoirService() {
               <ul className="space-y-3 text-gray-700 mb-8">
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>Studio, home, or private location</span>
+                  <span>Home or private location</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
@@ -235,7 +217,7 @@ export default function BoudoirService() {
               </div>
               <div>
                 <h3 className="font-medium">Where do boudoir sessions take place?</h3>
-                <p>Sessions can be held in-studio, at your home, or a private location of your choice.</p>
+                <p>Sessions can be held at your home or a private location of your choice.</p>
               </div>
               <div>
                 <h3 className="font-medium">Is privacy guaranteed?</h3>

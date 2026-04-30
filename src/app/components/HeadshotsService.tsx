@@ -49,7 +49,7 @@ export default function HeadshotsService() {
               "name": "Where do headshot sessions take place?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Sessions can be held in-studio, on-location, or at your office for groups."
+                "text": "Sessions can be held on-location or at your office for groups."
               }
             },
             {
@@ -64,24 +64,6 @@ export default function HeadshotsService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Professional Headshots Toronto</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Business, Acting & Personal Branding Portraits</h2>
-          <p className="mb-6 text-lg">Elevate your professional image with high-quality headshots. Perfect for business, acting, and personal branding. Sessions available in-studio, on-location, or at your office.</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Business, acting, and social media headshots</li>
-            <li>Guidance on wardrobe, posing, and expression</li>
-            <li>Fast turnaround and online gallery delivery</li>
-            <li>Group and corporate sessions available</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Experienced portrait photographer</li>
-            <li>Personalized approach for every client</li>
-            <li>Professional retouching included</li>
-          </ul>
-        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
@@ -94,7 +76,7 @@ export default function HeadshotsService() {
           <header>
             <h1 className="text-4xl md:text-5xl font-serif mb-4">Professional Headshots Toronto</h1>
             <p className="text-xl text-gray-600 mb-6">
-              Headshots for business, acting, and personal branding. Studio, location, or office sessions available.
+              Headshots for business, acting, and personal branding. Location or office sessions available.
             </p>
           </header>
 
@@ -146,7 +128,7 @@ export default function HeadshotsService() {
               <ul className="space-y-3 text-gray-700 mb-8">
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>Studio or location session</span>
+                  <span>Location session</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
@@ -158,7 +140,7 @@ export default function HeadshotsService() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>Fast turnaround</span>
+
                 </li>
               </ul>
 
@@ -235,7 +217,7 @@ export default function HeadshotsService() {
               </div>
               <div>
                 <h3 className="font-medium">Where do headshot sessions take place?</h3>
-                <p>Sessions can be held in-studio, on-location, or at your office for groups.</p>
+                <p>Sessions can be held on-location or at your office for groups.</p>
               </div>
               <div>
                 <h3 className="font-medium">How do I prepare for my headshot session?</h3>

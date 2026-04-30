@@ -69,24 +69,6 @@ export default function RealEstateService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Toronto Real Estate Photography</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Professional Property Photography for Realtors & Homeowners</h2>
-          <p className="mb-6 text-lg">Showcase your property with stunning images that attract buyers and elevate your listing. We offer interior, exterior, aerial, and twilight photography for homes and commercial spaces in Toronto and the GTA.</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Residential and commercial real estate photography</li>
-            <li>Flexible scheduling and fast turnaround</li>
-            <li>All images professionally edited and delivered in a private gallery</li>
-            <li>Optional aerial/drone and twilight sessions</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Experienced in real estate and architectural photography</li>
-            <li>Attention to detail and composition</li>
-            <li>Quick delivery and easy online access</li>
-          </ul>
-        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
@@ -138,7 +120,7 @@ export default function RealEstateService() {
               <div className="flex gap-4">
                 <Clock className="w-6 h-6 text-[#819184] flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-serif text-xl mb-2">Fast Turnaround</h3>
+
                   <p className="text-gray-600">
                     Receive your edited images within 24-48 hours of your session.
                   </p>
@@ -163,7 +145,7 @@ export default function RealEstateService() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>24-48 hour turnaround</span>
+
                 </li>
               </ul>
 

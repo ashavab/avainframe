@@ -2,7 +2,7 @@ import { Heart, Users, Baby, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 const peopleServices = [
-  { icon: Users, title: "Portraits", desc: "Professional studio or outdoor sessions.", rate: 200, extra: 100, min: 1, max: 6, tiered: true },
+  { icon: Users, title: "Portraits", desc: "Professional outdoor sessions.", rate: 200, extra: 100, min: 1, max: 6, tiered: true },
   { icon: Baby, title: "Newborn", desc: "Gentle photography celebrating new life.", rate: 200, extra: 100, min: 1, max: 4, tiered: true },
   { icon: Heart, title: "Boudoir", desc: "Empowering, tasteful, and private sessions.", rate: 250, min: 2, max: 6, tiered: false },
   { icon: Users, title: "Headshots", desc: "Professional headshots for business or personal branding.", rate: 150, min: 1, max: 3, tiered: false },

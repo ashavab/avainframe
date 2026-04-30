@@ -37,23 +37,7 @@ export function TorontoPhotographerService() {
       }) }} />
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
         <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Toronto Photographer</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Wedding, Engagement, Family & Lifestyle Photography in Toronto & GTA</h2>
-          <p className="mb-6 text-lg">Ava in Frame offers a full range of photography services in Toronto, including weddings, engagements, family portraits, and lifestyle sessions. We blend candid moments with editorial artistry for timeless results.</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li><a href="/#/blog" className="text-[#819184] hover:underline">Photography tips for Toronto clients</a></li>
-            <li>Experienced Toronto photographer for all occasions</li>
-            <li>Flexible packages and transparent pricing</li>
-            <li>All images professionally edited and delivered in a private online gallery</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>10+ years of experience in Toronto photography</li>
-            <li>Personalized approach for every client</li>
-            <li>Fast turnaround and exceptional service</li>
-          </ul>
-        </section>
+        {/* Removed duplicate top info block for cleaner layout */}
         <div className="mx-auto max-w-4xl pt-20">
           <button
             onClick={() => (window.location.hash = "/")}

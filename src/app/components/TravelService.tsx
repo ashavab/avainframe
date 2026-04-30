@@ -66,24 +66,6 @@ export default function TravelService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Travel & Destination Photography</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Worldwide Weddings, Elopements & Adventures</h2>
-          <p className="mb-6 text-lg">Capture your adventures and special moments anywhere in the world. We offer destination wedding, elopement, and travel photography with custom packages for every journey.</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Destination weddings and elopements</li>
-            <li>Travel, adventure, and landscape photography</li>
-            <li>Flexible packages and custom quotes</li>
-            <li>All images professionally edited and delivered online</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Experienced travel and wedding photographer</li>
-            <li>Creative, documentary approach</li>
-            <li>Personalized service for every client</li>
-          </ul>
-        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}

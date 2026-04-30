@@ -64,24 +64,6 @@ export default function PetsService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Pet Photography Toronto</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Fun, Candid Portraits for Pets & Owners</h2>
-          <p className="mb-6 text-lg">Celebrate your furry friends with a pet photography session. We capture the joy and character of your pets in every photo—dogs, cats, and all beloved animals welcome!</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Outdoor, in-home, or favorite location sessions</li>
-            <li>Owners and families welcome in portraits</li>
-            <li>All images professionally edited and delivered in a private gallery</li>
-            <li>Flexible scheduling for your pet's comfort</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Patient, animal-loving photographer</li>
-            <li>Experience with pets of all sizes and temperaments</li>
-            <li>Fun, relaxed sessions for natural results</li>
-          </ul>
-        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
@@ -158,7 +140,7 @@ export default function PetsService() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>Fast turnaround</span>
+
                 </li>
               </ul>
 

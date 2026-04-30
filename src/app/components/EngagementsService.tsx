@@ -70,24 +70,6 @@ export function EngagementsService() {
         })}
       </script>
       <main className="min-h-screen bg-white text-gray-900 px-6 py-12">
-        <button onClick={() => window.location.hash = '/'} className="mb-8 px-6 py-2 rounded-full bg-[#819184] text-white font-semibold hover:bg-[#6b7d6e] transition-all">← Back</button>
-        <section className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-5xl font-serif mb-6 dark:text-black">Toronto Engagement Photography</h1>
-          <h2 className="text-2xl font-semibold mb-4 text-[#819184]">Natural, Candid Engagement Photographer in Toronto & GTA</h2>
-          <p className="mb-6 text-lg">Celebrate your love story with a relaxed, fun engagement session. We capture genuine moments in Toronto’s most beautiful locations, perfect for save-the-dates and wedding announcements.</p>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li><a href="/#/blog" className="text-[#819184] hover:underline">Read engagement session tips</a></li>
-            <li>Flexible session locations across Toronto and the GTA</li>
-            <li>Guidance on outfits and posing for natural results</li>
-            <li>All images professionally edited and delivered in a private online gallery</li>
-          </ul>
-          <h3 className="text-xl font-serif mb-2">Why Choose Ava in Frame?</h3>
-          <ul className="list-disc pl-6 mb-6 text-gray-700">
-            <li>Experienced in capturing candid, editorial engagement photos</li>
-            <li>Personalized approach for every couple</li>
-            <li>Fast turnaround and transparent pricing</li>
-          </ul>
-        </section>
         <div className="mx-auto max-w-4xl pt-20">
         <button
           onClick={() => (window.location.hash = "/")}
@@ -160,7 +142,7 @@ export function EngagementsService() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>2-3 weeks turnaround time</span>
+
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#819184] font-bold mt-1">•</span>
