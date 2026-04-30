@@ -17,7 +17,9 @@ export default function ConsultationModal({ open, onClose }: { open: boolean; on
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={handleOverlayClick}
     >
-      <div className="bg-white dark:bg-black rounded-2xl shadow-xl max-w-md w-[95vw] sm:w-full p-6 sm:p-8 relative">
+      <div className="bg-white dark:bg-black rounded-2xl shadow-xl max-w-2xl w-[98vw] sm:w-[600px] p-10 sm:p-12 relative max-h-[90vh] overflow-y-auto flex flex-col justify-center box-border">
+        {/* Add a wrapper for inner content to ensure equal spacing */}
+        <div className="flex flex-col gap-6 justify-center h-full w-full">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-black dark:hover:text-white text-2xl"
@@ -44,6 +46,7 @@ export default function ConsultationModal({ open, onClose }: { open: boolean; on
           <a href="https://instagram.com/ava_in_frame" target="_blank" className="flex items-center gap-2 text-pink-600 hover:underline">
             <Instagram className="w-5 h-5" /> Instagram: @ava_in_frame
           </a>
+        </div>
         </div>
       </div>
     </div>

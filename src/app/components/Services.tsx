@@ -1,11 +1,21 @@
 import { Heart, Users, Baby, Sparkles } from "lucide-react";
 import { useState } from "react";
 
-const services = [
-  { icon: Heart, title: "Weddings", desc: "Capturing every magical moment. (free in person consultation)", rate: 250, min: 4, max: 12, tiered: false },
+const peopleServices = [
   { icon: Users, title: "Portraits", desc: "Professional studio or outdoor sessions.", rate: 200, extra: 100, min: 1, max: 6, tiered: true },
   { icon: Baby, title: "Newborn", desc: "Gentle photography celebrating new life.", rate: 200, extra: 100, min: 1, max: 4, tiered: true },
-  { icon: Sparkles, title: "Events", desc: "Coverage for parties and celebrations. (free in person consultation)", rate: 200, min: 2, max: 10, tiered: false }
+  { icon: Heart, title: "Boudoir", desc: "Empowering, tasteful, and private sessions.", rate: 250, min: 2, max: 6, tiered: false },
+  { icon: Users, title: "Headshots", desc: "Professional headshots for business or personal branding.", rate: 150, min: 1, max: 3, tiered: false },
+];
+
+const eventServices = [
+  { icon: Heart, title: "Weddings", desc: "Capturing every magical moment. (free in person consultation)", rate: 250, min: 4, max: 12, tiered: false },
+  { icon: Sparkles, title: "Events", desc: "Coverage for parties and celebrations. (free in person consultation)", rate: 200, min: 2, max: 10, tiered: false },
+];
+
+const commercialServices = [
+  { icon: Sparkles, title: "Real Estate", desc: "Professional real estate photography for listings and rentals.", rate: 180, min: 1, max: 4, tiered: false },
+  { icon: Sparkles, title: "Pets", desc: "Fun and creative pet photography sessions.", rate: 120, min: 1, max: 3, tiered: false },
 ];
 
 function ServiceCard({ service }: { service: any }) {
@@ -49,8 +59,64 @@ export function Services() {
           <h2 className="text-4xl md:text-5xl mb-4 font-serif dark:text-white">Services</h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg">Transparent pricing with real-time estimates</p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {services.map((s, index) => <ServiceCard key={index} service={s} />)}
+        {/* Main service cards for most-checked services only */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
+          {/* People */}
+          <div>
+            <h3 className="text-xl font-semibold mb-5 text-[#819184] text-center">People</h3>
+            <div className="flex flex-col gap-6">
+              {/* Only show Portraits and Newborn as full cards */}
+              {peopleServices.filter(s => ["Portraits", "Newborn"].includes(s.title)).map((s) => <ServiceCard key={s.title} service={s} />)}
+            </div>
+          </div>
+          {/* Events */}
+          <div>
+            <h3 className="text-xl font-semibold mb-5 text-[#819184] text-center">Events</h3>
+            <div className="flex flex-col gap-6">
+              {/* Only show Weddings and Events as full cards */}
+              {eventServices.map((s) => <ServiceCard key={s.title} service={s} />)}
+            </div>
+          </div>
+        </div>
+
+        {/* Link Tree Box for all services */}
+        <div className="mt-8 rounded-2xl border border-gray-100 dark:border-white/10 bg-white/80 dark:bg-black/40 p-6 md:p-10 shadow-lg">
+          <h3 className="font-serif text-2xl mb-3 dark:text-white text-center">All Services</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-7 text-center max-w-2xl mx-auto">
+            Quick links to every service we offer. Explore more below!
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {/* People */}
+            {peopleServices.map((s) => (
+              <a
+                key={s.title}
+                href={`/#/${s.title.toLowerCase().replace(/\s+/g, "-")}`}
+                className="inline-block rounded-full border border-[#819184]/30 px-5 py-2 text-sm font-medium text-[#819184] bg-white dark:bg-black/60 hover:bg-[#819184]/10 hover:text-black dark:hover:text-white transition"
+              >
+                {s.title}
+              </a>
+            ))}
+            {/* Events */}
+            {eventServices.map((s) => (
+              <a
+                key={s.title}
+                href={`/#/${s.title.toLowerCase().replace(/\s+/g, "-")}`}
+                className="inline-block rounded-full border border-[#819184]/30 px-5 py-2 text-sm font-medium text-[#819184] bg-white dark:bg-black/60 hover:bg-[#819184]/10 hover:text-black dark:hover:text-white transition"
+              >
+                {s.title}
+              </a>
+            ))}
+            {/* Commercial */}
+            {commercialServices.map((s) => (
+              <a
+                key={s.title}
+                href={`/#/${s.title.toLowerCase().replace(/\s+/g, "-")}`}
+                className="inline-block rounded-full border border-[#819184]/30 px-5 py-2 text-sm font-medium text-[#819184] bg-white dark:bg-black/60 hover:bg-[#819184]/10 hover:text-black dark:hover:text-white transition"
+              >
+                {s.title}
+              </a>
+            ))}
+          </div>
         </div>
         {/* Redesigned Service Guides Box */}
         <div className="mt-12 rounded-2xl border border-gray-100 dark:border-white/10 bg-gradient-to-br from-white/90 via-[#f6f8f6]/80 to-[#eaf1ea]/80 dark:from-black/70 dark:via-black/60 dark:to-[#1a1e1a]/80 p-6 md:p-12 shadow-2xl">
