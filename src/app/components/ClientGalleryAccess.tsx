@@ -133,6 +133,39 @@ export function ClientGalleryAccess() {
                 allow="fullscreen; autoplay; clipboard-read; clipboard-write"
                 allowFullScreen
               />
+
+              {/* Review Section */}
+              <div className="mt-10 p-6 rounded-2xl border border-[#7a8d7d]/30 bg-[#f8f8f5] flex flex-col items-center">
+                <h2 className="text-2xl font-serif mb-2 text-[#7a8d7d]">Enjoying your photos?</h2>
+                <p className="mb-4 text-neutral-700 text-center">We'd love to hear your feedback! Please consider leaving a review on your favorite platform:</p>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <a
+                    href="https://g.page/r/CdJN4SgZHr5HEBM/review"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2 rounded-full bg-[#4285F4] text-white font-medium hover:bg-[#357ae8] transition"
+                  >
+                    Leave a Google Review
+                  </a>
+                  <a
+                    href="https://www.facebook.com/avainframe/reviews" // TODO: Replace with your actual Facebook review link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2 rounded-full bg-[#4267B2] text-white font-medium hover:bg-[#365899] transition"
+                  >
+                    Facebook
+                  </a>
+                  <a
+                    href="https://www.yelp.com/biz/ava-in-frame-photography-toronto" // TODO: Replace with your actual Yelp review link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2 rounded-full bg-[#d32323] text-white font-medium hover:bg-[#b71c1c] transition"
+                  >
+                    Yelp
+                  </a>
+                </div>
+                <p className="mt-4 text-xs text-neutral-500">Thank you for supporting Ava in Frame Photography!</p>
+              </div>
             </div>
           )}
         </div>
