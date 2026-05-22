@@ -70,7 +70,7 @@ export function Reviews() {
             Google Reviews
           </a>
           <a
-            href="https://www.yelp.com/biz/ava-in-frame-photography-toronto"
+            href="https://www.yelp.ca/writeareview/biz/kl6StD-njEXc5PbUUhaiVA?return_url=%2Fbiz%2Fkl6StD-njEXc5PbUUhaiVA&review_origin=biz-details-war-button"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#d32323] text-white font-semibold text-lg shadow hover:bg-[#b71c1c] transition"
@@ -79,7 +79,7 @@ export function Reviews() {
             Yelp Reviews
           </a>
           <a
-            href="https://www.facebook.com/avainframe/reviews"
+            href="https://www.facebook.com/profile.php?id=61589665170358&sk=reviews"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#4267B2] text-white font-semibold text-lg shadow hover:bg-[#365899] transition"

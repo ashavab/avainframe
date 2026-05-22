@@ -148,7 +148,7 @@ export function ClientGalleryAccess() {
                     Leave a Google Review
                   </a>
                   <a
-                    href="https://www.facebook.com/avainframe/reviews" // TODO: Replace with your actual Facebook review link
+                    href="https://www.facebook.com/profile.php?id=61589665170358&sk=reviews" // Updated Facebook review link
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-5 py-2 rounded-full bg-[#4267B2] text-white font-medium hover:bg-[#365899] transition"
@@ -156,7 +156,7 @@ export function ClientGalleryAccess() {
                     Facebook
                   </a>
                   <a
-                    href="https://www.yelp.com/biz/ava-in-frame-photography-toronto" // TODO: Replace with your actual Yelp review link
+                    href="https://www.yelp.ca/writeareview/biz/kl6StD-njEXc5PbUUhaiVA?return_url=%2Fbiz%2Fkl6StD-njEXc5PbUUhaiVA&review_origin=biz-details-war-button" // Updated Yelp review link
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-5 py-2 rounded-full bg-[#d32323] text-white font-medium hover:bg-[#b71c1c] transition"
