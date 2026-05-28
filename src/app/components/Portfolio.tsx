@@ -1,19 +1,21 @@
-import { portfolioEntries } from "../data/portfolioData";
+import { portfolioEntries as manualEntries } from "../data/portfolioData";
+import { generatedEntries } from "../data/portfolioGenerated";
 
 export function Portfolio() {
+  const entries = (generatedEntries && generatedEntries.length > 0) ? generatedEntries : manualEntries;
+
   return (
     <section id="portfolio" className="py-20 bg-transparent transition-colors duration-1000">
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center">
           <h2 className="text-4xl md:text-5xl font-serif mb-4 dark:text-white transition-colors">Portfolio</h2>
           <p className="mx-auto mb-12 max-w-2xl text-base text-slate-600 dark:text-slate-300">
-            Keep this portfolio up to date by editing the shoot list in <span className="font-semibold">src/app/data/portfolioData.ts</span>.
-            Add new shoots, update captions, or point each entry to a gallery link.
+            Keep this portfolio up to date by dropping photos into the folders under <strong>public/galleries/</strong> then running <code>npm run galleries:generate</code>.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {portfolioEntries.map((entry) => (
+          {entries.map((entry: any) => (
             <article key={entry.title} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
               <img
                 src={entry.imageUrl}
