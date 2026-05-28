@@ -14,6 +14,7 @@ import { Footer } from "./components/Footer";
 import { ImmichAccess } from "./components/ImmichAccess";
 import { ClientGalleryAccess } from "./components/ClientGalleryAccess";
 import { WeddingsService } from "./components/WeddingsService";
+import { Portfolio } from "./components/Portfolio";
 import { EngagementsService } from "./components/EngagementsService";
 import { FamilyService } from "./components/FamilyService";
 import { TorontoPhotographerService } from "./components/TorontoPhotographerService";
@@ -55,60 +56,6 @@ function getRouteCandidates() {
   return { path, hash };
 }
 
-function Portfolio() {
-  return (
-    <section id="portfolio" className="py-20 bg-transparent">
-      <div className="max-w-6xl mx-auto px-4 text-center">
-        <h2 className="text-4xl md:text-5xl font-serif mb-12 dark:text-white">Portfolio</h2>
-        <div className="w-full overflow-hidden rounded-xl shadow-lg">
-          <iframe 
-            src="https://widgets.sociablekit.com/instagram-feed/iframe/25659098" 
-            className="w-full border-0 h-[600px] md:h-[800px] bg-white"
-            title="Instagram Feed: Ava in Frame portfolio highlights"
-            aria-label="Instagram Feed: Ava in Frame portfolio highlights"
-          />
-        </div>
-        {/* ImageObject schema for portfolio highlights */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "ImageObject",
-          "contentUrl": "https://avainframe.com/DSC06596.jpg",
-          "author": { "@type": "Person", "name": "Ashleigh Boudier" },
-          "description": "Wedding photography portfolio highlight by Ava in Frame, Toronto photographer.",
-          "license": "https://avainframe.com",
-          "acquireLicensePage": "https://avainframe.com/contact"
-        }) }} />
-        {/* Example Event schema for mini-session promotion */}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Event",
-          "name": "Spring Mini Sessions",
-          "startDate": "2026-05-15T10:00",
-          "endDate": "2026-05-15T18:00",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "eventStatus": "https://schema.org/EventScheduled",
-          "location": {
-            "@type": "Place",
-            "name": "Toronto Botanical Garden",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Toronto",
-              "addressRegion": "ON",
-              "addressCountry": "CA"
-            }
-          },
-          "image": ["https://avainframe.com/DSC06596.jpg"],
-          "description": "Limited spring mini photography sessions in Toronto. Book your spot today!",
-          "organizer": {
-            "@type": "Organization",
-            "name": "Ava in Frame",
-            "url": "https://avainframe.com"
-          }
-        }) }} />
-      </div>
-    </section>
-  );
-}
 
 export default function App() {
   const [routeVersion, setRouteVersion] = useState(0);
