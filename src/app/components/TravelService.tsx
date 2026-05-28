@@ -1,6 +1,7 @@
 import { Globe, Camera, MapPin, Heart } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
+import ServiceGallery from "./ServiceGallery";
 
 export default function TravelService() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,6 +82,8 @@ export default function TravelService() {
               Available for weddings, elopements, and adventures worldwide—let's capture your story wherever it unfolds.
             </p>
           </header>
+
+          <ServiceGallery category="travel" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

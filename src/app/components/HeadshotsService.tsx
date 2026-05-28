@@ -1,6 +1,7 @@
 import { User, Briefcase, Camera, Smile } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
+import ServiceGallery from "./ServiceGallery";
 
 export default function HeadshotsService() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,6 +80,8 @@ export default function HeadshotsService() {
               Headshots for business, acting, and personal branding. Location or office sessions available.
             </p>
           </header>
+
+          <ServiceGallery category="headshots" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

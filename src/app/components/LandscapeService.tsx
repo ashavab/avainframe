@@ -1,6 +1,7 @@
 import { Image, Globe, Briefcase, Camera } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
+import ServiceGallery from "./ServiceGallery";
 
 export default function LandscapeService() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -80,6 +81,8 @@ export default function LandscapeService() {
               Fine art landscape images for collectors, businesses, and editorial use—available worldwide.
             </p>
           </header>
+
+          <ServiceGallery category="landscape" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

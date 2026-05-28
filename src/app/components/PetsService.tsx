@@ -1,6 +1,7 @@
 import { PawPrint, Smile, MapPin, Camera } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
+import ServiceGallery from "./ServiceGallery";
 
 export default function PetsService() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,6 +80,8 @@ export default function PetsService() {
               Capture your pet's unique personality with a fun, relaxed photo session in Toronto or the GTA.
             </p>
           </header>
+
+          <ServiceGallery category="pets" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

@@ -1,5 +1,6 @@
 import { Sparkles, MapPin, Camera, Clock } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
+import ServiceGallery from "./ServiceGallery";
 
 export function EngagementsService() {
   return (
@@ -85,6 +86,8 @@ export function EngagementsService() {
               Celebrate your love story with a candid engagement session in Toronto's most beautiful locations.
             </p>
           </header>
+
+          <ServiceGallery category="engagements" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

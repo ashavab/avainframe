@@ -1,6 +1,7 @@
 import { Building2, Camera, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
+import ServiceGallery from "./ServiceGallery";
 import { SeoHead } from "./SeoHead";
 import { BreadcrumbListSchema, ServiceAreaSchema } from "./schemaUtils";
 
@@ -84,6 +85,8 @@ export default function RealEstateService() {
               Professional photography for homes, condos, and commercial properties in Toronto and the GTA.
             </p>
           </header>
+
+          <ServiceGallery category="real-estate" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

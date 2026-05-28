@@ -1,5 +1,6 @@
 import { Camera, MapPin, Heart, Users } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
+import ServiceGallery from "./ServiceGallery";
 
 export function TorontoPhotographerService() {
   return (

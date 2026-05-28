@@ -1,6 +1,7 @@
 import { Heart, Lock, Home, Camera } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
+import ServiceGallery from "./ServiceGallery";
 
 export default function BoudoirService() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,6 +80,8 @@ export default function BoudoirService() {
               Intimate, empowering portrait sessions for every body and every story.
             </p>
           </header>
+
+          <ServiceGallery category="boudoir" />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">
