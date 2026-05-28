@@ -1,5 +1,6 @@
 import { Heart, MapPin, Calendar, Images } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
+import ServiceGallery from "./ServiceGallery";
 
 export function WeddingsService() {
   return (
@@ -84,6 +85,7 @@ export function WeddingsService() {
             <p className="text-xl text-gray-600 mb-6">
               Candid, editorial-style wedding photography capturing your most precious moments in Toronto and the GTA.
             </p>
+            <ServiceGallery category="weddings" />
           </header>
 
           <div className="grid md:grid-cols-2 gap-8 my-8">

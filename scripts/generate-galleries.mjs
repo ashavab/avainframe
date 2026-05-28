@@ -4,6 +4,38 @@ import path from 'path';
 const PUBLIC_GALLERIES = path.join(process.cwd(), 'public', 'galleries');
 const OUT_FILE = path.join(process.cwd(), 'src', 'app', 'data', 'portfolioGenerated.ts');
 
+// Helper to format image filename as caption
+function filenameToCaption(filename) {
+  let name = filename.replace(/\.[^.]+$/, '');
+  name = name.replace(/^\d{4}-\d{2}-\d{2}-/, '');
+  return name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+// Helper to find the head image for a gallery
+function findHeadImage(images, category) {
+  for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'gif', 'tif', 'heic']) {
+    const catFile = `${category}.${ext}`;
+    if (images.includes(catFile)) return catFile;
+  }
+  for (const pattern of ['head', 'cover']) {
+    const match = images.find(f => f.toLowerCase().startsWith(pattern + '.'));
+    if (match) return match;
+  }
+  return images[0];
+}
+
+function generateGalleryHTML(category, images, headImage) {
+  const categoryTitle = category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const thumbs = images
+    .map(img => {
+      const caption = filenameToCaption(img);
+      return `\n    <a href="${img}" class="gallery-item" title="${caption}">\n      <img src="${img}" alt="${caption}" loading="lazy" />\n      <div class="gallery-caption">${caption}</div>\n    </a>`;
+    })
+    .join('\n');
+
+  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${categoryTitle} Gallery</title>\n  <style>\n    * { margin: 0; padding: 0; box-sizing: border-box; }\n    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }\n    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }\n    .hero { margin-bottom: 40px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }\n    .hero img { width: 100%; height: auto; display: block; max-height: 500px; object-fit: cover; }\n    .hero-content { background: white; padding: 30px; text-align: center; }\n    .hero-content h1 { font-size: 2.5rem; margin-bottom: 10px; color: #1a1a1a; }\n    .hero-content p { font-size: 1.1rem; color: #666; line-height: 1.6; }\n    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; margin-top: 20px; }\n    .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform .3s, box-shadow .3s; display: block; text-decoration: none; background: white; aspect-ratio: 3/2; }\n    .gallery-item:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }\n    .gallery-item img { width:100%; height:100%; object-fit:cover; display:block; }\n    .gallery-caption { position:absolute; bottom:0; left:0; right:0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 20px 15px 15px; font-size: .95rem; font-weight:500; text-align:left; opacity:0; transition: opacity .3s; }\n    .gallery-item:hover .gallery-caption { opacity: 1; }\n    @media (max-width:768px) { .hero-content h1 { font-size:2rem } .gallery-grid{ grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap:15px } }\n    @media (max-width:480px) { .container{ padding:10px } .hero-content{ padding:20px } .hero-content h1{ font-size:1.5rem } .gallery-grid{ grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px } }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <div class="hero">\n      <img src="${headImage}" alt="${categoryTitle}" />\n      <div class="hero-content">\n        <h1>${categoryTitle}</h1>\n        <p>Browse our ${categoryTitle.toLowerCase()} photography collection</p>\n      </div>\n    </div>\n\n    <div class="gallery-grid">\n${thumbs}\n    </div>\n  </div>\n</body>\n</html>`;
+}
+
 async function generate() {
   const categories = await fs.readdir(PUBLIC_GALLERIES, { withFileTypes: true });
   const entries = [];
@@ -13,14 +45,28 @@ async function generate() {
     const catName = dirent.name;
     const catPath = path.join(PUBLIC_GALLERIES, catName);
     const files = await fs.readdir(catPath);
-    const images = files.filter(f => /\.(jpe?g|png|webp|gif|tif|heic)$/i.test(f));
+    const images = files.filter(f => /\.(jpe?g|png|webp|gif|tif|heic)$/i.test(f)).sort();
     if (images.length === 0) continue;
 
-    const thumbnail = `/galleries/${catName}/${images[0]}`;
+    const headImage = findHeadImage(images, catName);
+
+    // write per-gallery index.html
+    const galleryHTML = generateGalleryHTML(catName, images, headImage);
+    const indexPath = path.join(catPath, 'index.html');
+    await fs.writeFile(indexPath, galleryHTML, 'utf8');
+    console.log(`Wrote ${indexPath}`);
+
+    // write per-gallery JSON manifest for in-app rendering
+    const manifest = images.map(img => ({ src: `/galleries/${catName}/${img}`, caption: filenameToCaption(img) }));
+    const manifestPath = path.join(catPath, 'gallery.json');
+    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
+    console.log(`Wrote ${manifestPath}`);
+
+    const thumbnail = `/galleries/${catName}/${headImage}`;
     entries.push({
       title: catName.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
       category: catName,
-      date: new Date().toISOString().slice(0,10),
+      date: new Date().toISOString().slice(0, 10),
       description: `Auto-generated gallery for ${catName}`,
       imageUrl: thumbnail,
       galleryLink: `/galleries/${catName}/`
