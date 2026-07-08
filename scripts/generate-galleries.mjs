@@ -41,14 +41,38 @@ function generateEmptyGalleryHTML(category) {
   return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${categoryTitle} Gallery</title>\n  <style>\n    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }\n    .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; text-align: center; }\n    .message { background: white; border-radius: 18px; padding: 40px 30px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); }\n    h1 { font-size: 2.5rem; margin-bottom: 20px; }\n    p { font-size: 1.05rem; line-height: 1.7; color: #555; }\n    a { color: #1f6feb; text-decoration: none; font-weight: 600; }\n  </style>\n</head>\n<body>\n  <div class="container">\n    <div class="message">\n      <h1>${categoryTitle} Gallery</h1>\n      <p>This gallery is ready for your images. Drop photos into <strong>public/galleries/${category}</strong> and run <code>npm run galleries:generate</code>.</p>\n      <p>Once images are added, this page will update automatically.</p>\n    </div>\n  </div>\n</body>\n</html>`;
 }
 
+const CATEGORIES = [
+  'family',
+  'newborn',
+  'boudoir',
+  'headshots',
+  'weddings',
+  'events',
+  'real-estate',
+  'pets'
+];
+
+const CATEGORY_METADATA = {
+  family: { title: 'Family & Portraits', description: 'Timeless family and portrait photography for modern Toronto families.', defaultImage: '/IMG_0158.jpeg' },
+  newborn: { title: 'Newborn', description: 'Gentle photography celebrating new life.', defaultImage: '/IMG_0158.jpeg' },
+  boudoir: { title: 'Boudoir Photography', description: 'Private boudoir sessions that celebrate confidence and intimate artistry.', defaultImage: '/ashleigh.jpg' },
+  headshots: { title: 'Professional Headshots', description: 'Clean corporate and personal branding headshots for your professional image.', defaultImage: '/window.jpeg' },
+  weddings: { title: 'Wedding Photography', description: 'Editorial wedding photography with a modern Toronto celebration feel.', defaultImage: '/DSC06596.jpg' },
+  events: { title: 'Events', description: 'Coverage for parties and celebrations.', defaultImage: '/DSC07060.jpg' },
+  'real-estate': { title: 'Real Estate Photography', description: 'Beautiful real estate photography designed to make listings stand out.', defaultImage: '/DSC06596.jpg' },
+  pets: { title: 'Pet Photography', description: 'Fun, character-driven portraits of pets and their people.', defaultImage: '/avana.jpg' }
+};
+
 async function generate() {
-  const categories = await fs.readdir(PUBLIC_GALLERIES, { withFileTypes: true });
   const entries = [];
 
-  for (const dirent of categories) {
-    if (!dirent.isDirectory()) continue;
-    const catName = dirent.name;
+  for (const catName of CATEGORIES) {
+    const meta = CATEGORY_METADATA[catName] || { title: catName, description: '', defaultImage: '' };
     const catPath = path.join(PUBLIC_GALLERIES, catName);
+    
+    // Ensure directory exists
+    await fs.mkdir(catPath, { recursive: true });
+
     const files = await fs.readdir(catPath);
     const images = files.filter(f => /\.(jpe?g|png|webp|gif|tif|heic)$/i.test(f)).sort();
     const indexPath = path.join(catPath, 'index.html');
@@ -60,6 +84,15 @@ async function generate() {
       await fs.writeFile(manifestPath, JSON.stringify([], null, 2), 'utf8');
       console.log(`Wrote placeholder ${indexPath}`);
       console.log(`Wrote placeholder ${manifestPath}`);
+      
+      entries.push({
+        title: meta.title,
+        category: catName,
+        date: '',
+        description: meta.description,
+        imageUrl: meta.defaultImage,
+        galleryLink: `/galleries/${catName}/`
+      });
       continue;
     }
 
@@ -77,10 +110,10 @@ async function generate() {
 
     const thumbnail = `/galleries/${catName}/${headImage}`;
     entries.push({
-      title: catName.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+      title: meta.title,
       category: catName,
-      date: new Date().toISOString().slice(0, 10),
-      description: `Auto-generated gallery for ${catName}`,
+      date: '',
+      description: meta.description,
       imageUrl: thumbnail,
       galleryLink: `/galleries/${catName}/`
     });
