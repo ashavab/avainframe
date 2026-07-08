@@ -79,93 +79,52 @@ export function Services() {
           </div>
         </div>
 
-        {/* Unified Service Guides & Quick Links Section */}
+        {/* Explore Our Service Guides Section */}
         <div className="mt-12 rounded-2xl border border-gray-100 dark:border-white/10 bg-gradient-to-br from-white/90 via-[#f6f8f6]/80 to-[#eaf1ea]/80 dark:from-black/70 dark:via-black/60 dark:to-[#1a1e1a]/80 p-6 md:p-12 shadow-2xl">
-          
-          {/* Quick Links Section */}
-          <div className="mb-10 text-center pb-8 border-b border-gray-200/50 dark:border-white/10">
-            <h3 className="font-serif text-2xl mb-3 dark:text-white">All Services</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto text-sm">
-              Quick links to every service we offer. Explore more below!
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {/* People */}
-              {peopleServices.map((s) => (
-                <a
-                  key={s.title}
-                  href={`/#/${s.title.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="inline-block rounded-full border border-[#819184]/30 px-5 py-2 text-sm font-medium text-[#819184] bg-white dark:bg-black/60 hover:bg-[#819184]/10 hover:text-black dark:hover:text-white transition"
-                >
-                  {s.title}
-                </a>
-              ))}
-              {/* Events */}
-              {eventServices.map((s) => (
-                <a
-                  key={s.title}
-                  href={`/#/${s.title.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="inline-block rounded-full border border-[#819184]/30 px-5 py-2 text-sm font-medium text-[#819184] bg-white dark:bg-black/60 hover:bg-[#819184]/10 hover:text-black dark:hover:text-white transition"
-                >
-                  {s.title}
-                </a>
-              ))}
-              {/* Commercial */}
-              {commercialServices.map((s) => (
-                <a
-                  key={s.title}
-                  href={`/#/${s.title.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="inline-block rounded-full border border-[#819184]/30 px-5 py-2 text-sm font-medium text-[#819184] bg-white dark:bg-black/60 hover:bg-[#819184]/10 hover:text-black dark:hover:text-white transition"
-                >
-                  {s.title}
-                </a>
-              ))}
+          <h3 className="font-serif text-3xl mb-4 dark:text-white text-center tracking-tight">Explore Our Service Guides</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-10 text-center max-w-2xl mx-auto text-base">
+            Find the perfect photography service for your needs. Browse our detailed guides by category below.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* People & Events */}
+            <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-[#819184] text-lg">People & Events</h4>
+              </div>
+              <ul className="space-y-2">
+                <li><a href="/#/weddings" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Wedding Photography</a></li>
+                <li><a href="/#/engagements" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Engagement Sessions</a></li>
+                <li><a href="/#/family" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Family Photography</a></li>
+                <li><a href="/galleries/portraits/" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Portrait Photography</a></li>
+                <li><a href="/galleries/newborn/" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Newborn Photography</a></li>
+                <li><a href="/#/headshots" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Professional Headshots</a></li>
+                <li><a href="/#/boudoir" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Boudoir Photography</a></li>
+                <li><a href="/galleries/events/" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Event Photography</a></li>
+              </ul>
             </div>
-          </div>
-
-          {/* Service Guides Grid */}
-          <div>
-            <h3 className="font-serif text-3xl mb-4 dark:text-white text-center tracking-tight">Explore Our Service Guides</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-10 text-center max-w-2xl mx-auto text-base">
-              Find the perfect photography service for your needs. Browse our detailed guides by category below.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* People & Events */}
-              <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
-                <div className="flex items-center gap-3 mb-4">
-                  <Users className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
-                  <h4 className="font-semibold text-[#819184] text-lg">People & Events</h4>
-                </div>
-                <ul className="space-y-2">
-                  <li><a href="/#/weddings" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Wedding Photography</a></li>
-                  <li><a href="/#/engagements" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Engagement Sessions</a></li>
-                  <li><a href="/#/family" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Family & Portraits</a></li>
-                  <li><a href="/#/headshots" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Professional Headshots</a></li>
-                  <li><a href="/#/boudoir" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Boudoir Photography</a></li>
-                </ul>
+            {/* Commercial & Pets */}
+            <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-4">
+                <Sparkles className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-[#819184] text-lg">Commercial & Pets</h4>
               </div>
-              {/* Commercial & Pets */}
-              <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
-                <div className="flex items-center gap-3 mb-4">
-                  <Sparkles className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
-                  <h4 className="font-semibold text-[#819184] text-lg">Commercial & Pets</h4>
-                </div>
-                <ul className="space-y-2">
-                  <li><a href="/#/real-estate" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Real Estate Photography</a></li>
-                  <li><a href="/#/pets" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Pet Photography</a></li>
-                </ul>
+              <ul className="space-y-2">
+                <li><a href="/#/real-estate" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Real Estate Photography</a></li>
+                <li><a href="/#/pets" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Pet Photography</a></li>
+              </ul>
+            </div>
+            {/* Creative & Travel */}
+            <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-4">
+                <Heart className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
+                <h4 className="font-semibold text-[#819184] text-lg">Creative & Travel</h4>
               </div>
-              {/* Creative & Travel */}
-              <div className="bg-white/70 dark:bg-black/30 rounded-xl p-6 border border-gray-100 dark:border-white/10 shadow group hover:shadow-lg transition">
-                <div className="flex items-center gap-3 mb-4">
-                  <Heart className="w-6 h-6 text-[#819184] group-hover:scale-110 transition-transform" />
-                  <h4 className="font-semibold text-[#819184] text-lg">Creative & Travel</h4>
-                </div>
-                <ul className="space-y-2">
-                  <li><a href="/#/travel" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Travel & Destination</a></li>
-                  <li><a href="/#/landscape" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Landscape Photography</a></li>
-                  <li><a href="/#/toronto-photographer" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Toronto Photographer Area</a></li>
-                </ul>
-              </div>
+              <ul className="space-y-2">
+                <li><a href="/#/travel" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Travel & Destination</a></li>
+                <li><a href="/#/landscape" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Landscape Photography</a></li>
+                <li><a href="/#/toronto-photographer" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Toronto Photographer Area</a></li>
+              </ul>
             </div>
           </div>
         </div>
