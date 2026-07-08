@@ -28,47 +28,55 @@ if (!SHARE_KEY) {
 
 // Categories list
 const CATEGORIES = [
-  'family',
-  'newborn',
-  'boudoir',
-  'headshots',
   'weddings',
-  'events',
+  'engagements',
+  'family',
+  'headshots',
+  'boudoir',
+  'commercial-pets',
   'real-estate',
-  'pets'
+  'pet-photography',
+  'creative-travel',
+  'travel-destination',
+  'landscape',
+  'toronto'
 ];
 
 // Hardcoded mapping for existing 60 photos
 const KNOWN_ASSETS = {
-  // Events (band)
-  '5f3f461f-c3ae-4a57-a9cb-3ef327897817': 'events', // DSC01794
-  '613ff316-a0b6-4e78-b9fc-67af1ac14b74': 'events', // DSC01782
-  'a5420ac9-e066-42fa-aa0a-e7ee1cd68e6a': 'events', // DSC01755
-  '0b735bff-db62-4592-a802-c06e6166b365': 'events', // DSC01739
-  'DSC01794.png': 'events',
-  'DSC01782.png': 'events',
-  'DSC01755.png': 'events',
-  'DSC01739.png': 'events',
+  // Band photos -> creative-travel
+  '5f3f461f-c3ae-4a57-a9cb-3ef327897817': 'creative-travel',
+  '613ff316-a0b6-4e78-b9fc-67af1ac14b74': 'creative-travel',
+  'a5420ac9-e066-42fa-aa0a-e7ee1cd68e6a': 'creative-travel',
+  '0b735bff-db62-4592-a802-c06e6166b365': 'creative-travel',
+  'DSC01794.png': 'creative-travel',
+  'DSC01782.png': 'creative-travel',
+  'DSC01755.png': 'creative-travel',
+  'DSC01739.png': 'creative-travel',
 
-  // Newborn (baby)
-  'a9cdface-6f49-4667-b29a-97e345215996': 'newborn', // DSC02216
-  'a54c1bf9-62e3-4156-9dcd-228fe70163ac': 'newborn', // DSC01828
-  '96ba43b4-66d4-4857-9944-c27ddd7979b5': 'newborn', // DSC01816
-  'DSC02216.png': 'newborn',
-  'DSC01828.png': 'newborn',
-  'DSC01816.png': 'newborn',
+  // Baby photos -> family
+  'a9cdface-6f49-4667-b29a-97e345215996': 'family',
+  'a54c1bf9-62e3-4156-9dcd-228fe70163ac': 'family',
+  '96ba43b4-66d4-4857-9944-c27ddd7979b5': 'family',
+  'DSC02216.png': 'family',
+  'DSC01828.png': 'family',
+  'DSC01816.png': 'family',
 };
 
 // Keyword mapping for auto-classification of new photos
 const KEYWORD_MAP = {
-  newborn: ['newborn', 'baby', 'infant', 'toddler'],
-  boudoir: ['boudoir', 'intimate', 'sensual'],
-  headshots: ['headshot', 'headshots', 'corporate', 'branding', 'professional'],
   weddings: ['wedding', 'weddings', 'bride', 'groom', 'marriage', 'nuptials'],
-  events: ['event', 'events', 'band', 'concert', 'performance', 'show', 'gig'],
-  'real-estate': ['real-estate', 'realestate', 'property', 'house', 'interior', 'architecture', 'home'],
-  pets: ['pet', 'pets', 'dog', 'cat', 'animal', 'puppy', 'kitten'],
-  family: ['family', 'portrait', 'portraits', 'couple', 'maternity', 'lifestyle']
+  engagements: ['engagement', 'engagements', 'proposal'],
+  family: ['family', 'portrait', 'portraits', 'newborn', 'baby', 'maternity', 'lifestyle'],
+  headshots: ['headshot', 'headshots', 'corporate', 'branding', 'professional'],
+  boudoir: ['boudoir', 'intimate', 'sensual'],
+  'commercial-pets': ['commercial', 'promo', 'advertising', 'product'],
+  'real-estate': ['real-estate', 'realestate', 'property', 'house', 'interior', 'architecture', 'home', 'listing'],
+  'pet-photography': ['pet', 'pets', 'dog', 'cat', 'animal', 'puppy', 'kitten'],
+  'creative-travel': ['creative', 'travel', 'street', 'documentary', 'band', 'concert', 'event', 'events'],
+  'travel-destination': ['destination', 'destination-wedding', 'elopement', 'travel-destination'],
+  landscape: ['landscape', 'landscapes', 'nature', 'scenery', 'outdoor-nature'],
+  toronto: ['toronto', 'gta', 'local', 'cityscape']
 };
 
 function determineCategory(asset) {
@@ -84,7 +92,19 @@ function determineCategory(asset) {
   const textToScan = `${description} ${filename} ${tags.join(' ')}`;
 
   // 3. Scan for keywords in order of specificity
-  for (const cat of ['newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets']) {
+  for (const cat of [
+    'weddings',
+    'engagements',
+    'headshots',
+    'boudoir',
+    'commercial-pets',
+    'real-estate',
+    'pet-photography',
+    'creative-travel',
+    'travel-destination',
+    'landscape',
+    'toronto'
+  ]) {
     const keywords = KEYWORD_MAP[cat];
     if (keywords.some(kw => textToScan.includes(kw))) {
       return cat;
@@ -179,6 +199,23 @@ async function run() {
       if (!expectedPaths.has(fullPath)) {
         console.log(`  Deleting obsolete file: ${fullPath}`);
         fs.unlinkSync(fullPath);
+      }
+    }
+  }
+
+  // 4b. Clean up any obsolete category directories that are not in the CATEGORIES list
+  console.log('Cleaning up obsolete category folders...');
+  const galleriesBaseDir = path.join(process.cwd(), 'public', 'galleries');
+  if (fs.existsSync(galleriesBaseDir)) {
+    const folders = fs.readdirSync(galleriesBaseDir);
+    for (const folder of folders) {
+      if (folder === '.DS_Store') continue;
+      const folderPath = path.join(galleriesBaseDir, folder);
+      if (fs.statSync(folderPath).isDirectory()) {
+        if (!CATEGORIES.includes(folder)) {
+          console.log(`  Deleting obsolete category folder: ${folderPath}`);
+          fs.rmSync(folderPath, { recursive: true, force: true });
+        }
       }
     }
   }
