@@ -72,27 +72,28 @@ const KEYWORD_MAP = {
 };
 
 function determineCategory(asset) {
-  // 1. Check known assets mapping
+  const description = (asset.description || (asset.exifInfo && asset.exifInfo.description) || '').toLowerCase().trim();
+
+  // 1. Prioritize user description from Immich (if set)
+  if (description) {
+    for (const cat of ['newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets', 'family']) {
+      const keywords = KEYWORD_MAP[cat];
+      if (keywords.some(kw => description.includes(kw))) {
+        return cat;
+      }
+    }
+  }
+
+  // 2. Fall back to pre-seeded known assets mapping if no description matches
   if (KNOWN_ASSETS[asset.id]) return KNOWN_ASSETS[asset.id];
   if (KNOWN_ASSETS[asset.originalFileName]) return KNOWN_ASSETS[asset.originalFileName];
 
-  // 2. Collect text to scan (lowercase)
-  const description = (asset.description || (asset.exifInfo && asset.exifInfo.description) || '').toLowerCase();
+  // 3. Fall back to filename and tags
   const filename = (asset.originalFileName || '').toLowerCase();
   const tags = (asset.tags || []).map(t => (t.name || '').toLowerCase());
+  const textToScan = `${filename} ${tags.join(' ')}`;
 
-  const textToScan = `${description} ${filename} ${tags.join(' ')}`;
-
-  // 3. Scan for keywords in order of specificity
-  for (const cat of [
-    'newborn',
-    'boudoir',
-    'headshots',
-    'weddings',
-    'events',
-    'real-estate',
-    'pets'
-  ]) {
+  for (const cat of ['newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets']) {
     const keywords = KEYWORD_MAP[cat];
     if (keywords.some(kw => textToScan.includes(kw))) {
       return cat;

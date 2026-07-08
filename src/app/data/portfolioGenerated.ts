@@ -12,7 +12,7 @@ export const generatedEntries = [
     "category": "newborn",
     "date": "",
     "description": "Gentle photography celebrating new life.",
-    "imageUrl": "/galleries/newborn/DSC01816.jpg",
+    "imageUrl": "/IMG_0158.jpeg",
     "galleryLink": "/galleries/newborn/"
   },
   {
