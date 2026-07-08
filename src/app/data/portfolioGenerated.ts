@@ -12,7 +12,7 @@ export const generatedEntries = [
     "category": "family",
     "date": "",
     "description": "Warm and authentic lifestyle photography celebrating family connections.",
-    "imageUrl": "/galleries/family/DSC01359.jpg",
+    "imageUrl": "/galleries/family/DSC02305.jpg",
     "galleryLink": "/galleries/family/"
   },
   {
