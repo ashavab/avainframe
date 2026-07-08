@@ -10,7 +10,7 @@ export function Portfolio() {
         <div className="text-center">
           <h2 className="text-4xl md:text-5xl font-serif mb-4 dark:text-white transition-colors">Portfolio</h2>
           <p className="mx-auto mb-12 max-w-2xl text-base text-slate-600 dark:text-slate-300">
-            Keep this portfolio up to date by dropping photos into the folders under <strong>public/galleries/</strong> then running <code>npm run galleries:generate</code>.
+            A curated collection of candid moments, authentic connections, and milestone stories captured across Toronto and beyond.
           </p>
         </div>
 
@@ -28,7 +28,6 @@ export function Portfolio() {
                   <span className="inline-flex rounded-full bg-[#eef5eb] px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[#4d644d] dark:bg-slate-800 dark:text-slate-200">
                     {entry.category}
                   </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">{entry.date}</span>
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">{entry.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">{entry.description}</p>
