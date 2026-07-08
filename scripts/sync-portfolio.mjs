@@ -28,55 +28,47 @@ if (!SHARE_KEY) {
 
 // Categories list
 const CATEGORIES = [
-  'weddings',
-  'engagements',
   'family',
-  'headshots',
+  'newborn',
   'boudoir',
-  'commercial-pets',
+  'headshots',
+  'weddings',
+  'events',
   'real-estate',
-  'pet-photography',
-  'creative-travel',
-  'travel-destination',
-  'landscape',
-  'toronto'
+  'pets'
 ];
 
 // Hardcoded mapping for existing 60 photos
 const KNOWN_ASSETS = {
-  // Band photos -> creative-travel
-  '5f3f461f-c3ae-4a57-a9cb-3ef327897817': 'creative-travel',
-  '613ff316-a0b6-4e78-b9fc-67af1ac14b74': 'creative-travel',
-  'a5420ac9-e066-42fa-aa0a-e7ee1cd68e6a': 'creative-travel',
-  '0b735bff-db62-4592-a802-c06e6166b365': 'creative-travel',
-  'DSC01794.png': 'creative-travel',
-  'DSC01782.png': 'creative-travel',
-  'DSC01755.png': 'creative-travel',
-  'DSC01739.png': 'creative-travel',
+  // Band photos -> events
+  '5f3f461f-c3ae-4a57-a9cb-3ef327897817': 'events',
+  '613ff316-a0b6-4e78-b9fc-67af1ac14b74': 'events',
+  'a5420ac9-e066-42fa-aa0a-e7ee1cd68e6a': 'events',
+  '0b735bff-db62-4592-a802-c06e6166b365': 'events',
+  'DSC01794.png': 'events',
+  'DSC01782.png': 'events',
+  'DSC01755.png': 'events',
+  'DSC01739.png': 'events',
 
-  // Baby photos -> family
-  'a9cdface-6f49-4667-b29a-97e345215996': 'family',
-  'a54c1bf9-62e3-4156-9dcd-228fe70163ac': 'family',
-  '96ba43b4-66d4-4857-9944-c27ddd7979b5': 'family',
-  'DSC02216.png': 'family',
-  'DSC01828.png': 'family',
-  'DSC01816.png': 'family',
+  // Baby photos -> newborn
+  'a9cdface-6f49-4667-b29a-97e345215996': 'newborn',
+  'a54c1bf9-62e3-4156-9dcd-228fe70163ac': 'newborn',
+  '96ba43b4-66d4-4857-9944-c27ddd7979b5': 'newborn',
+  'DSC02216.png': 'newborn',
+  'DSC01828.png': 'newborn',
+  'DSC01816.png': 'newborn',
 };
 
 // Keyword mapping for auto-classification of new photos
 const KEYWORD_MAP = {
-  weddings: ['wedding', 'weddings', 'bride', 'groom', 'marriage', 'nuptials'],
-  engagements: ['engagement', 'engagements', 'proposal'],
-  family: ['family', 'portrait', 'portraits', 'newborn', 'baby', 'maternity', 'lifestyle'],
-  headshots: ['headshot', 'headshots', 'corporate', 'branding', 'professional'],
+  newborn: ['newborn', 'baby', 'infant', 'toddler'],
   boudoir: ['boudoir', 'intimate', 'sensual'],
-  'commercial-pets': ['commercial', 'promo', 'advertising', 'product'],
+  headshots: ['headshot', 'headshots', 'corporate', 'branding', 'professional'],
+  weddings: ['wedding', 'weddings', 'bride', 'groom', 'marriage', 'nuptials'],
+  events: ['event', 'events', 'band', 'concert', 'performance', 'show', 'gig'],
   'real-estate': ['real-estate', 'realestate', 'property', 'house', 'interior', 'architecture', 'home', 'listing'],
-  'pet-photography': ['pet', 'pets', 'dog', 'cat', 'animal', 'puppy', 'kitten'],
-  'creative-travel': ['creative', 'travel', 'street', 'documentary', 'band', 'concert', 'event', 'events'],
-  'travel-destination': ['destination', 'destination-wedding', 'elopement', 'travel-destination'],
-  landscape: ['landscape', 'landscapes', 'nature', 'scenery', 'outdoor-nature'],
-  toronto: ['toronto', 'gta', 'local', 'cityscape']
+  pets: ['pet', 'pets', 'dog', 'cat', 'animal', 'puppy', 'kitten'],
+  family: ['family', 'portrait', 'portraits', 'couple', 'lifestyle']
 };
 
 function determineCategory(asset) {
@@ -93,17 +85,13 @@ function determineCategory(asset) {
 
   // 3. Scan for keywords in order of specificity
   for (const cat of [
-    'weddings',
-    'engagements',
-    'headshots',
+    'newborn',
     'boudoir',
-    'commercial-pets',
+    'headshots',
+    'weddings',
+    'events',
     'real-estate',
-    'pet-photography',
-    'creative-travel',
-    'travel-destination',
-    'landscape',
-    'toronto'
+    'pets'
   ]) {
     const keywords = KEYWORD_MAP[cat];
     if (keywords.some(kw => textToScan.includes(kw))) {
