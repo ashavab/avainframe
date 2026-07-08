@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events Gallery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .hero { margin-bottom: 40px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .hero img { width: 100%; height: auto; display: block; max-height: 500px; object-fit: cover; }
+    .hero-content { background: white; padding: 30px; text-align: center; }
+    .hero-content h1 { font-size: 2.5rem; margin-bottom: 10px; color: #1a1a1a; }
+    .hero-content p { font-size: 1.1rem; color: #666; line-height: 1.6; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; margin-top: 20px; }
+    .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform .3s, box-shadow .3s; display: block; text-decoration: none; background: white; aspect-ratio: 3/2; }
+    .gallery-item:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
+    .gallery-item img { width:100%; height:100%; object-fit:cover; display:block; }
+    .gallery-caption { position:absolute; bottom:0; left:0; right:0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 20px 15px 15px; font-size: .95rem; font-weight:500; text-align:left; opacity:0; transition: opacity .3s; }
+    .gallery-item:hover .gallery-caption { opacity: 1; }
+    @media (max-width:768px) { .hero-content h1 { font-size:2rem } .gallery-grid{ grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap:15px } }
+    @media (max-width:480px) { .container{ padding:10px } .hero-content{ padding:20px } .hero-content h1{ font-size:1.5rem } .gallery-grid{ grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap:10px } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <img src="DSC01739.jpg" alt="Events" />
+      <div class="hero-content">
+        <h1>Events</h1>
+        <p>Browse our events photography collection</p>
+      </div>
+    </div>
+
+    <div class="gallery-grid">
+
+    <a href="DSC01739.jpg" class="gallery-item" title="DSC01739">
+      <img src="DSC01739.jpg" alt="DSC01739" loading="lazy" />
+      <div class="gallery-caption">DSC01739</div>
+    </a>
+
+    <a href="DSC01755.jpg" class="gallery-item" title="DSC01755">
+      <img src="DSC01755.jpg" alt="DSC01755" loading="lazy" />
+      <div class="gallery-caption">DSC01755</div>
+    </a>
+
+    <a href="DSC01782.jpg" class="gallery-item" title="DSC01782">
+      <img src="DSC01782.jpg" alt="DSC01782" loading="lazy" />
+      <div class="gallery-caption">DSC01782</div>
+    </a>
+
+    <a href="DSC01794.jpg" class="gallery-item" title="DSC01794">
+      <img src="DSC01794.jpg" alt="DSC01794" loading="lazy" />
+      <div class="gallery-caption">DSC01794</div>
+    </a>
+    </div>
+  </div>
+</body>
+</html>

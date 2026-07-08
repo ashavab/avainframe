@@ -7,6 +7,7 @@
     "seo:update-sitemaps": "node scripts/update-sitemaps.mjs",
     "seo:prepare": "npm run seo:update-sitemaps",
     "galleries:generate": "node scripts/generate-galleries.mjs",
+    "portfolio:sync": "node scripts/sync-portfolio.mjs",
     "build": "vite build",
     "dev": "vite"
   },

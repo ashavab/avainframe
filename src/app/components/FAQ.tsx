@@ -2,7 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 const defaultFaqs = [
-  { q: "What is your turnaround time?", a: "Standard delivery is 2-3 weeks for portraits and 6-8 weeks for weddings." },
+  { q: "What is your turnaround time?", a: "Standard delivery is up to 3 weeks for portraits and up to 8 weeks for weddings." },
   { q: "Do you travel outside the GTA?", a: "Yes! Travel fees apply for locations outside my standard radius." },
   { q: "How many photos will I receive?", a: "You'll get all high-resolution edited images from our session via a private gallery." },
   { q: "How do I book a session?", a: "Use the contact form below or reach out via WhatsApp to secure your date." }

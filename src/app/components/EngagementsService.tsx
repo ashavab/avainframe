@@ -229,7 +229,7 @@ export function EngagementsService() {
               </div>
               <div>
                 <h3 className="font-medium">When are the final photos delivered?</h3>
-                <p>Final edited images are usually delivered in 2-3 weeks in a private online gallery.</p>
+                <p>Final edited images are usually delivered in up to 3 weeks in a private online gallery.</p>
               </div>
             </div>
           </section>

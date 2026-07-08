@@ -1,18 +1,26 @@
 export const generatedEntries = [
   {
+    "title": "Events",
+    "category": "events",
+    "date": "2026-07-08",
+    "description": "Auto-generated gallery for events",
+    "imageUrl": "/galleries/events/DSC01739.jpg",
+    "galleryLink": "/galleries/events/"
+  },
+  {
     "title": "Family",
     "category": "family",
-    "date": "2026-05-28",
+    "date": "2026-07-08",
     "description": "Auto-generated gallery for family",
-    "imageUrl": "/galleries/family/DSC02873.png",
+    "imageUrl": "/galleries/family/DSC01350.jpg",
     "galleryLink": "/galleries/family/"
   },
   {
-    "title": "Headshots",
-    "category": "headshots",
-    "date": "2026-05-28",
-    "description": "Auto-generated gallery for headshots",
-    "imageUrl": "/galleries/headshots/DSC01509.png",
-    "galleryLink": "/galleries/headshots/"
+    "title": "Newborn",
+    "category": "newborn",
+    "date": "2026-07-08",
+    "description": "Auto-generated gallery for newborn",
+    "imageUrl": "/galleries/newborn/DSC01816.jpg",
+    "galleryLink": "/galleries/newborn/"
   }
 ] as const;

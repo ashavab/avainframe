@@ -31,7 +31,7 @@ export function TorontoPhotographerService() {
             "name": "How quickly are edited photos delivered?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Portrait and engagement sessions are typically delivered in 2-3 weeks, while weddings are delivered in 6-8 weeks."
+              "text": "Portrait and engagement sessions are typically delivered in up to 3 weeks, while weddings are delivered in up to 8 weeks."
             }
           }
         ]

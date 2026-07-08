@@ -125,7 +125,7 @@ export function WeddingsService() {
                 <div>
                   <h3 className="font-serif text-xl mb-2">Complete Gallery</h3>
                   <p className="text-gray-600">
-                    All high-resolution edited images delivered via private gallery within 6-8 weeks.
+                    All high-resolution edited images delivered via private gallery within 8 weeks.
                   </p>
                 </div>
               </div>
@@ -236,7 +236,7 @@ export function WeddingsService() {
               </div>
               <div>
                 <h3 className="font-medium">When will our wedding gallery be delivered?</h3>
-                <p>Final edited wedding galleries are typically delivered in 6-8 weeks through a private online gallery.</p>
+                <p>Final edited wedding galleries are typically delivered in up to 8 weeks through a private online gallery.</p>
               </div>
             </div>
           </section>
