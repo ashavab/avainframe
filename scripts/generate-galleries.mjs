@@ -42,6 +42,7 @@ function generateEmptyGalleryHTML(category) {
 }
 
 const CATEGORIES = [
+  'portraits',
   'family',
   'newborn',
   'boudoir',
@@ -53,7 +54,8 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_METADATA = {
-  family: { title: 'Family & Portraits', description: 'Timeless family and portrait photography for modern Toronto families.', defaultImage: '/IMG_0158.jpeg' },
+  portraits: { title: 'Portraits', description: 'Timeless personal and lifestyle portraits capturing authentic expressions.', defaultImage: '/IMG_0158.jpeg' },
+  family: { title: 'Family', description: 'Warm and authentic lifestyle photography celebrating family connections.', defaultImage: '/IMG_0158.jpeg' },
   newborn: { title: 'Newborn', description: 'Gentle photography celebrating new life.', defaultImage: '/IMG_0158.jpeg' },
   boudoir: { title: 'Boudoir Photography', description: 'Private boudoir sessions that celebrate confidence and intimate artistry.', defaultImage: '/ashleigh.jpg' },
   headshots: { title: 'Professional Headshots', description: 'Clean corporate and personal branding headshots for your professional image.', defaultImage: '/window.jpeg' },
@@ -84,15 +86,7 @@ async function generate() {
       await fs.writeFile(manifestPath, JSON.stringify([], null, 2), 'utf8');
       console.log(`Wrote placeholder ${indexPath}`);
       console.log(`Wrote placeholder ${manifestPath}`);
-      
-      entries.push({
-        title: meta.title,
-        category: catName,
-        date: '',
-        description: meta.description,
-        imageUrl: meta.defaultImage,
-        galleryLink: `/galleries/${catName}/`
-      });
+      // Skip pushing to entries list so empty categories are hidden on homepage portfolio section
       continue;
     }
 

@@ -28,6 +28,7 @@ if (!SHARE_KEY) {
 
 // Categories list
 const CATEGORIES = [
+  'portraits',
   'family',
   'newborn',
   'boudoir',
@@ -61,14 +62,15 @@ const KNOWN_ASSETS = {
 
 // Keyword mapping for auto-classification of new photos
 const KEYWORD_MAP = {
+  portraits: ['portrait', 'portraits', 'lifestyle'],
+  family: ['family', 'families', 'couple'],
   newborn: ['newborn', 'baby', 'infant', 'toddler'],
   boudoir: ['boudoir', 'intimate', 'sensual'],
   headshots: ['headshot', 'headshots', 'corporate', 'branding', 'professional'],
   weddings: ['wedding', 'weddings', 'bride', 'groom', 'marriage', 'nuptials'],
   events: ['event', 'events', 'band', 'concert', 'performance', 'show', 'gig'],
   'real-estate': ['real-estate', 'realestate', 'property', 'house', 'interior', 'architecture', 'home', 'listing'],
-  pets: ['pet', 'pets', 'dog', 'cat', 'animal', 'puppy', 'kitten'],
-  family: ['family', 'portrait', 'portraits', 'couple', 'lifestyle']
+  pets: ['pet', 'pets', 'dog', 'cat', 'animal', 'puppy', 'kitten']
 };
 
 function determineCategory(asset) {
@@ -76,7 +78,7 @@ function determineCategory(asset) {
 
   // 1. Prioritize user description from Immich (if set)
   if (description) {
-    for (const cat of ['newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets', 'family']) {
+    for (const cat of ['portraits', 'family', 'newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets']) {
       const keywords = KEYWORD_MAP[cat];
       if (keywords.some(kw => description.includes(kw))) {
         return cat;
@@ -93,7 +95,7 @@ function determineCategory(asset) {
   const tags = (asset.tags || []).map(t => (t.name || '').toLowerCase());
   const textToScan = `${filename} ${tags.join(' ')}`;
 
-  for (const cat of ['newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets']) {
+  for (const cat of ['portraits', 'newborn', 'boudoir', 'headshots', 'weddings', 'events', 'real-estate', 'pets']) {
     const keywords = KEYWORD_MAP[cat];
     if (keywords.some(kw => textToScan.includes(kw))) {
       return cat;
