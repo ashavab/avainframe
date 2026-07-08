@@ -4,7 +4,7 @@ export const generatedEntries = [
     "category": "portraits",
     "date": "",
     "description": "Timeless personal and lifestyle portraits capturing authentic expressions.",
-    "imageUrl": "/galleries/portraits/DSC01350.jpg",
+    "imageUrl": "/galleries/portraits/DSC03794.jpg",
     "galleryLink": "/galleries/portraits/"
   },
   {
@@ -12,7 +12,7 @@ export const generatedEntries = [
     "category": "family",
     "date": "",
     "description": "Warm and authentic lifestyle photography celebrating family connections.",
-    "imageUrl": "/galleries/family/DSC02305.jpg",
+    "imageUrl": "/galleries/family/DSC04632.jpg",
     "galleryLink": "/galleries/family/"
   },
   {
@@ -20,7 +20,7 @@ export const generatedEntries = [
     "category": "events",
     "date": "",
     "description": "Coverage for parties and celebrations.",
-    "imageUrl": "/galleries/events/DSC01739.jpg",
+    "imageUrl": "/galleries/events/DSC01794.jpg",
     "galleryLink": "/galleries/events/"
   }
 ] as const;

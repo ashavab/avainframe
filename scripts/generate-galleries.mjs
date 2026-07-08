@@ -76,7 +76,7 @@ async function generate() {
     await fs.mkdir(catPath, { recursive: true });
 
     const files = await fs.readdir(catPath);
-    const images = files.filter(f => /\.(jpe?g|png|webp|gif|tif|heic)$/i.test(f)).sort();
+    const images = files.filter(f => /\.(jpe?g|png|webp|gif|tif|heic)$/i.test(f)).sort().reverse();
     const indexPath = path.join(catPath, 'index.html');
     const manifestPath = path.join(catPath, 'gallery.json');
 
