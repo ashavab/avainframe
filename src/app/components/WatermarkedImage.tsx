@@ -28,7 +28,6 @@ export function WatermarkedImage({
   }, []);
 
   useEffect(() => {
-    // Reset state for new image
     setProcessedSrc(null);
     setCorsFailed(false);
 
@@ -43,8 +42,16 @@ export function WatermarkedImage({
     img.crossOrigin = "anonymous";
     img.src = src;
 
-    img.onload = () => {
+    const logoImg = new Image();
+    logoImg.src = "/logo_white-removebg-preview.png";
+
+    let photoLoaded = false;
+    let logoLoaded = false;
+    let logoFailed = false;
+
+    const processImages = () => {
       if (!isMounted.current) return;
+      if (!photoLoaded || (!logoLoaded && !logoFailed)) return;
 
       try {
         const canvas = document.createElement("canvas");
@@ -53,52 +60,62 @@ export function WatermarkedImage({
           throw new Error("Could not get 2D context");
         }
 
-        // Use natural dimensions of the image
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
 
-        // Draw original image
+        // Draw original photo
         ctx.drawImage(img, 0, 0);
 
-        // Apply tiled diagonal watermark
         ctx.save();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.08)";
-        ctx.lineWidth = 1;
 
-        // Dynamic font size proportional to image size
-        const fontSize = Math.max(18, Math.floor(canvas.width / 22));
-        ctx.font = `600 ${fontSize}px "Space Grotesk", "Plus Jakarta Sans", sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        if (logoLoaded && !logoFailed) {
+          // Draw Centered Logo Watermark
+          ctx.globalAlpha = 0.22; // 22% opacity is subtle and premium
 
-        const textWidth = ctx.measureText(watermarkText).width;
-        // Spacing based on text width and font size
-        const xGap = textWidth * 1.6;
-        const yGap = fontSize * 5;
+          // Scale logo to take up 40% of the image's width
+          const scale = (canvas.width * 0.4) / logoImg.naturalWidth;
+          const logoWidth = logoImg.naturalWidth * scale;
+          const logoHeight = logoImg.naturalHeight * scale;
 
-        // Rotate context around the center for diagonal watermark
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(-35 * Math.PI / 180);
-        ctx.translate(-canvas.width / 2, -canvas.height / 2);
+          const x = (canvas.width - logoWidth) / 2;
+          const y = (canvas.height - logoHeight) / 2;
 
-        // Grid ranges larger than canvas to ensure full coverage when rotated
-        const startX = -canvas.width * 0.5;
-        const endX = canvas.width * 1.5;
-        const startY = -canvas.height * 0.5;
-        const endY = canvas.height * 1.5;
+          ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
+        } else {
+          // Text Watermark Fallback if logo fails to load
+          ctx.fillStyle = "rgba(255, 255, 255, 0.18)";
+          ctx.strokeStyle = "rgba(0, 0, 0, 0.08)";
+          ctx.lineWidth = 1;
 
-        for (let y = startY; y < endY; y += yGap) {
-          let xOffset = (Math.floor(y / yGap) % 2) * (xGap / 2); // stagger rows
-          for (let x = startX + xOffset; x < endX; x += xGap) {
-            ctx.fillText(watermarkText, x, y);
-            ctx.strokeText(watermarkText, x, y);
+          const fontSize = Math.max(18, Math.floor(canvas.width / 22));
+          ctx.font = `600 ${fontSize}px "Space Grotesk", sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.rotate(-35 * Math.PI / 180);
+          ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+          const textWidth = ctx.measureText(watermarkText).width;
+          const xGap = textWidth * 1.6;
+          const yGap = fontSize * 5;
+
+          const startX = -canvas.width * 0.5;
+          const endX = canvas.width * 1.5;
+          const startY = -canvas.height * 0.5;
+          const endY = canvas.height * 1.5;
+
+          for (let y = startY; y < endY; y += yGap) {
+            let xOffset = (Math.floor(y / yGap) % 2) * (xGap / 2);
+            for (let x = startX + xOffset; x < endX; x += xGap) {
+              ctx.fillText(watermarkText, x, y);
+              ctx.strokeText(watermarkText, x, y);
+            }
           }
         }
 
         ctx.restore();
 
-        // Convert to high-quality JPEG data URL
         const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
         setProcessedSrc(dataUrl);
         setLoading(false);
@@ -109,15 +126,30 @@ export function WatermarkedImage({
       }
     };
 
+    img.onload = () => {
+      photoLoaded = true;
+      processImages();
+    };
+
     img.onerror = () => {
       if (!isMounted.current) return;
-      console.warn("CORS check failed for canvas. Falling back to CSS watermark overlay.");
+      console.warn("CORS/load error on image. Falling back to CSS watermark overlay.");
       setCorsFailed(true);
       setLoading(false);
     };
+
+    logoImg.onload = () => {
+      logoLoaded = true;
+      processImages();
+    };
+
+    logoImg.onerror = () => {
+      console.warn("Watermark logo failed to load. Using text fallback.");
+      logoFailed = true;
+      processImages();
+    };
   }, [src, shouldWatermark, watermarkText]);
 
-  // Disable dragging and context menu on the image wrapper to make saving a bit harder
   const handlePrevent = (e: React.SyntheticEvent) => {
     e.preventDefault();
   };
@@ -135,12 +167,12 @@ export function WatermarkedImage({
 
   return (
     <div
-      className="relative overflow-hidden select-none"
+      className="relative overflow-hidden select-none w-full h-full"
       onContextMenu={handlePrevent}
       onDragStart={handlePrevent}
     >
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 animate-pulse z-10">
           <span className="text-xs text-neutral-400">Loading and securing...</span>
         </div>
       )}
@@ -149,21 +181,22 @@ export function WatermarkedImage({
         // CSS Fallback rendering when CORS blocks canvas manipulation
         <div className="relative w-full h-full">
           <img
-            src={src} // load without anonymous crossOrigin so it works even if CORS is blocked
+            src={src}
             alt={alt}
-            className={`${className} pointer-events-none`}
+            className={`${className} pointer-events-none w-full h-auto`}
             loading="lazy"
           />
-          {/* CSS Watermark Overlay */}
-          <div className="absolute inset-0 pointer-events-none grid grid-cols-2 grid-rows-3 p-4 gap-4 overflow-hidden select-none opacity-20 rotate-[-15deg] scale-110">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-center font-bold text-white text-xs md:text-sm font-sans tracking-wider whitespace-nowrap drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]"
-              >
-                {watermarkText}
-              </div>
-            ))}
+          {/* CSS Logo Watermark Overlay */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center select-none bg-transparent">
+            <img
+              src="/logo_white-removebg-preview.png"
+              alt="Watermark logo"
+              className="w-1/3 opacity-22 select-none pointer-events-none object-contain"
+              onError={(e) => {
+                // Fallback to text overlay if logo fails in CSS too
+                (e.target as HTMLElement).style.display = "none";
+              }}
+            />
           </div>
         </div>
       ) : (
@@ -172,7 +205,7 @@ export function WatermarkedImage({
           <img
             src={processedSrc}
             alt={alt}
-            className={`${className} transition-opacity duration-300`}
+            className={`${className} transition-opacity duration-300 w-full h-auto`}
             loading="lazy"
           />
         )

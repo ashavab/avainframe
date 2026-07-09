@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState, useEffect } from "react";
+import { FormEvent, useMemo, useState, useEffect, useRef } from "react";
 import { WatermarkedImage } from "./WatermarkedImage";
 import {
   ChevronLeft,
@@ -9,7 +9,9 @@ import {
   Unlock,
   ExternalLink,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Maximize,
+  Minimize
 } from "lucide-react";
 
 const IMMICH_URL = import.meta.env.VITE_IMMICH_URL || "";
@@ -100,6 +102,33 @@ export function ClientGalleryAccess() {
 
   // Lightbox State
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const lightboxRef = useRef<HTMLDivElement>(null);
+
+  // Sync fullscreen state when user exits native full screen via Esc key
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!lightboxRef.current) return;
+
+    if (!document.fullscreenElement) {
+      lightboxRef.current.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch((err) => {
+        console.warn("Failed to enter fullscreen:", err);
+      });
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      });
+    }
+  };
 
   const shareUrl = useMemo(() => toShareUrl(password), [password]);
 
@@ -167,7 +196,7 @@ export function ClientGalleryAccess() {
 
       setAlbumName(albumData.albumName || "Your Gallery");
       setAssets(albumData.assets || []);
-      setShareKey(token);
+      setShareKey(albumData.shareKey || token);
       setFallbackToIframe(false);
     } catch (err: any) {
       console.warn("Immich API direct fetch failed (likely CORS or network permissions). Falling back to iframe view.", err);
@@ -388,7 +417,10 @@ export function ClientGalleryAccess() {
 
       {/* Lightbox Modal */}
       {lightboxIndex !== null && currentLightboxAsset && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-white select-none">
+        <div
+          ref={lightboxRef}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-white select-none"
+        >
           {/* Header Controls */}
           <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10 bg-gradient-to-b from-black/60 to-transparent">
             <div>
@@ -418,6 +450,19 @@ export function ClientGalleryAccess() {
                   Download High-Res Original
                 </a>
               )}
+
+              {/* Fullscreen Toggle Button */}
+              <button
+                onClick={toggleFullscreen}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer"
+                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+              >
+                {isFullscreen ? (
+                  <Minimize className="h-5 w-5" />
+                ) : (
+                  <Maximize className="h-5 w-5" />
+                )}
+              </button>
 
               <button
                 onClick={() => setLightboxIndex(null)}

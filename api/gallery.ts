@@ -13,27 +13,49 @@ export default async function handler(req: Request) {
     });
   }
 
-  // Fallback to the configured Immich URL
   const immichUrl = process.env.VITE_IMMICH_URL || "https://photos.avainframe.com";
 
   try {
-    // 1. Get shared link info to find the albumId
-    const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
-      headers: { "x-immich-share-key": token },
-    });
+    let resolvedKey = token;
+    let albumId = "";
+    let albumName = "Client Gallery";
 
-    if (!meRes.ok) {
-      return new Response(
-        JSON.stringify({ error: `Immich auth failed: Status ${meRes.status}` }),
-        {
-          status: meRes.status,
-          headers: { "content-type": "application/json" },
+    // 1. Try to resolve as a slug first (e.g. "beth")
+    try {
+      const slugRes = await fetch(`${immichUrl}/api/shared-links/me?slug=${token}`);
+      if (slugRes.ok) {
+        const slugData = await slugRes.json();
+        if (slugData.key && slugData.album?.id) {
+          resolvedKey = slugData.key;
+          albumId = slugData.album.id;
+          albumName = slugData.album.albumName || albumName;
         }
-      );
+      }
+    } catch (slugErr) {
+      console.warn("Failed to resolve slug, proceeding as direct key:", slugErr);
     }
 
-    const sharedLink = await meRes.json();
-    const albumId = sharedLink.album?.id;
+    // 2. If it wasn't a slug (or slug resolution failed), validate as direct key
+    if (!albumId) {
+      const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
+        headers: { "x-immich-share-key": token },
+      });
+
+      if (!meRes.ok) {
+        return new Response(
+          JSON.stringify({ error: `Immich auth failed: Status ${meRes.status}` }),
+          {
+            status: meRes.status,
+            headers: { "content-type": "application/json" },
+          }
+        );
+      }
+
+      const sharedLink = await meRes.json();
+      albumId = sharedLink.album?.id;
+      albumName = sharedLink.album?.albumName || albumName;
+    }
+
     if (!albumId) {
       return new Response(
         JSON.stringify({ error: "Shared link does not point to an album" }),
@@ -44,9 +66,9 @@ export default async function handler(req: Request) {
       );
     }
 
-    // 2. Get album details containing the assets list
+    // 3. Fetch album assets using the resolved key
     const albumRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
-      headers: { "x-immich-share-key": token },
+      headers: { "x-immich-share-key": resolvedKey },
     });
 
     if (!albumRes.ok) {
@@ -62,14 +84,15 @@ export default async function handler(req: Request) {
     const albumData = await albumRes.json();
     return new Response(
       JSON.stringify({
-        albumName: albumData.albumName || "Client Gallery",
+        albumName: albumData.albumName || albumName,
         assets: albumData.assets || [],
+        shareKey: resolvedKey, // return resolved key so the frontend can request images
       }),
       {
         status: 200,
         headers: {
           "content-type": "application/json",
-          "Cache-Control": "public, max-age=60, s-maxage=600", // cache link listings briefly
+          "Cache-Control": "public, max-age=60, s-maxage=600",
         },
       }
     );
