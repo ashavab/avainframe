@@ -188,14 +188,14 @@ export function ClientGalleryAccess() {
           .map((asset, index) => `${index + 1}. ${asset.originalFileName} (ID: ${asset.id})`)
           .join("\n");
 
-        const messageContent = `A client has selected the following ${selectedAssets.length} photo(s) from the gallery "${albumName || "Client Gallery"}":\n\n${photoList}`;
+        const messageContent = `A client has selected the following ${selectedAssets.length} photo(s) from the gallery "${displayAlbumName || "Client Gallery"}":\n\n${photoList}`;
 
         const templateParams = {
           name: "Client Gallery System",
           from_email: "noreply@avainframe.com",
           phone: "N/A",
           message: messageContent,
-          title: `Photos Selected - ${albumName || "Client Gallery"}`,
+          title: `Photos Selected - ${displayAlbumName || "Client Gallery"}`,
           reply_to: "avainframe@proton.me",
         };
 
@@ -338,9 +338,12 @@ export function ClientGalleryAccess() {
     setLightboxIndex((prev) => (prev !== null && prev < assets.length - 1 ? prev + 1 : 0));
   };
 
+  const isAlbumUnlocked = albumName.includes(".");
+  const displayAlbumName = isAlbumUnlocked ? albumName.replace(/\./g, "").trim() : albumName;
+
   const currentLightboxAsset = lightboxIndex !== null ? assets[lightboxIndex] : null;
   const isCurrentAssetClean = currentLightboxAsset 
-    ? (currentLightboxAsset.description?.includes(".") || false)
+    ? (isAlbumUnlocked || currentLightboxAsset.description?.includes(".") || false)
     : false;
 
   return (
@@ -430,11 +433,20 @@ export function ClientGalleryAccess() {
             <div className="mt-12">
               <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
                 <div>
-                  <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
+                  <h2 className="text-2xl font-serif text-[#7a8d7d]">{displayAlbumName}</h2>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
                 </div>
                 <div className="text-xs text-neutral-400 flex items-center gap-1">
-                  <Lock className="h-3 w-3" /> Securing proof photos
+                  {isAlbumUnlocked ? (
+                    <>
+                      <Unlock className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
+                      <span className="text-emerald-700 font-medium">All photos unlocked</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-3 w-3" /> Securing proof photos
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -481,8 +493,8 @@ export function ClientGalleryAccess() {
               {/* Photos Grid */}
               <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
                 {assets.map((asset, index) => {
-                  // Watermark unless description contains a dot '.'
-                  const shouldWatermark = !asset.description || !asset.description.includes(".");
+                  // Watermark unless the entire album is unlocked or the description contains a dot '.'
+                  const shouldWatermark = !isAlbumUnlocked && (!asset.description || !asset.description.includes("."));
                   const thumbUrl = `${IMMICH_URL}/api/assets/${asset.id}/thumbnail?key=${shareKey}&size=thumbnail`;
 
                   return (
