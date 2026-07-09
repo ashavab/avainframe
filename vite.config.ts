@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
@@ -10,11 +10,70 @@ export default defineConfig({
     react(),
     tailwindcss(),
     
-    // Custom dev middleware to simulate the /api/gallery Vercel serverless function locally
+    // Custom dev middleware to simulate Vercel serverless functions locally
     {
       name: 'local-api-proxy',
       configureServer(server) {
         server.middlewares.use(async (req, res, next) => {
+          // 1. Handle selection submission
+          if (req.url && req.url.startsWith('/api/select-photos')) {
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', async () => {
+              try {
+                const { assetIds } = JSON.parse(body);
+                if (!assetIds || !Array.isArray(assetIds) || assetIds.length === 0) {
+                  res.statusCode = 400;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Missing or invalid assetIds' }));
+                  return;
+                }
+
+                // Load config using loadEnv in development
+                const env = loadEnv(server.config.mode, process.cwd(), '');
+                const immichUrl = env.VITE_IMMICH_URL || "https://photos.avainframe.com";
+                const apiKey = env.IMMICH_API_KEY || env.VITE_IMMICH_API_KEY;
+
+                if (!apiKey) {
+                  res.statusCode = 500;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Local API Key (IMMICH_API_KEY) not configured in .env' }));
+                  return;
+                }
+
+                const updateRes = await fetch(`${immichUrl}/api/assets`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey
+                  },
+                  body: JSON.stringify({
+                    ids: assetIds,
+                    description: 'Selected.' // Contains the dot "." to trigger auto-unwatermark
+                  })
+                });
+
+                if (!updateRes.ok) {
+                  const errorText = await updateRes.text();
+                  res.statusCode = updateRes.status;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `Immich update failed: ${errorText}` }));
+                  return;
+                }
+
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: true }));
+              } catch (err: any) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: err.message || 'Internal Server Error' }));
+              }
+            });
+            return;
+          }
+
+          // 2. Handle gallery data retrieval
           if (req.url && req.url.startsWith('/api/gallery')) {
             try {
               const url = new URL(req.url, 'http://localhost');
@@ -27,14 +86,15 @@ export default defineConfig({
                 return;
               }
 
-              // Load URL from env or use default
-              const immichUrl = process.env.VITE_IMMICH_URL || "https://photos.avainframe.com";
+              // Load URL from env
+              const env = loadEnv(server.config.mode, process.cwd(), '');
+              const immichUrl = env.VITE_IMMICH_URL || "https://photos.avainframe.com";
 
               let resolvedKey = token;
               let albumId = "";
               let albumName = "Client Gallery";
 
-              // 1. Try to resolve as a slug first (e.g. "beth")
+              // Try to resolve as a slug first (e.g. "beth")
               try {
                 const slugRes = await fetch(`${immichUrl}/api/shared-links/me?slug=${token}`);
                 if (slugRes.ok) {
@@ -49,7 +109,7 @@ export default defineConfig({
                 console.warn("Failed to resolve slug, proceeding as direct key:", slugErr);
               }
 
-              // 2. If it wasn't a slug, validate as direct key
+              // If it wasn't a slug, validate as direct key
               if (!albumId) {
                 const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
                   headers: { "x-immich-share-key": token },
@@ -74,7 +134,7 @@ export default defineConfig({
                 return;
               }
 
-              // 3. Fetch album assets using the resolved key
+              // Fetch album assets using the resolved key
               const albumRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
                 headers: { "x-immich-share-key": resolvedKey },
               });
@@ -93,7 +153,7 @@ export default defineConfig({
                 JSON.stringify({
                   albumName: albumData.albumName || albumName,
                   assets: albumData.assets || [],
-                  shareKey: resolvedKey, // send the resolved key back so the client can load images
+                  shareKey: resolvedKey,
                 })
               );
             } catch (err: any) {

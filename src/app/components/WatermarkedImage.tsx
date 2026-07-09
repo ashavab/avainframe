@@ -70,10 +70,10 @@ export function WatermarkedImage({
 
         if (logoLoaded && !logoFailed) {
           // Draw Centered Logo Watermark
-          ctx.globalAlpha = 0.22; // 22% opacity is subtle and premium
+          ctx.globalAlpha = 0.12; // 12% opacity is very subtle and faint
 
-          // Scale logo to take up 40% of the image's width
-          const scale = (canvas.width * 0.4) / logoImg.naturalWidth;
+          // Scale logo to take up 25% of the image's width
+          const scale = (canvas.width * 0.25) / logoImg.naturalWidth;
           const logoWidth = logoImg.naturalWidth * scale;
           const logoHeight = logoImg.naturalHeight * scale;
 
@@ -191,7 +191,7 @@ export function WatermarkedImage({
             <img
               src="/logo_white-removebg-preview.png"
               alt="Watermark logo"
-              className="w-1/3 opacity-22 select-none pointer-events-none object-contain"
+              className="w-1/4 opacity-12 select-none pointer-events-none object-contain"
               onError={(e) => {
                 // Fallback to text overlay if logo fails in CSS too
                 (e.target as HTMLElement).style.display = "none";

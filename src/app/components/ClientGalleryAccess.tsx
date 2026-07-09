@@ -11,8 +11,11 @@ import {
   Loader2,
   AlertCircle,
   Maximize,
-  Minimize
+  Minimize,
+  Check,
+  Circle
 } from "lucide-react";
+import { toast, Toaster } from "sonner";
 
 const IMMICH_URL = import.meta.env.VITE_IMMICH_URL || "";
 
@@ -127,6 +130,76 @@ export function ClientGalleryAccess() {
       document.exitFullscreen().then(() => {
         setIsFullscreen(false);
       });
+    }
+  };
+
+  // Selection proofing state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [submittingSelection, setSubmittingSelection] = useState(false);
+
+  const handleToggleSelect = (assetId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation(); // prevent opening lightbox
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(assetId)) {
+        next.delete(assetId);
+      } else {
+        next.add(assetId);
+      }
+      return next;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === assets.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(assets.map((a) => a.id)));
+    }
+  };
+
+  const handleSubmitSelection = async () => {
+    if (selectedIds.size === 0) return;
+    setSubmittingSelection(true);
+
+    try {
+      const res = await fetch("/api/select-photos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assetIds: Array.from(selectedIds),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to submit selection.");
+      }
+
+      toast.success(`Selection submitted successfully! ${selectedIds.size} photo(s) are now unlocked.`);
+
+      // Instantly unwatermark selected photos in local state
+      setAssets((prevAssets) =>
+        prevAssets.map((asset) => {
+          if (selectedIds.has(asset.id)) {
+            return {
+              ...asset,
+              description: "Selected.",
+            };
+          }
+          return asset;
+        })
+      );
+
+      // Clear selection
+      setSelectedIds(new Set());
+    } catch (err: any) {
+      console.error("Selection error:", err);
+      toast.error(err.message || "Could not submit selection. Make sure IMMICH_API_KEY is configured.");
+    } finally {
+      setSubmittingSelection(false);
     }
   };
 
@@ -325,13 +398,53 @@ export function ClientGalleryAccess() {
           {/* Render Custom Dynamic Watermarked Gallery */}
           {!fallbackToIframe && assets.length > 0 && (
             <div className="mt-12">
-              <div className="border-b border-neutral-200 pb-4 mb-8 flex justify-between items-end">
+              <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
                 <div>
                   <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
                 </div>
                 <div className="text-xs text-neutral-400 flex items-center gap-1">
                   <Lock className="h-3 w-3" /> Securing proof photos
+                </div>
+              </div>
+
+              {/* Floating Selection Action Bar */}
+              <div className="sticky top-4 z-30 mb-8 p-4 rounded-2xl bg-white/80 border border-[#7a8d7d]/15 shadow-md backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
+                  <div className="rounded-full bg-[#7a8d7d]/10 px-4 py-2 text-sm text-[#4d644d] font-medium border border-[#7a8d7d]/20 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#7a8d7d] animate-pulse"></span>
+                    <span>{selectedIds.size} of {assets.length} selected</span>
+                  </div>
+                  <p className="text-xs text-neutral-500 text-center sm:text-left">
+                    Select photos you want, then submit. Selected photos will automatically unlock!
+                  </p>
+                </div>
+                
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                  <button
+                    onClick={handleSelectAll}
+                    className="flex-1 sm:flex-none rounded-xl border border-black/15 bg-white px-5 py-2.5 text-xs font-semibold hover:bg-black/5 transition cursor-pointer"
+                  >
+                    {selectedIds.size === assets.length ? "Deselect All" : "Select All"}
+                  </button>
+
+                  <button
+                    onClick={handleSubmitSelection}
+                    disabled={selectedIds.size === 0 || submittingSelection}
+                    className="flex-1 sm:flex-none rounded-xl bg-[#7a8d7d] text-white px-6 py-2.5 text-xs font-semibold hover:bg-[#687a6b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center transition cursor-pointer shadow-sm"
+                  >
+                    {submittingSelection ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-3.5 w-3.5" />
+                        Submit Selection
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
 
@@ -348,6 +461,22 @@ export function ClientGalleryAccess() {
                       onClick={() => setLightboxIndex(index)}
                       className="break-inside-avoid relative overflow-hidden rounded-2xl border border-black/5 bg-neutral-100 shadow-sm cursor-zoom-in group transition duration-300 hover:shadow-md hover:border-black/10"
                     >
+                      {/* Checkbox Overlay */}
+                      <button
+                        onClick={(e) => handleToggleSelect(asset.id, e)}
+                        className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
+                          selectedIds.has(asset.id)
+                            ? "bg-emerald-600 border-emerald-600 text-white scale-110"
+                            : "bg-white/40 border-white/60 text-transparent hover:bg-white/80 hover:scale-105"
+                        }`}
+                      >
+                        {selectedIds.has(asset.id) ? (
+                          <Check className="h-3.5 w-3.5 stroke-[3]" />
+                        ) : (
+                          <Circle className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-white/80" />
+                        )}
+                      </button>
+
                       <WatermarkedImage
                         src={thumbUrl}
                         alt={asset.originalFileName}
@@ -433,6 +562,30 @@ export function ClientGalleryAccess() {
             </div>
             
             <div className="flex items-center gap-4">
+              {/* Selection Toggle in Lightbox (for proof photos) */}
+              {!isCurrentAssetClean && (
+                <button
+                  onClick={() => handleToggleSelect(currentLightboxAsset.id)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer border ${
+                    selectedIds.has(currentLightboxAsset.id)
+                      ? "bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700"
+                      : "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                  }`}
+                >
+                  {selectedIds.has(currentLightboxAsset.id) ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                      <span>Selected</span>
+                    </>
+                  ) : (
+                    <>
+                      <Circle className="h-3.5 w-3.5" />
+                      <span>Select Photo</span>
+                    </>
+                  )}
+                </button>
+              )}
+
               {!isCurrentAssetClean ? (
                 <div className="text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-full flex items-center gap-1.5">
                   <Lock className="h-3 w-3" />
@@ -502,6 +655,9 @@ export function ClientGalleryAccess() {
           </button>
         </div>
       )}
+
+      {/* Toaster container for Sonner toast notifications */}
+      <Toaster richColors closeButton position="bottom-right" />
     </main>
   );
 }
