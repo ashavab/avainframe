@@ -19,6 +19,7 @@
   - `VITE_IMMICH_HIDDEN_PATH`: Secret path segment, for example `/studio-vault-2026`.
   - `VITE_IMMICH_PASSWORD_SHA256`: SHA-256 hash of your passphrase.
   - `VITE_IMMICH_CLIENT_PATH`: Route for client gallery access page, for example `/clients`.
+  - `IMMICH_API_KEY`: API Key generated from your Immich instance (under User Settings > API Keys) to allow the app to perform bulk updates (e.g. submitting selected/unwatermarked photos).
 
   Generate the SHA-256 hash in your terminal:
 

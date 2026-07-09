@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState, useEffect, useRef } from "react";
 import { WatermarkedImage } from "./WatermarkedImage";
+import emailjs from '@emailjs/browser';
 import {
   ChevronLeft,
   ChevronRight,
@@ -179,6 +180,35 @@ export function ClientGalleryAccess() {
       }
 
       toast.success(`Selection submitted successfully! ${selectedIds.size} photo(s) are now unlocked.`);
+
+      // Send email notification to photographer
+      try {
+        const selectedAssets = assets.filter((asset) => selectedIds.has(asset.id));
+        const photoList = selectedAssets
+          .map((asset, index) => `${index + 1}. ${asset.originalFileName} (ID: ${asset.id})`)
+          .join("\n");
+
+        const messageContent = `A client has selected the following ${selectedAssets.length} photo(s) from the gallery "${albumName || "Client Gallery"}":\n\n${photoList}`;
+
+        const templateParams = {
+          name: "Client Gallery System",
+          from_email: "noreply@avainframe.com",
+          phone: "N/A",
+          message: messageContent,
+          title: `Photos Selected - ${albumName || "Client Gallery"}`,
+          reply_to: "avainframe@proton.me",
+        };
+
+        await emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
+          templateParams
+        );
+        console.log("Email notification sent successfully.");
+      } catch (emailErr) {
+        console.error("Failed to send email notification:", emailErr);
+      }
 
       // Instantly unwatermark selected photos in local state
       setAssets((prevAssets) =>
