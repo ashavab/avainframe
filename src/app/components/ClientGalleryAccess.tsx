@@ -1,6 +1,7 @@
 import { FormEvent, useMemo, useState, useEffect, useRef } from "react";
 import { WatermarkedImage } from "./WatermarkedImage";
 import emailjs from '@emailjs/browser';
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import {
   ChevronLeft,
   ChevronRight,
@@ -555,64 +556,68 @@ export function ClientGalleryAccess() {
               )}
 
               {/* Photos Grid */}
-              <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
-                {assets.map((asset, index) => {
-                  // Watermark unless the entire album is unlocked or the description contains a dot '.'
-                  const shouldWatermark = !isAlbumUnlocked && (!asset.description || !asset.description.includes("."));
-                  const thumbUrl = `${IMMICH_URL}/api/assets/${asset.id}/thumbnail?key=${shareKey}&size=thumbnail`;
+              <ResponsiveMasonry
+                columnsCountBreakPoints={{ 350: 1, 640: 2, 768: 3 }}
+              >
+                <Masonry gutter="24px">
+                  {assets.map((asset, index) => {
+                    // Watermark unless the entire album is unlocked or the description contains a dot '.'
+                    const shouldWatermark = !isAlbumUnlocked && (!asset.description || !asset.description.includes("."));
+                    const thumbUrl = `${IMMICH_URL}/api/assets/${asset.id}/thumbnail?key=${shareKey}&size=thumbnail`;
 
-                  return (
-                    <div
-                      key={asset.id}
-                      onClick={() => setLightboxIndex(index)}
-                      className="break-inside-avoid relative overflow-hidden rounded-2xl border border-black/5 bg-neutral-100 shadow-sm cursor-zoom-in group transition duration-300 hover:shadow-md hover:border-black/10"
-                    >
-                      {/* Checkbox Overlay */}
-                      {!isAlbumUnlocked && (
-                        <button
-                          onClick={(e) => handleToggleSelect(asset.id, e)}
-                          className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
-                            selectedIds.has(asset.id)
-                              ? "bg-emerald-600 border-emerald-600 text-white scale-110"
-                              : "bg-white/40 border-white/60 text-transparent hover:bg-white/80 hover:scale-105"
-                          }`}
-                        >
-                          {selectedIds.has(asset.id) ? (
-                            <Check className="h-3.5 w-3.5 stroke-[3]" />
-                          ) : (
-                            <Circle className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-white/80" />
-                          )}
-                        </button>
-                      )}
+                    return (
+                      <div
+                        key={asset.id}
+                        onClick={() => setLightboxIndex(index)}
+                        className="relative overflow-hidden rounded-2xl border border-black/5 bg-neutral-100 shadow-sm cursor-zoom-in group transition duration-300 hover:shadow-md hover:border-black/10"
+                      >
+                        {/* Checkbox Overlay */}
+                        {!isAlbumUnlocked && (
+                          <button
+                            onClick={(e) => handleToggleSelect(asset.id, e)}
+                            className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
+                              selectedIds.has(asset.id)
+                                ? "bg-emerald-600 border-emerald-600 text-white scale-110"
+                                : "bg-white/40 border-white/60 text-transparent hover:bg-white/80 hover:scale-105"
+                            }`}
+                          >
+                            {selectedIds.has(asset.id) ? (
+                              <Check className="h-3.5 w-3.5 stroke-[3]" />
+                            ) : (
+                              <Circle className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-white/80" />
+                            )}
+                          </button>
+                        )}
 
-                      <WatermarkedImage
-                        src={thumbUrl}
-                        alt={asset.originalFileName}
-                        shouldWatermark={shouldWatermark}
-                        useCssOnly={true}
-                        className="w-full h-auto object-cover rounded-2xl transition duration-500 group-hover:scale-[1.02]"
-                      />
-                      
-                      {/* Hover Info Overlay */}
-                      <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-end p-4 rounded-2xl">
-                        <div className="text-white text-xs bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                          {shouldWatermark ? (
-                            <>
-                              <Lock className="h-3 w-3" />
-                              <span>Proof Copy</span>
-                            </>
-                          ) : (
-                            <>
-                              <Unlock className="h-3 w-3 text-emerald-400" />
-                              <span className="text-emerald-400">Download Ready</span>
-                            </>
-                          )}
+                        <WatermarkedImage
+                          src={thumbUrl}
+                          alt={asset.originalFileName}
+                          shouldWatermark={shouldWatermark}
+                          useCssOnly={true}
+                          className="w-full h-auto object-cover rounded-2xl transition duration-500 group-hover:scale-[1.02]"
+                        />
+                        
+                        {/* Hover Info Overlay */}
+                        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-end p-4 rounded-2xl">
+                          <div className="text-white text-xs bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                            {shouldWatermark ? (
+                              <>
+                                <Lock className="h-3 w-3" />
+                                <span>Proof Copy</span>
+                              </>
+                            ) : (
+                              <>
+                                <Unlock className="h-3 w-3 text-emerald-400" />
+                                <span className="text-emerald-400">Download Ready</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </Masonry>
+              </ResponsiveMasonry>
 
               {/* Review Section */}
               <div className="mt-16 p-8 rounded-3xl border border-[#7a8d7d]/20 bg-[#f8f8f5]/60 flex flex-col items-center">
