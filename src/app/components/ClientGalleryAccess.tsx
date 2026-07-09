@@ -739,7 +739,7 @@ export function ClientGalleryAccess() {
           {/* Large Image Container */}
           <div className="w-full max-w-5xl max-h-[80vh] px-4 flex items-center justify-center relative">
             <WatermarkedImage
-              src={`${IMMICH_URL}/api/assets/${currentLightboxAsset.id}/thumbnail?key=${shareKey}&size=preview`}
+              src={`${IMMICH_URL}/api/assets/${currentLightboxAsset.id}/thumbnail?key=${shareKey}&size=${isFullscreen ? "preview" : "thumbnail"}`}
               alt={currentLightboxAsset.originalFileName}
               shouldWatermark={!isCurrentAssetClean}
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
