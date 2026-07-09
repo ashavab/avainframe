@@ -453,7 +453,7 @@ export function ClientGalleryAccess() {
                 {assets.map((asset, index) => {
                   // Watermark unless description contains a dot '.'
                   const shouldWatermark = !asset.description || !asset.description.includes(".");
-                  const thumbUrl = `${IMMICH_URL}/api/assets/${asset.id}/thumbnail?key=${shareKey}&size=preview`;
+                  const thumbUrl = `${IMMICH_URL}/api/assets/${asset.id}/thumbnail?key=${shareKey}&size=thumbnail`;
 
                   return (
                     <div
@@ -481,6 +481,7 @@ export function ClientGalleryAccess() {
                         src={thumbUrl}
                         alt={asset.originalFileName}
                         shouldWatermark={shouldWatermark}
+                        useCssOnly={true}
                         className="w-full h-auto object-cover rounded-2xl transition duration-500 group-hover:scale-[1.02]"
                       />
                       

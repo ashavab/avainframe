@@ -6,6 +6,7 @@ interface WatermarkedImageProps {
   shouldWatermark: boolean;
   className?: string;
   watermarkText?: string;
+  useCssOnly?: boolean;
 }
 
 export function WatermarkedImage({
@@ -14,6 +15,7 @@ export function WatermarkedImage({
   shouldWatermark,
   className = "",
   watermarkText = "Ava in Frame Photography",
+  useCssOnly = false,
 }: WatermarkedImageProps) {
   const [processedSrc, setProcessedSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +34,11 @@ export function WatermarkedImage({
     setCorsFailed(false);
 
     if (!shouldWatermark) {
+      setLoading(false);
+      return;
+    }
+
+    if (useCssOnly) {
       setLoading(false);
       return;
     }
@@ -155,6 +162,35 @@ export function WatermarkedImage({
   const handlePrevent = (e: React.SyntheticEvent) => {
     e.preventDefault();
   };
+
+  if (useCssOnly) {
+    return (
+      <div
+        className="relative overflow-hidden select-none w-full h-full"
+        onContextMenu={handlePrevent}
+        onDragStart={handlePrevent}
+      >
+        <div className="relative w-full h-full">
+          <img
+            src={src}
+            alt={alt}
+            className={className}
+            loading="lazy"
+          />
+          {shouldWatermark && (
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center select-none bg-transparent">
+              <img
+                src="/logo_white-removebg-preview.png"
+                alt="Watermark logo"
+                className="w-1/2 select-none pointer-events-none object-contain"
+                style={{ opacity: 0.55 }}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (!shouldWatermark) {
     return (
