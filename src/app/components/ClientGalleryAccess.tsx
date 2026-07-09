@@ -100,6 +100,7 @@ export function ClientGalleryAccess() {
   // API Gallery State
   const [assets, setAssets] = useState<ImmichAsset[]>([]);
   const [albumName, setAlbumName] = useState("");
+  const [albumDescription, setAlbumDescription] = useState("");
   const [shareKey, setShareKey] = useState("");
   const [fallbackToIframe, setFallbackToIframe] = useState(false);
   const [activeUrl, setActiveUrl] = useState("");
@@ -188,14 +189,14 @@ export function ClientGalleryAccess() {
           .map((asset, index) => `${index + 1}. ${asset.originalFileName} (ID: ${asset.id})`)
           .join("\n");
 
-        const messageContent = `A client has selected the following ${selectedAssets.length} photo(s) from the gallery "${displayAlbumName || "Client Gallery"}":\n\n${photoList}`;
+        const messageContent = `A client has selected the following ${selectedAssets.length} photo(s) from the gallery "${albumName || "Client Gallery"}":\n\n${photoList}`;
 
         const templateParams = {
           name: "Client Gallery System",
           from_email: "noreply@avainframe.com",
           phone: "N/A",
           message: messageContent,
-          title: `Photos Selected - ${displayAlbumName || "Client Gallery"}`,
+          title: `Photos Selected - ${albumName || "Client Gallery"}`,
           reply_to: "avainframe@proton.me",
         };
 
@@ -298,6 +299,7 @@ export function ClientGalleryAccess() {
       }
 
       setAlbumName(albumData.albumName || "Your Gallery");
+      setAlbumDescription(albumData.albumDescription || albumData.description || "");
       setAssets(albumData.assets || []);
       setShareKey(albumData.shareKey || token);
       setFallbackToIframe(false);
@@ -338,8 +340,7 @@ export function ClientGalleryAccess() {
     setLightboxIndex((prev) => (prev !== null && prev < assets.length - 1 ? prev + 1 : 0));
   };
 
-  const isAlbumUnlocked = albumName.includes(".");
-  const displayAlbumName = isAlbumUnlocked ? albumName.replace(/\./g, "").trim() : albumName;
+  const isAlbumUnlocked = albumDescription.includes(".");
 
   const currentLightboxAsset = lightboxIndex !== null ? assets[lightboxIndex] : null;
   const isCurrentAssetClean = currentLightboxAsset 
@@ -433,7 +434,7 @@ export function ClientGalleryAccess() {
             <div className="mt-12">
               <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
                 <div>
-                  <h2 className="text-2xl font-serif text-[#7a8d7d]">{displayAlbumName}</h2>
+                  <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
                 </div>
                 <div className="text-xs text-neutral-400 flex items-center gap-1">

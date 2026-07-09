@@ -85,6 +85,7 @@ export default async function handler(req: Request) {
     return new Response(
       JSON.stringify({
         albumName: albumData.albumName || albumName,
+        albumDescription: albumData.description || "",
         assets: albumData.assets || [],
         shareKey: resolvedKey, // return resolved key so the frontend can request images
       }),
