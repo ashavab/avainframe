@@ -222,13 +222,16 @@ export default defineConfig({
               }
 
               const albumData = await albumRes.json();
+              const allAssets = albumData.assets || [];
+              const limitedAssets = allAssets.slice(0, 500);
+
               res.statusCode = 200;
               res.setHeader('Content-Type', 'application/json');
               res.end(
                 JSON.stringify({
                   albumName: albumData.albumName || albumName,
                   albumDescription: albumData.description || "",
-                  assets: albumData.assets || [],
+                  assets: limitedAssets,
                   shareKey: resolvedKey,
                 })
               );

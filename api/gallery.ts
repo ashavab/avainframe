@@ -82,11 +82,14 @@ export default async function handler(req: Request) {
     }
 
     const albumData = await albumRes.json();
+    const allAssets = albumData.assets || [];
+    const limitedAssets = allAssets.slice(0, 500);
+
     return new Response(
       JSON.stringify({
         albumName: albumData.albumName || albumName,
         albumDescription: albumData.description || "",
-        assets: albumData.assets || [],
+        assets: limitedAssets,
         shareKey: resolvedKey, // return resolved key so the frontend can request images
       }),
       {
