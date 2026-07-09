@@ -40,10 +40,8 @@ export function WatermarkedImage({
 
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.src = src;
 
     const logoImg = new Image();
-    logoImg.src = "/logo_white-removebg-preview.png";
 
     let photoLoaded = false;
     let logoLoaded = false;
@@ -70,10 +68,10 @@ export function WatermarkedImage({
 
         if (logoLoaded && !logoFailed) {
           // Draw Centered Logo Watermark
-          ctx.globalAlpha = 0.12; // 12% opacity is very subtle and faint
+          ctx.globalAlpha = 0.35; // 35% opacity is clearly visible yet professional
 
-          // Scale logo to take up 25% of the image's width
-          const scale = (canvas.width * 0.25) / logoImg.naturalWidth;
+          // Scale logo to take up 45% of the image's width
+          const scale = (canvas.width * 0.45) / logoImg.naturalWidth;
           const logoWidth = logoImg.naturalWidth * scale;
           const logoHeight = logoImg.naturalHeight * scale;
 
@@ -148,6 +146,10 @@ export function WatermarkedImage({
       logoFailed = true;
       processImages();
     };
+
+    // Set src AFTER attaching handlers to prevent race conditions with cached images
+    img.src = src;
+    logoImg.src = "/logo_white-removebg-preview.png";
   }, [src, shouldWatermark, watermarkText]);
 
   const handlePrevent = (e: React.SyntheticEvent) => {
@@ -191,7 +193,8 @@ export function WatermarkedImage({
             <img
               src="/logo_white-removebg-preview.png"
               alt="Watermark logo"
-              className="w-1/4 opacity-12 select-none pointer-events-none object-contain"
+              className="w-2/5 select-none pointer-events-none object-contain"
+              style={{ opacity: 0.35 }}
               onError={(e) => {
                 // Fallback to text overlay if logo fails in CSS too
                 (e.target as HTMLElement).style.display = "none";
