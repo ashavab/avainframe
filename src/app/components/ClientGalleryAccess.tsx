@@ -179,7 +179,7 @@ export function ClientGalleryAccess() {
         throw new Error(data.error || "Failed to submit selection.");
       }
 
-      toast.success(`Selection submitted successfully! ${selectedIds.size} photo(s) are now unlocked.`);
+      toast.success(`Selection submitted! The photographer has been notified.`);
 
       // Send email notification to photographer
       try {
@@ -210,13 +210,13 @@ export function ClientGalleryAccess() {
         console.error("Failed to send email notification:", emailErr);
       }
 
-      // Instantly unwatermark selected photos in local state
+      // Update local state to mark photos as selected/requested (remains watermarked until approved)
       setAssets((prevAssets) =>
         prevAssets.map((asset) => {
           if (selectedIds.has(asset.id)) {
             return {
               ...asset,
-              description: "Selected.",
+              description: "Selected",
             };
           }
           return asset;

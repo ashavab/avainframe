@@ -49,7 +49,7 @@ export default defineConfig({
                   },
                   body: JSON.stringify({
                     ids: assetIds,
-                    description: 'Selected.' // Contains the dot "." to trigger auto-unwatermark
+                    description: 'Selected' // Set description to "Selected" (no dot) to keep watermarked until approved
                   })
                 });
 
