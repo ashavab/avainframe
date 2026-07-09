@@ -138,6 +138,7 @@ export function ClientGalleryAccess() {
   // Selection proofing state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [submittingSelection, setSubmittingSelection] = useState(false);
+  const [downloadingAll, setDownloadingAll] = useState(false);
 
   const handleToggleSelect = (assetId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation(); // prevent opening lightbox
@@ -231,6 +232,47 @@ export function ClientGalleryAccess() {
       toast.error(err.message || "Could not submit selection. Make sure IMMICH_API_KEY is configured.");
     } finally {
       setSubmittingSelection(false);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (assets.length === 0) return;
+    setDownloadingAll(true);
+
+    try {
+      const res = await fetch("/api/download-all", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          assetIds: assets.map((a) => a.id),
+          shareKey,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ error: "Failed to download zip of photos." }));
+        throw new Error(errData.error || "Failed to download zip of photos.");
+      }
+
+      // Read response body as blob and download it
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${albumName || "gallery"}_photos.zip`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Download started successfully!");
+    } catch (err: any) {
+      console.error("Download all error:", err);
+      toast.error(err.message || "Failed to download all photos. Please try downloading them individually.");
+    } finally {
+      setDownloadingAll(false);
     }
   };
 
@@ -437,59 +479,80 @@ export function ClientGalleryAccess() {
                   <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
                 </div>
-                <div className="text-xs text-neutral-400 flex items-center gap-1">
+                <div className="flex items-center gap-3">
                   {isAlbumUnlocked ? (
                     <>
-                      <Unlock className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
-                      <span className="text-emerald-700 font-medium">All photos unlocked</span>
+                      <div className="text-xs text-neutral-400 flex items-center gap-1">
+                        <Unlock className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
+                        <span className="text-emerald-700 font-medium">All photos unlocked</span>
+                      </div>
+                      <button
+                        onClick={handleDownloadAll}
+                        disabled={downloadingAll}
+                        className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
+                      >
+                        {downloadingAll ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            <span>Downloading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download className="h-3.5 w-3.5" />
+                            <span>Download All (ZIP)</span>
+                          </>
+                        )}
+                      </button>
                     </>
                   ) : (
-                    <>
+                    <div className="text-xs text-neutral-400 flex items-center gap-1">
                       <Lock className="h-3 w-3" /> Securing proof photos
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
 
               {/* Floating Selection Action Bar */}
-              <div className="sticky top-4 z-30 mb-8 p-4 rounded-2xl bg-white/80 border border-[#7a8d7d]/15 shadow-md backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <div className="rounded-full bg-[#7a8d7d]/10 px-4 py-2 text-sm text-[#4d644d] font-medium border border-[#7a8d7d]/20 flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-[#7a8d7d] animate-pulse"></span>
-                    <span>{selectedIds.size} of {assets.length} selected</span>
+              {!isAlbumUnlocked && (
+                <div className="sticky top-4 z-30 mb-8 p-4 rounded-2xl bg-white/80 border border-[#7a8d7d]/15 shadow-md backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <div className="rounded-full bg-[#7a8d7d]/10 px-4 py-2 text-sm text-[#4d644d] font-medium border border-[#7a8d7d]/20 flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#7a8d7d] animate-pulse"></span>
+                      <span>{selectedIds.size} of {assets.length} selected</span>
+                    </div>
+                    <p className="text-xs text-neutral-500 text-center sm:text-left">
+                      Select photos you want, then submit.
+                    </p>
                   </div>
-                  <p className="text-xs text-neutral-500 text-center sm:text-left">
-                    Select photos you want, then submit. Selected photos will automatically unlock!
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                  <button
-                    onClick={handleSelectAll}
-                    className="flex-1 sm:flex-none rounded-xl border border-black/15 bg-white px-5 py-2.5 text-xs font-semibold hover:bg-black/5 transition cursor-pointer"
-                  >
-                    {selectedIds.size === assets.length ? "Deselect All" : "Select All"}
-                  </button>
+                  
+                  <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <button
+                      onClick={handleSelectAll}
+                      className="flex-1 sm:flex-none rounded-xl border border-black/15 bg-white px-5 py-2.5 text-xs font-semibold hover:bg-black/5 transition cursor-pointer"
+                    >
+                      {selectedIds.size === assets.length ? "Deselect All" : "Select All"}
+                    </button>
 
-                  <button
-                    onClick={handleSubmitSelection}
-                    disabled={selectedIds.size === 0 || submittingSelection}
-                    className="flex-1 sm:flex-none rounded-xl bg-[#7a8d7d] text-white px-6 py-2.5 text-xs font-semibold hover:bg-[#687a6b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center transition cursor-pointer shadow-sm"
-                  >
-                    {submittingSelection ? (
-                      <>
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <Check className="h-3.5 w-3.5" />
-                        Submit Selection
-                      </>
-                    )}
-                  </button>
+                    <button
+                      onClick={handleSubmitSelection}
+                      disabled={selectedIds.size === 0 || submittingSelection}
+                      className="flex-1 sm:flex-none rounded-xl bg-[#7a8d7d] text-white px-6 py-2.5 text-xs font-semibold hover:bg-[#687a6b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center transition cursor-pointer shadow-sm"
+                    >
+                      {submittingSelection ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-3.5 w-3.5" />
+                          Submit Selection
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Photos Grid */}
               <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
@@ -505,20 +568,22 @@ export function ClientGalleryAccess() {
                       className="break-inside-avoid relative overflow-hidden rounded-2xl border border-black/5 bg-neutral-100 shadow-sm cursor-zoom-in group transition duration-300 hover:shadow-md hover:border-black/10"
                     >
                       {/* Checkbox Overlay */}
-                      <button
-                        onClick={(e) => handleToggleSelect(asset.id, e)}
-                        className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
-                          selectedIds.has(asset.id)
-                            ? "bg-emerald-600 border-emerald-600 text-white scale-110"
-                            : "bg-white/40 border-white/60 text-transparent hover:bg-white/80 hover:scale-105"
-                        }`}
-                      >
-                        {selectedIds.has(asset.id) ? (
-                          <Check className="h-3.5 w-3.5 stroke-[3]" />
-                        ) : (
-                          <Circle className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-white/80" />
-                        )}
-                      </button>
+                      {!isAlbumUnlocked && (
+                        <button
+                          onClick={(e) => handleToggleSelect(asset.id, e)}
+                          className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
+                            selectedIds.has(asset.id)
+                              ? "bg-emerald-600 border-emerald-600 text-white scale-110"
+                              : "bg-white/40 border-white/60 text-transparent hover:bg-white/80 hover:scale-105"
+                          }`}
+                        >
+                          {selectedIds.has(asset.id) ? (
+                            <Check className="h-3.5 w-3.5 stroke-[3]" />
+                          ) : (
+                            <Circle className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-white/80" />
+                          )}
+                        </button>
+                      )}
 
                       <WatermarkedImage
                         src={thumbUrl}
