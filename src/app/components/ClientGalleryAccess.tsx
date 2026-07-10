@@ -147,7 +147,7 @@ export function ClientGalleryAccess() {
   const [gdprEmail, setGdprEmail] = useState("");
   const [gdprSignature, setGdprSignature] = useState("");
   const [gdprChoice, setGdprChoice] = useState<'all' | 'some' | 'none' | null>(null);
-  const [gdprMode, setGdprMode] = useState<'signing' | 'viewing' | 'selecting'>('viewing');
+  const [gdprMode, setGdprMode] = useState<'signing' | 'viewing' | 'selecting' | 'previewing'>('viewing');
   const [gdprSelectedIds, setGdprSelectedIds] = useState<Set<string>>(new Set());
   const [submittingGdprConsent, setSubmittingGdprConsent] = useState(false);
 
@@ -185,8 +185,8 @@ export function ClientGalleryAccess() {
         await handleSendGdprEmail(gdprChoice === "all" ? "all" : "none", gdprName, gdprEmail, gdprSignature);
         localStorage.setItem(`gdpr_${shareKey}`, "signed");
 
-        // Trigger automatic doc copy download
-        downloadDocCopy(gdprName, gdprEmail, gdprSignature, gdprChoice);
+        // Trigger automatic PDF copy download
+        downloadPdfCopy(gdprName, gdprEmail, gdprSignature, gdprChoice);
 
         setShowGdprModal(false);
         setGdprMode("viewing");
@@ -314,9 +314,9 @@ ${photoList}`;
 
       toast.success("GDPR photo permissions submitted! Signed copy downloaded.");
 
-      // Trigger automatic doc copy download
+      // Trigger automatic PDF copy download
       const approvedFileNames = approvedAssets.map(a => a.originalFileName || `Photo_${a.id}`);
-      downloadDocCopy(gdprName, gdprEmail, gdprSignature, "some", approvedFileNames);
+      downloadPdfCopy(gdprName, gdprEmail, gdprSignature, "some", approvedFileNames);
 
       localStorage.setItem(`gdpr_${shareKey}`, "signed");
       setGdprMode("viewing");
@@ -326,6 +326,139 @@ ${photoList}`;
       toast.error("Failed to submit consent. Please try again.");
     } finally {
       setSubmittingGdprConsent(false);
+    }
+  };
+
+  const loadJsPDF = (): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      if ((window as any).jspdf) {
+        resolve((window as any).jspdf.jsPDF);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+      script.onload = () => {
+        resolve((window as any).jspdf.jsPDF);
+      };
+      script.onerror = (err) => {
+        reject(err);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  const downloadPdfCopy = async (clientName: string, clientEmail: string, signature: string, choice: string, approvedAssetsList: string[] = []) => {
+    try {
+      const jsPDFClass = await loadJsPDF();
+      const doc = new jsPDFClass();
+
+      // Title header
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      doc.setTextColor(122, 141, 125); // #7a8d7d Sage
+      doc.text("Ava in Frame Photography", 105, 25, { align: "center" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+      doc.setTextColor(80, 80, 80);
+      doc.text("Consent Form for Photography & Filming", 105, 33, { align: "center" });
+
+      // Divider Line
+      doc.setDrawColor(122, 141, 125);
+      doc.setLineWidth(0.5);
+      doc.line(20, 38, 190, 38);
+
+      // Document Text Content
+      doc.setFontSize(10.5);
+      doc.setTextColor(50, 50, 50);
+      
+      let y = 50;
+      const splitText = (text: string) => doc.splitTextToSize(text, 170);
+
+      const paragraphs = [
+        "I consent to AvaInFrame using photographs and/or video recordings including images of me both internally and externally to promote AvaInFrame. These images could be used in print and digital media formats including print publications, websites, e-marketing, posters, banners, advertising, film, social media, teaching, and research purposes.",
+        "I understand that images on websites can be viewed throughout the world and not just in Canada and that some overseas countries may not provide the same level of protection to the rights of individuals as Canadian legislation provides.",
+        "I understand that some images or recordings may be kept permanently once they are published and be kept as an archive.",
+        "I have read and understand the conditions and consent to my images being used as described."
+      ];
+
+      paragraphs.forEach((p) => {
+        const lines = splitText(p);
+        doc.text(lines, 20, y);
+        y += (lines.length * 5) + 6;
+      });
+
+      // Signature Card styling
+      doc.setFillColor(250, 249, 246); // #faf9f6
+      doc.rect(20, y, 170, 50, "F");
+      doc.setDrawColor(122, 141, 125);
+      doc.setLineWidth(0.5);
+      doc.rect(20, y, 170, 50, "D");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(122, 141, 125);
+      doc.text("CONSENT & SIGNATURE RECORD", 25, y + 8);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(50, 50, 50);
+      doc.text(`Client Name: ${clientName}`, 25, y + 17);
+      doc.text(`Email Address: ${clientEmail}`, 25, y + 25);
+      doc.text(`Date Signed: ${new Date().toLocaleDateString()}`, 25, y + 33);
+      
+      const consentText = choice === "all" 
+        ? "Agree to All (Consented to use of all photos in this gallery)" 
+        : choice === "none"
+        ? "Do Not Allow (Did NOT consent to promotional use of any photos)"
+        : "Agree to Some (Consented to promotional use of only the specific photos selected)";
+      doc.text(`Preference: ${consentText}`, 25, y + 41);
+
+      // Draw handwritten font style for Electronic Signature
+      doc.setFont("times", "italic");
+      doc.setFontSize(18);
+      doc.setTextColor(30, 30, 30);
+      doc.text(signature, 145, y + 24, { align: "center" });
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(120, 120, 120);
+      doc.text("Electronic Signature Verification", 145, y + 29, { align: "center" });
+
+      y += 62;
+
+      // Approved photos (if applicable)
+      if (approvedAssetsList.length > 0) {
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(122, 141, 125);
+        doc.text(`Consented Photos List (${approvedAssetsList.length}):`, 20, y);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(80, 80, 80);
+        y += 8;
+
+        approvedAssetsList.forEach((photoName) => {
+          if (y > 270) {
+            doc.addPage();
+            y = 25;
+          }
+          doc.text(`- ${photoName}`, 25, y);
+          y += 5.5;
+        });
+      }
+
+      // Footer text
+      doc.setFontSize(8.5);
+      doc.setTextColor(150, 150, 150);
+      doc.text("Ava in Frame Photography  *  avainframe@proton.me  *  avainframe.com", 105, 287, { align: "center" });
+
+      doc.save(`GDPR_Consent_${clientName.replace(/\s+/g, "_")}.pdf`);
+      toast.success("Signed GDPR PDF downloaded!");
+    } catch (err) {
+      console.error("PDF generation failed, falling back to DOC copy:", err);
+      toast.error("Failed to generate PDF. A DOC file copy is downloading instead.");
+      downloadDocCopy(clientName, clientEmail, signature, choice, approvedAssetsList);
     }
   };
 
@@ -880,27 +1013,35 @@ ${photoList}`;
                 <div className="flex items-center gap-3">
                   {isAlbumUnlocked ? (
                     <>
-                      <div className="text-xs text-neutral-400 flex items-center gap-1">
-                        <Unlock className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
-                        <span className="text-emerald-700 font-medium">All photos unlocked</span>
-                      </div>
-                      <button
-                        onClick={handleDownloadAll}
-                        disabled={downloadingAll}
-                        className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
-                      >
-                        {downloadingAll ? (
-                          <>
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            <span>Downloading...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Download className="h-3.5 w-3.5" />
-                            <span>Download All (ZIP)</span>
-                          </>
-                        )}
-                      </button>
+                      {gdprMode === "viewing" ? (
+                        <>
+                          <div className="text-xs text-neutral-400 flex items-center gap-1">
+                            <Unlock className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
+                            <span className="text-emerald-700 font-medium">All photos unlocked</span>
+                          </div>
+                          <button
+                            onClick={handleDownloadAll}
+                            disabled={downloadingAll}
+                            className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
+                          >
+                            {downloadingAll ? (
+                              <>
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <span>Downloading...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Download className="h-3.5 w-3.5" />
+                                <span>Download All (ZIP)</span>
+                              </>
+                            )}
+                          </button>
+                        </>
+                      ) : (
+                        <div className="text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 flex items-center gap-1.5 font-medium">
+                          <Lock className="h-3.5 w-3.5 text-amber-500" /> Sign GDPR to unlock download
+                        </div>
+                      )}
                     </>
                   ) : (
                     <div className="text-xs text-neutral-400 flex items-center gap-1">
@@ -909,6 +1050,30 @@ ${photoList}`;
                   )}
                 </div>
               </div>
+
+              {/* GDPR Preview Banner */}
+              {gdprMode === "previewing" && (
+                <div className="mb-8 p-6 rounded-3xl border border-amber-300 bg-amber-50/90 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="h-6 w-6 text-amber-600 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-semibold text-amber-800 text-sm">Previewing Gallery</h3>
+                      <p className="text-xs text-amber-700 mt-0.5 font-medium">
+                        You can view all your photos here. To select your proof photos or download them, you must sign the GDPR consent form first.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setGdprMode("signing");
+                      setShowGdprModal(true);
+                    }}
+                    className="w-full sm:w-auto rounded-xl bg-[#7a8d7d] text-white px-5 py-2.5 text-xs font-semibold hover:bg-[#687a6b] transition cursor-pointer shadow-sm text-center"
+                  >
+                    Open Consent Form
+                  </button>
+                </div>
+              )}
 
               {/* Review Section */}
               <div className="mb-8 p-8 rounded-3xl border border-[#7a8d7d]/20 bg-[#f8f8f5]/60 flex flex-col items-center">
@@ -1136,7 +1301,7 @@ ${photoList}`;
             
             <div className="flex items-center gap-4">
               {/* Selection Toggle in Lightbox (for proof photos) */}
-              {!isCurrentAssetClean && (
+              {!isCurrentAssetClean && gdprMode === "viewing" && (
                 <button
                   onClick={() => handleToggleSelect(currentLightboxAsset.id)}
                   className={`px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer border ${
@@ -1165,16 +1330,25 @@ ${photoList}`;
                   <span>Preview Copy (Watermarked)</span>
                 </div>
               ) : (
-                <a
-                  href={`${IMMICH_URL}/api/assets/${currentLightboxAsset.id}/original?key=${shareKey}`}
-                  download={currentLightboxAsset.originalFileName}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  Download High-Res Original
-                </a>
+                <>
+                  {gdprMode === "viewing" ? (
+                    <a
+                      href={`${IMMICH_URL}/api/assets/${currentLightboxAsset.id}/original?key=${shareKey}`}
+                      download={currentLightboxAsset.originalFileName}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download High-Res Original
+                    </a>
+                  ) : (
+                    <div className="text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 font-medium">
+                      <Lock className="h-3 w-3 text-amber-500" />
+                      <span>Sign GDPR to Download</span>
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Fullscreen Toggle Button */}
@@ -1379,6 +1553,18 @@ ${photoList}`;
                 ) : (
                   "Agree and Submit Consent Form"
                 )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowGdprModal(false);
+                  setGdprMode("previewing");
+                  toast.info("Preview Mode: Click Open Consent Form at the top to complete e-signing.", { duration: 5000 });
+                }}
+                className="w-full text-center text-xs text-neutral-500 hover:text-neutral-700 underline mt-3 transition cursor-pointer"
+              >
+                Preview Photos First
               </button>
             </form>
           </div>
