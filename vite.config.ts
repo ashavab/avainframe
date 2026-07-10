@@ -21,7 +21,7 @@ export default defineConfig({
             req.on('data', chunk => { body += chunk; });
             req.on('end', async () => {
               try {
-                const { assetIds } = JSON.parse(body);
+                const { assetIds, description = 'Selected' } = JSON.parse(body);
                 if (!assetIds || !Array.isArray(assetIds) || assetIds.length === 0) {
                   res.statusCode = 400;
                   res.setHeader('Content-Type', 'application/json');
@@ -49,7 +49,7 @@ export default defineConfig({
                   },
                   body: JSON.stringify({
                     ids: assetIds,
-                    description: 'Selected' // Set description to "Selected" (no dot) to keep watermarked until approved
+                    description: description
                   })
                 });
 

@@ -163,26 +163,70 @@ export function ClientGalleryAccess() {
   };
 
   const handleSubmitSelection = async () => {
-    if (selectedIds.size === 0) return;
+    // Calculate current selected states from asset metadata
+    const currentSelectedIds = assets
+      .filter((a) => a.description === "Selected")
+      .map((a) => a.id);
+    const selectedArray = Array.from(selectedIds);
+
+    // Identify which items were added and which were removed
+    const addedIds = selectedArray.filter((id) => !currentSelectedIds.includes(id));
+    const removedIds = currentSelectedIds.filter((id) => !selectedIds.has(id));
+
+    if (addedIds.length === 0 && removedIds.length === 0) {
+      toast.info("No changes in selection to submit.");
+      return;
+    }
+
     setSubmittingSelection(true);
+    const submittedIds = new Set(selectedIds);
 
     try {
-      const res = await fetch("/api/select-photos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          assetIds: Array.from(selectedIds),
-        }),
-      });
+      // 1. Submit additions
+      if (addedIds.length > 0) {
+        const res = await fetch("/api/select-photos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            assetIds: addedIds,
+            description: "Selected",
+          }),
+        });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to submit selection.");
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to submit selection.");
+        }
       }
 
-      toast.success(`Selection submitted! The photographer has been notified.`);
+      // 2. Submit removals
+      if (removedIds.length > 0) {
+        const res = await fetch("/api/select-photos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            assetIds: removedIds,
+            description: "", // Clear description in Immich
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to clear deselected items.");
+        }
+      }
+
+      toast.success("Selection submitted! The photographer has been notified.", {
+        action: {
+          label: "Undo",
+          onClick: () => handleUndoSubmission(submittedIds, removedIds),
+        },
+        duration: 8000,
+      });
 
       // Send email notification to photographer
       try {
@@ -191,14 +235,22 @@ export function ClientGalleryAccess() {
           .map((asset, index) => `${index + 1}. ${asset.originalFileName} (ID: ${asset.id})`)
           .join("\n");
 
-        const messageContent = `A client has selected the following ${selectedAssets.length} photo(s) from the gallery "${albumName || "Client Gallery"}":\n\n${photoList}`;
+        let messageContent = `A client has updated their selection for the gallery "${albumName || "Client Gallery"}".\n\n`;
+        messageContent += `Total Selected: ${selectedAssets.length} photo(s)\n`;
+        if (addedIds.length > 0) {
+          messageContent += `- Added: ${addedIds.length} photo(s)\n`;
+        }
+        if (removedIds.length > 0) {
+          messageContent += `- Removed: ${removedIds.length} photo(s)\n`;
+        }
+        messageContent += `\nSelected Photos:\n${photoList}`;
 
         const templateParams = {
           name: "Client Gallery System",
           from_email: "noreply@avainframe.com",
           phone: "N/A",
           message: messageContent,
-          title: `Photos Selected - ${albumName || "Client Gallery"}`,
+          title: `Photos Selection Updated - ${albumName || "Client Gallery"}`,
           reply_to: "avainframe@proton.me",
         };
 
@@ -208,15 +260,79 @@ export function ClientGalleryAccess() {
           import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
           templateParams
         );
-        console.log("Email notification sent successfully.");
       } catch (emailErr) {
         console.error("Failed to send email notification:", emailErr);
       }
 
-      // Update local state to mark photos as selected/requested (remains watermarked until approved)
+      // Update local state descriptions
       setAssets((prevAssets) =>
         prevAssets.map((asset) => {
           if (selectedIds.has(asset.id)) {
+            return {
+              ...asset,
+              description: "Selected",
+            };
+          } else {
+            return {
+              ...asset,
+              description: asset.description === "Selected" ? "" : asset.description,
+            };
+          }
+        })
+      );
+    } catch (err: any) {
+      console.error("Selection error:", err);
+      toast.error(err.message || "Could not submit selection. Make sure IMMICH_API_KEY is configured.");
+    } finally {
+      setSubmittingSelection(false);
+    }
+  };
+
+  const handleUndoSubmission = async (previousSelectedIds: Set<string>, previouslyRemovedIds: string[]) => {
+    setSubmittingSelection(true);
+    try {
+      const addedArray = Array.from(previousSelectedIds);
+
+      // 1. Clear additions (set description back to empty)
+      if (addedArray.length > 0) {
+        await fetch("/api/select-photos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            assetIds: addedArray,
+            description: "",
+          }),
+        });
+      }
+
+      // 2. Restore removals (set description back to "Selected")
+      if (previouslyRemovedIds.length > 0) {
+        await fetch("/api/select-photos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            assetIds: previouslyRemovedIds,
+            description: "Selected",
+          }),
+        });
+      }
+
+      toast.success("Selection successfully undone!");
+
+      // Update local state descriptions back to previous state
+      setAssets((prevAssets) =>
+        prevAssets.map((asset) => {
+          if (previousSelectedIds.has(asset.id)) {
+            return {
+              ...asset,
+              description: "",
+            };
+          }
+          if (previouslyRemovedIds.includes(asset.id)) {
             return {
               ...asset,
               description: "Selected",
@@ -226,11 +342,20 @@ export function ClientGalleryAccess() {
         })
       );
 
-      // Clear selection
-      setSelectedIds(new Set());
+      // Restore checked states
+      const restoredChecked = new Set(
+        assets
+          .filter((a) => {
+            if (previousSelectedIds.has(a.id)) return false;
+            if (previouslyRemovedIds.includes(a.id)) return true;
+            return a.description === "Selected";
+          })
+          .map((a) => a.id)
+      );
+      setSelectedIds(restoredChecked);
     } catch (err: any) {
-      console.error("Selection error:", err);
-      toast.error(err.message || "Could not submit selection. Make sure IMMICH_API_KEY is configured.");
+      console.error("Undo error:", err);
+      toast.error(err.message || "Failed to undo selection.");
     } finally {
       setSubmittingSelection(false);
     }
@@ -341,11 +466,18 @@ export function ClientGalleryAccess() {
         albumData = await albumRes.json();
       }
 
+      const fetchedAssets = albumData.assets || [];
       setAlbumName(albumData.albumName || "Your Gallery");
       setAlbumDescription(albumData.albumDescription || albumData.description || "");
-      setAssets(albumData.assets || []);
+      setAssets(fetchedAssets);
       setShareKey(albumData.shareKey || token);
       setFallbackToIframe(false);
+
+      // Pre-populate selections for already submitted assets
+      const initiallySelected = new Set(
+        fetchedAssets.filter((a: any) => a.description === "Selected").map((a: any) => a.id)
+      );
+      setSelectedIds(initiallySelected);
     } catch (err: any) {
       console.warn("Immich API direct fetch failed (likely CORS or network permissions). Falling back to iframe view.", err);
       

@@ -11,7 +11,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { assetIds } = await req.json();
+    const { assetIds, description = "Selected" } = await req.json();
 
     if (!assetIds || !Array.isArray(assetIds) || assetIds.length === 0) {
       return new Response(JSON.stringify({ error: "Missing or invalid assetIds parameter" }), {
@@ -44,7 +44,7 @@ export default async function handler(req: Request) {
       },
       body: JSON.stringify({
         ids: assetIds,
-        description: "Selected", // Set description to "Selected" (no dot) to keep watermarked until approved
+        description: description, // Set description dynamically
       }),
     });
 
