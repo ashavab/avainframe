@@ -207,7 +207,7 @@ export function ClientGalleryAccess() {
         try {
           const imageBlob = await generateConsentImageBlob(gdprName, gdprEmail, gdprSignature, gdprChoice);
           const uploadFormData = new FormData();
-          uploadFormData.append("assetData", imageBlob);
+          uploadFormData.append("assetData", imageBlob, "consent.jpg");
           uploadFormData.append("deviceAssetId", `gdpr-consent-${gdprName.replace(/\s+/g, "_")}-${Date.now()}`);
           uploadFormData.append("deviceId", "vercel-web-client");
           uploadFormData.append("fileExtension", ".jpg");
@@ -301,7 +301,7 @@ export function ClientGalleryAccess() {
         const imageBlob = await generateConsentImageBlob(gdprName, gdprEmail, gdprSignature, "some", approvedFileNames);
         
         const uploadFormData = new FormData();
-        uploadFormData.append("assetData", imageBlob);
+        uploadFormData.append("assetData", imageBlob, "consent.jpg");
         uploadFormData.append("deviceAssetId", `gdpr-consent-${gdprName.replace(/\s+/g, "_")}-${Date.now()}`);
         uploadFormData.append("deviceId", "vercel-web-client");
         uploadFormData.append("fileExtension", ".jpg");

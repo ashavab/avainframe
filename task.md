@@ -1,0 +1,12 @@
+- [x] Implement GDPR states, e-signature handlers, and email submission helper inside ClientGalleryAccess.tsx
+- [x] Create GDPR consent overlay modal design (including print name, signature, date, and 3 consent choices)
+- [x] Implement GDPR selection banner and submit approved photos action when 'Agree to Some' is selected
+- [x] Verify the build compiles without errors and test locally
+- [x] Add 'Preview Photos First' option and secure downloads/selections in preview mode
+- [x] Implement dynamic browser-generated PDF downloader copy using cloud-loaded jsPDF
+- [x] Build backend proxy to log signed GDPR consent records directly to Immich Album Descriptions
+- [x] Integrate canvas-to-JPEG renderer on client-side e-signature submissions
+- [x] Build /api/upload-consent-image backend stream to upload signed forms directly into Immich client albums
+- [x] Deactivate EmailJS email notifications for GDPR consent forms
+- [x] Re-route photo asset uploads to link directly with the central GDPR album (s/GDPR)
+- [x] Implement dynamic API-key slug search to resolve GDPR shared links by name
