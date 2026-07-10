@@ -184,9 +184,13 @@ export function ClientGalleryAccess() {
       try {
         await handleSendGdprEmail(gdprChoice === "all" ? "all" : "none", gdprName, gdprEmail, gdprSignature);
         localStorage.setItem(`gdpr_${shareKey}`, "signed");
+
+        // Trigger automatic doc copy download
+        downloadDocCopy(gdprName, gdprEmail, gdprSignature, gdprChoice);
+
         setShowGdprModal(false);
         setGdprMode("viewing");
-        toast.success("GDPR consent form signed successfully!");
+        toast.success("GDPR consent form signed! Signed copy downloaded.");
       } catch (err) {
         toast.error("Failed to submit consent. Please try again.");
       } finally {
@@ -308,7 +312,12 @@ ${photoList}`;
         console.error("Failed to send consent email copy to client:", err);
       }
 
-      toast.success("GDPR photo permissions submitted successfully!");
+      toast.success("GDPR photo permissions submitted! Signed copy downloaded.");
+
+      // Trigger automatic doc copy download
+      const approvedFileNames = approvedAssets.map(a => a.originalFileName || `Photo_${a.id}`);
+      downloadDocCopy(gdprName, gdprEmail, gdprSignature, "some", approvedFileNames);
+
       localStorage.setItem(`gdpr_${shareKey}`, "signed");
       setGdprMode("viewing");
       setGdprSelectedIds(new Set());
@@ -318,6 +327,73 @@ ${photoList}`;
     } finally {
       setSubmittingGdprConsent(false);
     }
+  };
+
+  const downloadDocCopy = (clientName: string, clientEmail: string, signature: string, choice: string, approvedAssetsList: string[] = []) => {
+    const content = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <meta charset="utf-8">
+          <title>GDPR Consent Form - Ava in Frame Photography</title>
+          <style>
+            body { font-family: 'Arial', sans-serif; line-height: 1.6; padding: 40px; color: #333; }
+            h1 { text-align: center; color: #7a8d7d; font-family: 'Georgia', serif; }
+            .header-text { text-align: center; font-size: 12px; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+            .signature-box { border: 1px solid #7a8d7d; padding: 20px; margin-top: 30px; background-color: #faf9f6; }
+            .highlight { font-weight: bold; }
+            .footer-text { margin-top: 40px; font-size: 11px; color: #888; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <p class="header-text">Ava in Frame Photography</p>
+          <h1>Consent Form for Photography & Filming</h1>
+          <hr style="border: 0; border-top: 1px solid #7a8d7d; margin-bottom: 30px;" />
+          
+          <p>I consent to AvaInFrame using photographs and/or video recordings including images of me both internally and externally to promote AvaInFrame. These images could be used in print and digital media formats including print publications, websites, e-marketing, posters, banners, advertising, film, social media, teaching, and research purposes.</p>
+          
+          <p>I understand that images on websites can be viewed throughout the world and not just in Canada and that some overseas countries may not provide the same level of protection to the rights of individuals as Canadian legislation provides.</p>
+          
+          <p>I understand that some images or recordings may be kept permanently once they are published and be kept as an archive.</p>
+          
+          <p><strong>I have read and understand the conditions and consent to my images being used as described.</strong></p>
+          
+          <div class="signature-box">
+            <p><strong>Client Name:</strong> ${clientName}</p>
+            <p><strong>Email Address:</strong> ${clientEmail}</p>
+            <p><strong>Electronic Signature:</strong> <em>${signature}</em></p>
+            <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+            <p><strong>Consent Preference:</strong> ${
+              choice === "all" 
+                ? "Agree to All (Consented to promotional use of all photos in this gallery)" 
+                : choice === "none"
+                ? "Do Not Allow (Did NOT consent to promotional use of any photos)"
+                : "Agree to Some (Consented to promotional use of only the specific photos selected)"
+            }</p>
+          </div>
+          
+          ${approvedAssetsList.length > 0 ? `
+            <div style="margin-top: 30px;">
+              <h3>Approved Photos for Promotional Use (${approvedAssetsList.length}):</h3>
+              <ol style="padding-left: 20px;">
+                ${approvedAssetsList.map(item => `<li>${item}</li>`).join('')}
+              </ol>
+            </div>
+          ` : ''}
+          
+          <p class="footer-text">Ava in Frame Photography &bull; avainframe@proton.me &bull; avainframe.com</p>
+        </body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `GDPR_Consent_${clientName.replace(/\s+/g, '_')}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleToggleSelect = (assetId: string, e?: React.MouseEvent) => {
