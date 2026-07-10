@@ -73,6 +73,116 @@ export default defineConfig({
             return;
           }
 
+          // Handle save-consent
+          if (req.url && req.url.startsWith('/api/save-consent')) {
+            let body = '';
+            req.on('data', chunk => { body += chunk; });
+            req.on('end', async () => {
+              try {
+                const { token, name, email, signature, choice } = JSON.parse(body);
+                if (!token || !name || !email || !signature || !choice) {
+                  res.statusCode = 400;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Missing required parameters' }));
+                  return;
+                }
+
+                const env = loadEnv(server.config.mode, process.cwd(), '');
+                const immichUrl = env.VITE_IMMICH_URL || "https://photos.avainframe.com";
+                const apiKey = env.IMMICH_API_KEY || env.VITE_IMMICH_API_KEY;
+
+                if (!apiKey) {
+                  res.statusCode = 500;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Local API Key (IMMICH_API_KEY) not configured in .env' }));
+                  return;
+                }
+
+                // 1. Resolve albumId using the share link token
+                const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
+                  headers: { "x-immich-share-key": token },
+                });
+
+                if (!meRes.ok) {
+                  const errText = await meRes.text();
+                  res.statusCode = meRes.status;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `Failed to resolve share token: ${errText}` }));
+                  return;
+                }
+
+                const sharedLink = await meRes.json();
+                const albumId = sharedLink.album ? sharedLink.album.id : null;
+
+                if (!albumId) {
+                  res.statusCode = 400;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: "The provided share code does not belong to an album." }));
+                  return;
+                }
+
+                // 2. Fetch the current album properties (to retrieve the existing description)
+                const albumRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
+                  headers: { "x-immich-share-key": token },
+                });
+
+                if (!albumRes.ok) {
+                  const errText = await albumRes.text();
+                  res.statusCode = albumRes.status;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `Failed to fetch album details: ${errText}` }));
+                  return;
+                }
+
+                const album = await albumRes.json();
+                const currentDescription = album.description || "";
+
+                // 3. Format the new consent record entry
+                const timestamp = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+                const newConsentRecord = `[Consent: ${name} (${email}) signed on ${timestamp} - Choice: ${choice.toUpperCase()}]`;
+
+                // Append to description
+                let updatedDescription = currentDescription.trim();
+                if (!updatedDescription.includes(newConsentRecord)) {
+                  if (updatedDescription) {
+                    updatedDescription += `\n${newConsentRecord}`;
+                  } else {
+                    updatedDescription = newConsentRecord;
+                  }
+                }
+
+                // 4. Update the album description via PATCH /albums/{id}
+                const updateRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
+                  method: 'PATCH',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': apiKey
+                  },
+                  body: JSON.stringify({
+                    description: updatedDescription
+                  })
+                });
+
+                if (!updateRes.ok) {
+                  const errorText = await updateRes.text();
+                  res.statusCode = updateRes.status;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `Immich update failed: ${errorText}` }));
+                  return;
+                }
+
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: true, description: updatedDescription }));
+              } catch (err: any) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: err.message || 'Internal Server Error' }));
+              }
+            });
+            return;
+          }
+
           // 1.5. Handle download all
           if (req.url && req.url.startsWith('/api/download-all')) {
             let body = '';

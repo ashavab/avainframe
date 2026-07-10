@@ -185,6 +185,23 @@ export function ClientGalleryAccess() {
         await handleSendGdprEmail(gdprChoice === "all" ? "all" : "none", gdprName, gdprEmail, gdprSignature);
         localStorage.setItem(`gdpr_${shareKey}`, "signed");
 
+        // Save consent log to Immich metadata
+        try {
+          await fetch("/api/save-consent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token: shareKey,
+              name: gdprName,
+              email: gdprEmail,
+              signature: gdprSignature,
+              choice: gdprChoice,
+            }),
+          });
+        } catch (saveErr) {
+          console.warn("Failed to persist consent record to Immich:", saveErr);
+        }
+
         // Trigger automatic PDF copy download
         downloadPdfCopy(gdprName, gdprEmail, gdprSignature, gdprChoice);
 
@@ -310,6 +327,23 @@ ${photoList}`;
         console.log("Consent email copy sent to client.");
       } catch (err) {
         console.error("Failed to send consent email copy to client:", err);
+      }
+
+      // Save consent log to Immich metadata
+      try {
+        await fetch("/api/save-consent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: shareKey,
+            name: gdprName,
+            email: gdprEmail,
+            signature: gdprSignature,
+            choice: "some",
+          }),
+        });
+      } catch (saveErr) {
+        console.warn("Failed to persist consent record to Immich:", saveErr);
       }
 
       toast.success("GDPR photo permissions submitted! Signed copy downloaded.");
