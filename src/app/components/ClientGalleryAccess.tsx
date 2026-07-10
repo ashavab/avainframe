@@ -141,6 +141,185 @@ export function ClientGalleryAccess() {
   const [submittingSelection, setSubmittingSelection] = useState(false);
   const [downloadingAll, setDownloadingAll] = useState(false);
 
+  // GDPR Consent states
+  const [showGdprModal, setShowGdprModal] = useState(false);
+  const [gdprName, setGdprName] = useState("");
+  const [gdprEmail, setGdprEmail] = useState("");
+  const [gdprSignature, setGdprSignature] = useState("");
+  const [gdprChoice, setGdprChoice] = useState<'all' | 'some' | 'none' | null>(null);
+  const [gdprMode, setGdprMode] = useState<'signing' | 'viewing' | 'selecting'>('viewing');
+  const [gdprSelectedIds, setGdprSelectedIds] = useState<Set<string>>(new Set());
+  const [submittingGdprConsent, setSubmittingGdprConsent] = useState(false);
+
+  const handleToggleGdprSelect = (assetId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setGdprSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(assetId)) {
+        next.delete(assetId);
+      } else {
+        next.add(assetId);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleGdprSelectAll = () => {
+    if (gdprSelectedIds.size === assets.length) {
+      setGdprSelectedIds(new Set());
+    } else {
+      setGdprSelectedIds(new Set(assets.map(a => a.id)));
+    }
+  };
+
+  const handleGdprModalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!gdprName || !gdprEmail || !gdprSignature || !gdprChoice) {
+      toast.error("Please print your name, provide your email, sign, and choose a consent option.");
+      return;
+    }
+
+    if (gdprChoice === "all" || gdprChoice === "none") {
+      setSubmittingGdprConsent(true);
+      try {
+        await handleSendGdprEmail(gdprChoice === "all" ? "all" : "none", gdprName, gdprEmail, gdprSignature);
+        localStorage.setItem(`gdpr_${shareKey}`, "signed");
+        setShowGdprModal(false);
+        setGdprMode("viewing");
+        toast.success("GDPR consent form signed successfully!");
+      } catch (err) {
+        toast.error("Failed to submit consent. Please try again.");
+      } finally {
+        setSubmittingGdprConsent(false);
+      }
+    } else if (gdprChoice === "some") {
+      // Switch to GDPR Selection Mode
+      setShowGdprModal(false);
+      setGdprMode("selecting");
+      setGdprSelectedIds(new Set());
+      toast.info("Please select the photos you consent to AvaInFrame using, then click Submit at the bottom.");
+    }
+  };
+
+  const handleSendGdprEmail = async (choice: 'all' | 'none', clientName: string, clientEmail: string, signature: string) => {
+    const messageContent = `GDPR Consent Signature Form Submitted:
+Client Name: ${clientName}
+Email: ${clientEmail}
+Signature: ${signature}
+Date: ${new Date().toLocaleDateString()}
+Consent Choice: ${choice === 'all' ? "AGREE TO ALL (Consented to AvaInFrame using all photos in this gallery for promotional purposes)" : "DO NOT ALLOW (Did NOT consent to promotional use of photos)"}
+Gallery: ${albumName || "Client Gallery"}`;
+
+    // 1. Send to photographer
+    const photographerParams = {
+      name: clientName,
+      from_email: clientEmail,
+      phone: "N/A",
+      message: messageContent,
+      title: `GDPR Consent Signed (${choice === 'all' ? 'AGREE' : 'DECLINE'}) - ${albumName || "Client Gallery"}`,
+      reply_to: clientEmail,
+    };
+
+    await emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+    await emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
+      photographerParams
+    );
+
+    // 2. Send copy to client
+    const clientParams = {
+      name: "Ava in Frame Photography",
+      from_email: "noreply@avainframe.com",
+      phone: "N/A",
+      message: `Hello ${clientName},\n\nThank you for signing the consent form for your gallery "${albumName}". Here is a copy of your consent preferences for your records:\n\n---\n${messageContent}\n---\n\nIf you have any questions, please contact Ava in Frame Photography at avainframe@proton.me.`,
+      title: `Copy of Consent Form - Ava in Frame Photography`,
+      reply_to: "avainframe@proton.me",
+      to_email: clientEmail,
+    };
+
+    try {
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
+        clientParams
+      );
+      console.log("Consent email copy sent to client.");
+    } catch (err) {
+      console.error("Failed to send consent email copy to client:", err);
+    }
+  };
+
+  const handleSubmitGdprSome = async () => {
+    setSubmittingGdprConsent(true);
+    try {
+      const approvedAssets = assets.filter((asset) => gdprSelectedIds.has(asset.id));
+      const photoList = approvedAssets
+        .map((asset, index) => `${index + 1}. ${asset.originalFileName} (ID: ${asset.id})`)
+        .join("\n");
+
+      const messageContent = `GDPR Consent Signature Form Submitted:
+Client Name: ${gdprName}
+Email: ${gdprEmail}
+Signature: ${gdprSignature}
+Date: ${new Date().toLocaleDateString()}
+Consent Choice: AGREE TO SOME (Consented to AvaInFrame using only the specific photos listed below)
+Gallery: ${albumName || "Client Gallery"}
+
+Consented Photos (${approvedAssets.length} selected):
+${photoList}`;
+
+      // 1. Send to photographer
+      const photographerParams = {
+        name: gdprName,
+        from_email: gdprEmail,
+        phone: "N/A",
+        message: messageContent,
+        title: `GDPR Consent Signed (AGREE TO SOME) - ${albumName || "Client Gallery"}`,
+        reply_to: gdprEmail,
+      };
+
+      await emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
+        photographerParams
+      );
+
+      // 2. Send copy to client
+      const clientParams = {
+        name: "Ava in Frame Photography",
+        from_email: "noreply@avainframe.com",
+        phone: "N/A",
+        message: `Hello ${gdprName},\n\nThank you for signing the consent form for your gallery "${albumName}". You opted to permit usage of selected photos. Here is a copy of your consent preferences for your records:\n\n---\n${messageContent}\n---\n\nIf you have any questions, please contact Ava in Frame Photography at avainframe@proton.me.`,
+        title: `Copy of Consent Form - Ava in Frame Photography`,
+        reply_to: "avainframe@proton.me",
+        to_email: gdprEmail,
+      };
+
+      try {
+        await emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
+          clientParams
+        );
+        console.log("Consent email copy sent to client.");
+      } catch (err) {
+        console.error("Failed to send consent email copy to client:", err);
+      }
+
+      toast.success("GDPR photo permissions submitted successfully!");
+      localStorage.setItem(`gdpr_${shareKey}`, "signed");
+      setGdprMode("viewing");
+      setGdprSelectedIds(new Set());
+    } catch (err) {
+      console.error("GDPR submission error:", err);
+      toast.error("Failed to submit consent. Please try again.");
+    } finally {
+      setSubmittingGdprConsent(false);
+    }
+  };
+
   const handleToggleSelect = (assetId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation(); // prevent opening lightbox
     setSelectedIds((prev) => {
@@ -478,6 +657,16 @@ export function ClientGalleryAccess() {
         fetchedAssets.filter((a: any) => a.description === "Selected").map((a: any) => a.id)
       );
       setSelectedIds(initiallySelected);
+
+      // Check GDPR Consent Status
+      const gdprStatus = localStorage.getItem(`gdpr_${albumData.shareKey || token}`);
+      if (gdprStatus === "signed") {
+        setGdprMode("viewing");
+        setShowGdprModal(false);
+      } else {
+        setGdprMode("signing");
+        setShowGdprModal(true);
+      }
     } catch (err: any) {
       console.warn("Immich API direct fetch failed (likely CORS or network permissions). Falling back to iframe view.", err);
       
@@ -680,8 +869,50 @@ export function ClientGalleryAccess() {
                 <p className="mt-6 text-xs text-neutral-400">Thank you for supporting Ava in Frame Photography!</p>
               </div>
 
-              {/* Floating Selection Action Bar */}
-              {!isAlbumUnlocked && (
+              {/* GDPR Selection Action Bar */}
+              {gdprMode === "selecting" && (
+                <div className="sticky top-4 z-30 mb-8 p-4 rounded-2xl bg-white/95 border border-[#7a8d7d] shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                  <div className="flex flex-col sm:flex-row items-center gap-3">
+                    <div className="rounded-full bg-[#7a8d7d]/10 px-4 py-2 text-sm text-[#4d644d] font-semibold border border-[#7a8d7d]/30 flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-[#7a8d7d] animate-pulse"></span>
+                      <span>GDPR Consent: {gdprSelectedIds.size} of {assets.length} selected</span>
+                    </div>
+                    <p className="text-xs text-neutral-600 text-center sm:text-left font-medium">
+                      Check the photos you consent to AvaInFrame using, then click submit below.
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                    <button
+                      onClick={handleToggleGdprSelectAll}
+                      className="flex-1 sm:flex-none rounded-xl border border-black/15 bg-white px-5 py-2.5 text-xs font-semibold hover:bg-black/5 transition cursor-pointer"
+                    >
+                      {gdprSelectedIds.size === assets.length ? "Deselect All" : "Select All"}
+                    </button>
+
+                    <button
+                      onClick={handleSubmitGdprSome}
+                      disabled={submittingGdprConsent}
+                      className="flex-1 sm:flex-none rounded-xl bg-[#7a8d7d] text-white px-6 py-2.5 text-xs font-semibold hover:bg-[#687a6b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center transition cursor-pointer shadow-sm"
+                    >
+                      {submittingGdprConsent ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-3.5 w-3.5" />
+                          Submit Approved Photos
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Floating Selection Action Bar (Normal Proofing Selection) */}
+              {gdprMode === "viewing" && !isAlbumUnlocked && (
                 <div className="sticky top-4 z-30 mb-8 p-4 rounded-2xl bg-white/80 border border-[#7a8d7d]/15 shadow-md backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex flex-col sm:flex-row items-center gap-3">
                     <div className="rounded-full bg-[#7a8d7d]/10 px-4 py-2 text-sm text-[#4d644d] font-medium border border-[#7a8d7d]/20 flex items-center gap-2">
@@ -738,8 +969,26 @@ export function ClientGalleryAccess() {
                         onClick={() => setLightboxIndex(index)}
                         className="relative overflow-hidden rounded-2xl border border-black/5 bg-neutral-100 shadow-sm cursor-zoom-in group transition duration-300 hover:shadow-md hover:border-black/10"
                       >
-                        {/* Checkbox Overlay */}
-                        {!isAlbumUnlocked && (
+                        {/* GDPR Selection Mode Checkbox Overlay */}
+                        {gdprMode === "selecting" && (
+                          <button
+                            onClick={(e) => handleToggleGdprSelect(asset.id, e)}
+                            className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
+                              gdprSelectedIds.has(asset.id)
+                                ? "bg-[#7a8d7d] border-[#7a8d7d] text-white scale-110"
+                                : "bg-white/40 border-white/60 text-transparent hover:bg-white/80 hover:scale-105"
+                            }`}
+                          >
+                            {gdprSelectedIds.has(asset.id) ? (
+                              <Check className="h-3.5 w-3.5 stroke-[3]" />
+                            ) : (
+                              <Circle className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 text-white/80" />
+                            )}
+                          </button>
+                        )}
+
+                        {/* Normal Selection Mode Checkbox Overlay */}
+                        {gdprMode === "viewing" && !isAlbumUnlocked && (
                           <button
                             onClick={(e) => handleToggleSelect(asset.id, e)}
                             className={`absolute top-3.5 left-3.5 z-20 h-6 w-6 rounded-full flex items-center justify-center border shadow-md transition-all duration-300 cursor-pointer ${
@@ -901,6 +1150,162 @@ export function ClientGalleryAccess() {
           >
             <ChevronRight className="h-6 w-6" />
           </button>
+        </div>
+      )}
+
+      {/* GDPR Consent Form Modal Overlay */}
+      {showGdprModal && gdprMode === "signing" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-[#faf9f6] text-neutral-800 rounded-3xl border border-black/10 shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto flex flex-col font-serif">
+            {/* Header */}
+            <div className="border-b border-[#7a8d7d]/20 pb-4 mb-6">
+              <h2 className="text-2xl font-serif text-[#7a8d7d] text-center">Consent Form for Photography & Filming</h2>
+              <p className="text-xs text-center text-neutral-500 mt-1 uppercase tracking-wider font-sans">AvaInFrame Photography</p>
+            </div>
+
+            {/* Legal Document Content */}
+            <div className="flex-1 overflow-y-auto pr-2 space-y-4 text-sm leading-relaxed text-neutral-700 font-sans border-b border-[#7a8d7d]/10 pb-6 mb-6">
+              <p>
+                I consent to AvaInFrame using photographs and/or video recordings including images of me both internally and externally to promote AvaInFrame. These images could be used in print and digital media formats including print publications, websites, e-marketing, posters, banners, advertising, film, social media, teaching, and research purposes.
+              </p>
+              <p>
+                I understand that images on websites can be viewed throughout the world and not just in Canada and that some overseas countries may not provide the same level of protection to the rights of individuals as Canadian legislation provides.
+              </p>
+              <p>
+                I understand that some images or recordings may be kept permanently once they are published and be kept as an archive.
+              </p>
+              <p className="font-semibold text-neutral-900">
+                I have read and understand the conditions and consent to my images being used as described.
+              </p>
+
+              <div className="pt-4 border-t border-[#7a8d7d]/10">
+                <h3 className="font-semibold text-neutral-900 mb-1">Your Rights</h3>
+                <p className="text-xs text-neutral-500">
+                  You have the right to request to see a copy of the information we hold about you and to request corrections or deletions of the information that is no longer required. You can ask AvaInFrame to stop using your images at any time, in which case they will not be used in future publications but may continue to appear in publications already in circulation. You have the right to lodge a complaint against AvaInFrame regarding data protection issues.
+                </p>
+              </div>
+
+              <div className="pt-2">
+                <p className="text-xs text-neutral-500">
+                  AvaInFrame is committed to processing information in accordance with the General Data Protection Regulation (GDPR). The personal data collected on this form will be held securely and will only be used for administrative and consent verification purposes.
+                </p>
+              </div>
+            </div>
+
+            {/* Sign-off Form */}
+            <form onSubmit={handleGdprModalSubmit} className="space-y-6 font-sans">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">
+                    Print Name
+                  </label>
+                  <input
+                    type="text"
+                    value={gdprName}
+                    onChange={(e) => setGdprName(e.target.value)}
+                    placeholder="Full Name"
+                    className="w-full rounded-xl border border-black/15 px-4 py-2.5 bg-white text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={gdprEmail}
+                    onChange={(e) => setGdprEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full rounded-xl border border-black/15 px-4 py-2.5 bg-white text-sm"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">
+                  Electronic Signature
+                </label>
+                <input
+                  type="text"
+                  value={gdprSignature}
+                  onChange={(e) => setGdprSignature(e.target.value)}
+                  placeholder="Type name to sign"
+                  className="w-full rounded-xl border border-black/15 px-4 py-2.5 bg-white text-sm italic font-serif"
+                  required
+                />
+              </div>
+
+              {/* Consent Choices */}
+              <div className="bg-[#f2f0e8] p-5 rounded-2xl border border-neutral-300/30">
+                <span className="block text-xs font-bold uppercase tracking-wider text-neutral-700 mb-3">
+                  Consent Preferences (GDPR)
+                </span>
+                <div className="space-y-3">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="gdpr-choice"
+                      value="all"
+                      checked={gdprChoice === "all"}
+                      onChange={() => setGdprChoice("all")}
+                      className="mt-1 h-4 w-4 text-[#7a8d7d] border-gray-300 focus:ring-[#7a8d7d]"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-neutral-900">Agree to All</span>
+                      <span className="block text-xs text-neutral-500 mt-0.5">I consent to AvaInFrame using all photos in this gallery for promotional use.</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="gdpr-choice"
+                      value="some"
+                      checked={gdprChoice === "some"}
+                      onChange={() => setGdprChoice("some")}
+                      className="mt-1 h-4 w-4 text-[#7a8d7d] border-gray-300 focus:ring-[#7a8d7d]"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-neutral-900">Agree to Some</span>
+                      <span className="block text-xs text-neutral-500 mt-0.5">I wish to select which specific photos AvaInFrame is permitted to use.</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="gdpr-choice"
+                      value="none"
+                      checked={gdprChoice === "none"}
+                      onChange={() => setGdprChoice("none")}
+                      className="mt-1 h-4 w-4 text-[#7a8d7d] border-gray-300 focus:ring-[#7a8d7d]"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-neutral-900">Do Not Allow</span>
+                      <span className="block text-xs text-neutral-500 mt-0.5">I do not consent to AvaInFrame using any photos from this gallery for promotion.</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={submittingGdprConsent || !gdprName || !gdprSignature || !gdprChoice}
+                className="w-full rounded-xl bg-[#7a8d7d] text-white py-3.5 font-semibold text-sm hover:bg-[#687a6b] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition"
+              >
+                {submittingGdprConsent ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Submitting Consent...
+                  </>
+                ) : (
+                  "Agree and Submit Consent Form"
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
