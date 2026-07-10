@@ -79,7 +79,7 @@ export default defineConfig({
             req.on('data', chunk => { body += chunk; });
             req.on('end', async () => {
               try {
-                const { token, name, email, signature, choice } = JSON.parse(body);
+                const { token, name, email, signature, choice, assetIds = [] } = JSON.parse(body);
                 if (!token || !name || !email || !signature || !choice) {
                   res.statusCode = 400;
                   res.setHeader('Content-Type', 'application/json');
@@ -137,9 +137,10 @@ export default defineConfig({
                 const album = await albumRes.json();
                 const currentDescription = album.description || "";
 
-                // 3. Format the new consent record entry
+                // 3. Format the new consent record entry (pipe-delimited)
                 const timestamp = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
-                const newConsentRecord = `[Consent: ${name} (${email}) signed on ${timestamp} - Choice: ${choice.toUpperCase()}]`;
+                const assetIdsStr = Array.isArray(assetIds) && assetIds.length > 0 ? assetIds.join(",") : "";
+                const newConsentRecord = `[GDPR_SIGN: ${name} | ${email} | ${signature} | ${timestamp} | ${choice}${assetIdsStr ? ` | ${assetIdsStr}` : ""}]`;
 
                 // Append to description
                 let updatedDescription = currentDescription.trim();

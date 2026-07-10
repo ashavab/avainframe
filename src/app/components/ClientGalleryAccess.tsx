@@ -15,7 +15,8 @@ import {
   Maximize,
   Minimize,
   Check,
-  Circle
+  Circle,
+  ShieldAlert
 } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
@@ -340,6 +341,7 @@ ${photoList}`;
             email: gdprEmail,
             signature: gdprSignature,
             choice: "some",
+            assetIds: Array.from(gdprSelectedIds),
           }),
         });
       } catch (saveErr) {
@@ -947,6 +949,31 @@ ${photoList}`;
     setLightboxIndex((prev) => (prev !== null && prev < assets.length - 1 ? prev + 1 : 0));
   };
 
+  const gdprRecords = useMemo(() => {
+    // Check if ?admin=true is in the query params
+    const isAdmin = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("admin") === "true";
+    if (!isAdmin) return [];
+
+    const matches = albumDescription.match(/\[GDPR_SIGN: [^\]]+\]/g);
+    if (!matches) return [];
+
+    return matches.map((match) => {
+      // String is: [GDPR_SIGN: Name | Email | Signature | Date | Choice | OptionalAssetIds]
+      const rawContent = match.replace("[GDPR_SIGN: ", "").replace("]", "");
+      const parts = rawContent.split(" | ");
+      
+      const name = parts[0] || "";
+      const email = parts[1] || "";
+      const signature = parts[2] || "";
+      const date = parts[3] || "";
+      const choice = parts[4] || "";
+      const assetIdsStr = parts[5] || "";
+      const assetIds = assetIdsStr ? assetIdsStr.split(",") : [];
+
+      return { name, email, signature, date, choice, assetIds };
+    });
+  }, [albumDescription]);
+
   const isAlbumUnlocked = albumDescription.includes(".");
 
   const currentLightboxAsset = lightboxIndex !== null ? assets[lightboxIndex] : null;
@@ -1310,6 +1337,66 @@ ${photoList}`;
                 </Masonry>
               </ResponsiveMasonry>
 
+              {/* Admin GDPR Signature Logs panel */}
+              {gdprRecords.length > 0 && (
+                <div className="mt-16 p-8 rounded-3xl border border-[#7a8d7d]/35 bg-[#fcfbfa]/80 shadow-md">
+                  <h3 className="text-xl font-serif text-[#7a8d7d] mb-2 flex items-center gap-2">
+                    <ShieldAlert className="h-5 w-5 text-[#7a8d7d]" />
+                    <span>GDPR Consent Records (Admin Portal)</span>
+                  </h3>
+                  <p className="text-xs text-neutral-500 mb-6 font-sans">
+                    This section is only visible because you loaded the gallery with <code className="bg-neutral-100 px-1 py-0.5 rounded">?admin=true</code> in the URL.
+                  </p>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs font-sans text-neutral-700">
+                      <thead>
+                        <tr className="border-b border-[#7a8d7d]/20 text-[#4d644d]">
+                          <th className="py-2.5 font-bold">Date Signed</th>
+                          <th className="py-2.5 font-bold">Client Name</th>
+                          <th className="py-2.5 font-bold">Email</th>
+                          <th className="py-2.5 font-bold">Preference</th>
+                          <th className="py-2.5 font-bold text-right">Signed PDF</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {gdprRecords.map((record, idx) => {
+                          const choiceLabel = record.choice === "all"
+                            ? "Agree to All"
+                            : record.choice === "none"
+                            ? "Do Not Allow"
+                            : `Agree to Some (${record.assetIds.length} photos)`;
+
+                          return (
+                            <tr key={idx} className="border-b border-black/5 hover:bg-black/[0.02]">
+                              <td className="py-3 font-medium text-neutral-500">{record.date}</td>
+                              <td className="py-3 font-semibold text-neutral-900">{record.name}</td>
+                              <td className="py-3">{record.email}</td>
+                              <td className="py-3 font-medium">{choiceLabel}</td>
+                              <td className="py-3 text-right">
+                                <button
+                                  onClick={async () => {
+                                    // Map approved asset IDs to their original file names
+                                    const approvedFileNames = record.assetIds
+                                      .map(id => assets.find(a => a.id === id)?.originalFileName)
+                                      .filter(Boolean) as string[];
+                                    
+                                    await downloadPdfCopy(record.name, record.email, record.signature, record.choice, approvedFileNames);
+                                  }}
+                                  className="rounded-lg bg-[#7a8d7d] hover:bg-[#687a6b] text-white px-3 py-1.5 text-[10px] font-bold flex items-center gap-1 transition shadow-sm ml-auto cursor-pointer"
+                                >
+                                  <Download className="h-3 w-3" />
+                                  <span>Download PDF</span>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
 
             </div>
           )}

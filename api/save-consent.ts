@@ -11,7 +11,7 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const { token, name, email, signature, choice } = await req.json();
+    const { token, name, email, signature, choice, assetIds = [] } = await req.json();
 
     if (!token || !name || !email || !signature || !choice) {
       return new Response(
@@ -86,16 +86,15 @@ export default async function handler(req: Request) {
     const album = await albumRes.json();
     const currentDescription = album.description || "";
 
-    // 3. Format the new consent record entry
+    // 3. Format the new consent record entry (pipe-delimited)
     const timestamp = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
-    const newConsentRecord = `[Consent: ${name} (${email}) signed on ${timestamp} - Preference: ${choice.toUpperCase()}]`;
+    const assetIdsStr = Array.isArray(assetIds) && assetIds.length > 0 ? assetIds.join(",") : "";
+    const newConsentRecord = `[GDPR_SIGN: ${name} | ${email} | ${signature} | ${timestamp} | ${choice}${assetIdsStr ? ` | ${assetIdsStr}` : ""}]`;
 
-    // Append to description (avoiding duplicate logs for the same email/name if they sign again)
+    // Append to description (avoiding duplicate logs for the same signature line)
     let updatedDescription = currentDescription.trim();
     if (!updatedDescription.includes(newConsentRecord)) {
       if (updatedDescription) {
-        // If the description does not end with a period and contains "Selected"
-        // we make sure we preserve any locking period/rules
         updatedDescription += `\n${newConsentRecord}`;
       } else {
         updatedDescription = newConsentRecord;
