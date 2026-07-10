@@ -215,10 +215,25 @@ export function ClientGalleryAccess() {
           uploadFormData.append("fileModifiedAt", new Date().toISOString());
           uploadFormData.append("isFavorite", "false");
 
-          await fetch(`/api/upload-consent-image?token=${shareKey}`, {
+          // Try uploading directly from client browser first using the shared link key
+          const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
             method: "POST",
             body: uploadFormData,
           });
+
+          if (directUploadRes.ok) {
+            console.log("Direct browser upload to central GDPR folder succeeded.");
+          } else {
+            console.warn("Direct browser upload failed or was rejected. Trying server-side proxy upload...");
+            const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
+              method: "POST",
+              body: uploadFormData,
+            });
+            if (!proxyUploadRes.ok) {
+              const errText = await proxyUploadRes.text();
+              throw new Error(`Server-side proxy upload failed: ${errText}`);
+            }
+          }
           console.log("Consent form photo asset uploaded successfully to Immich central GDPR album.");
         } catch (uploadErr) {
           console.warn("Failed to upload consent form photo asset to Immich:", uploadErr);
@@ -281,10 +296,25 @@ export function ClientGalleryAccess() {
         uploadFormData.append("fileModifiedAt", new Date().toISOString());
         uploadFormData.append("isFavorite", "false");
 
-        await fetch(`/api/upload-consent-image?token=${shareKey}`, {
+        // Try uploading directly from client browser first using the shared link key
+        const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
           method: "POST",
           body: uploadFormData,
         });
+
+        if (directUploadRes.ok) {
+          console.log("Direct browser upload to central GDPR folder succeeded.");
+        } else {
+          console.warn("Direct browser upload failed or was rejected. Trying server-side proxy upload...");
+          const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
+            method: "POST",
+            body: uploadFormData,
+          });
+          if (!proxyUploadRes.ok) {
+            const errText = await proxyUploadRes.text();
+            throw new Error(`Server-side proxy upload failed: ${errText}`);
+          }
+        }
         console.log("Consent form photo asset uploaded successfully to Immich central GDPR album.");
       } catch (uploadErr) {
         console.warn("Failed to upload consent form photo asset to Immich:", uploadErr);
