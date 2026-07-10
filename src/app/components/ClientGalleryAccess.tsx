@@ -513,6 +513,41 @@ export function ClientGalleryAccess() {
                 </div>
               </div>
 
+              {/* Review Section */}
+              <div className="mb-8 p-8 rounded-3xl border border-[#7a8d7d]/20 bg-[#f8f8f5]/60 flex flex-col items-center">
+                <h2 className="text-2xl font-serif mb-2 text-[#7a8d7d]">Enjoying your photos?</h2>
+                <p className="mb-6 text-neutral-600 text-center max-w-lg">
+                  We'd love to hear your feedback! Please consider leaving a review on your favorite platform:
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <a
+                    href="https://g.page/r/CdJN4SgZHr5HEBM/review"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-[#4285F4] text-white font-medium hover:bg-[#357ae8] transition shadow-sm cursor-pointer"
+                  >
+                    Leave a Google Review
+                  </a>
+                  <a
+                    href="https://www.facebook.com/profile.php?id=61589665170358&sk=reviews"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-[#4267B2] text-white font-medium hover:bg-[#365899] transition shadow-sm cursor-pointer"
+                  >
+                    Facebook
+                  </a>
+                  <a
+                    href="https://www.yelp.ca/writeareview/biz/kl6StD-njEXc5PbUUhaiVA?return_url=%2Fbiz%2Fkl6StD-njEXc5PbUUhaiVA&review_origin=biz-details-war-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-[#d32323] text-white font-medium hover:bg-[#b71c1c] transition shadow-sm cursor-pointer"
+                  >
+                    Yelp
+                  </a>
+                </div>
+                <p className="mt-6 text-xs text-neutral-400">Thank you for supporting Ava in Frame Photography!</p>
+              </div>
+
               {/* Floating Selection Action Bar */}
               {!isAlbumUnlocked && (
                 <div className="sticky top-4 z-30 mb-8 p-4 rounded-2xl bg-white/80 border border-[#7a8d7d]/15 shadow-md backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -619,40 +654,7 @@ export function ClientGalleryAccess() {
                 </Masonry>
               </ResponsiveMasonry>
 
-              {/* Review Section */}
-              <div className="mt-16 p-8 rounded-3xl border border-[#7a8d7d]/20 bg-[#f8f8f5]/60 flex flex-col items-center">
-                <h2 className="text-2xl font-serif mb-2 text-[#7a8d7d]">Enjoying your photos?</h2>
-                <p className="mb-6 text-neutral-600 text-center max-w-lg">
-                  We'd love to hear your feedback! Please consider leaving a review on your favorite platform:
-                </p>
-                <div className="flex flex-wrap gap-4 justify-center">
-                  <a
-                    href="https://g.page/r/CdJN4SgZHr5HEBM/review"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-[#4285F4] text-white font-medium hover:bg-[#357ae8] transition shadow-sm"
-                  >
-                    Leave a Google Review
-                  </a>
-                  <a
-                    href="https://www.facebook.com/profile.php?id=61589665170358&sk=reviews"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-[#4267B2] text-white font-medium hover:bg-[#365899] transition shadow-sm"
-                  >
-                    Facebook
-                  </a>
-                  <a
-                    href="https://www.yelp.ca/writeareview/biz/kl6StD-njEXc5PbUUhaiVA?return_url=%2Fbiz%2Fkl6StD-njEXc5PbUUhaiVA&review_origin=biz-details-war-button"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-[#d32323] text-white font-medium hover:bg-[#b71c1c] transition shadow-sm"
-                  >
-                    Yelp
-                  </a>
-                </div>
-                <p className="mt-6 text-xs text-neutral-400">Thank you for supporting Ava in Frame Photography!</p>
-              </div>
+
             </div>
           )}
         </div>
