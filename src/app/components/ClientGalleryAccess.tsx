@@ -521,6 +521,14 @@ export function ClientGalleryAccess() {
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center">
                   <a
+                    href="https://www.yelp.ca/writeareview/biz/kl6StD-njEXc5PbUUhaiVA?return_url=%2Fbiz%2Fkl6StD-njEXc5PbUUhaiVA&review_origin=biz-details-war-button"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-[#d32323] text-white font-medium hover:bg-[#b71c1c] transition shadow-sm cursor-pointer"
+                  >
+                    Yelp
+                  </a>
+                  <a
                     href="https://g.page/r/CdJN4SgZHr5HEBM/review"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -535,14 +543,6 @@ export function ClientGalleryAccess() {
                     className="px-5 py-2.5 rounded-full bg-[#4267B2] text-white font-medium hover:bg-[#365899] transition shadow-sm cursor-pointer"
                   >
                     Facebook
-                  </a>
-                  <a
-                    href="https://www.yelp.ca/writeareview/biz/kl6StD-njEXc5PbUUhaiVA?return_url=%2Fbiz%2Fkl6StD-njEXc5PbUUhaiVA&review_origin=biz-details-war-button"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-[#d32323] text-white font-medium hover:bg-[#b71c1c] transition shadow-sm cursor-pointer"
-                  >
-                    Yelp
                   </a>
                 </div>
                 <p className="mt-6 text-xs text-neutral-400">Thank you for supporting Ava in Frame Photography!</p>
