@@ -184,6 +184,97 @@ export default defineConfig({
             return;
           }
 
+          // Handle upload-consent-image
+          if (req.url && req.url.startsWith('/api/upload-consent-image')) {
+            const urlObj = new URL(req.url, `http://${req.headers.host}`);
+            const token = urlObj.searchParams.get("token");
+            const albumId = urlObj.searchParams.get("albumId");
+
+            if (!token || !albumId) {
+              res.statusCode = 400;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: 'Missing token or albumId query parameter' }));
+              return;
+            }
+
+            const chunks: Buffer[] = [];
+            req.on('data', chunk => { chunks.push(chunk); });
+            req.on('end', async () => {
+              try {
+                const env = loadEnv(server.config.mode, process.cwd(), '');
+                const immichUrl = env.VITE_IMMICH_URL || "https://photos.avainframe.com";
+                const apiKey = env.IMMICH_API_KEY || env.VITE_IMMICH_API_KEY;
+
+                if (!apiKey) {
+                  res.statusCode = 500;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Local API Key (IMMICH_API_KEY) not configured in .env' }));
+                  return;
+                }
+
+                const totalBuffer = Buffer.concat(chunks);
+                const contentType = req.headers['content-type'] || '';
+
+                // 1. Upload to Immich POST /api/assets
+                const uploadRes = await fetch(`${immichUrl}/api/assets`, {
+                  method: 'POST',
+                  headers: {
+                    'x-api-key': apiKey,
+                    'content-type': contentType
+                  },
+                  body: totalBuffer
+                });
+
+                if (!uploadRes.ok) {
+                  const errorText = await uploadRes.text();
+                  res.statusCode = uploadRes.status;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `Immich upload failed: ${errorText}` }));
+                  return;
+                }
+
+                const uploadResult = await uploadRes.json();
+                const assetId = uploadResult.id;
+
+                if (!assetId) {
+                  res.statusCode = 500;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: 'Failed to parse uploaded asset ID from Immich response' }));
+                  return;
+                }
+
+                // 2. Link the uploaded asset to the client's album
+                const addRes = await fetch(`${immichUrl}/api/albums/${albumId}/assets`, {
+                  method: 'PUT',
+                  headers: {
+                    'content-type': 'application/json',
+                    'x-api-key': apiKey
+                  },
+                  body: JSON.stringify({
+                    ids: [assetId]
+                  })
+                });
+
+                if (!addRes.ok) {
+                  const errorText = await addRes.text();
+                  res.statusCode = addRes.status;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `Failed to link uploaded GDPR form to Immich album: ${errorText}` }));
+                  return;
+                }
+
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: true, assetId }));
+              } catch (err: any) {
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: err.message || 'Internal Server Error' }));
+              }
+            });
+            return;
+          }
+
           // 1.5. Handle download all
           if (req.url && req.url.startsWith('/api/download-all')) {
             let body = '';

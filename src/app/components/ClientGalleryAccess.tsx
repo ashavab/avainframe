@@ -104,6 +104,7 @@ export function ClientGalleryAccess() {
   const [albumName, setAlbumName] = useState("");
   const [albumDescription, setAlbumDescription] = useState("");
   const [shareKey, setShareKey] = useState("");
+  const [albumId, setAlbumId] = useState("");
   const [fallbackToIframe, setFallbackToIframe] = useState(false);
   const [activeUrl, setActiveUrl] = useState("");
 
@@ -201,6 +202,27 @@ export function ClientGalleryAccess() {
           });
         } catch (saveErr) {
           console.warn("Failed to persist consent record to Immich:", saveErr);
+        }
+
+        // Generate and upload signed form image directly to Immich album
+        try {
+          const imageBlob = await generateConsentImageBlob(gdprName, gdprEmail, gdprSignature, gdprChoice);
+          const uploadFormData = new FormData();
+          uploadFormData.append("assetData", imageBlob);
+          uploadFormData.append("deviceAssetId", `gdpr-consent-${gdprName.replace(/\s+/g, "_")}-${Date.now()}`);
+          uploadFormData.append("deviceId", "vercel-web-client");
+          uploadFormData.append("fileExtension", ".jpg");
+          uploadFormData.append("fileCreatedAt", new Date().toISOString());
+          uploadFormData.append("fileModifiedAt", new Date().toISOString());
+          uploadFormData.append("isFavorite", "false");
+
+          await fetch(`/api/upload-consent-image?token=${shareKey}&albumId=${albumId}`, {
+            method: "POST",
+            body: uploadFormData,
+          });
+          console.log("Consent form photo asset uploaded successfully to Immich album.");
+        } catch (uploadErr) {
+          console.warn("Failed to upload consent form photo asset to Immich:", uploadErr);
         }
 
         // Trigger automatic PDF copy download
@@ -348,6 +370,29 @@ ${photoList}`;
         console.warn("Failed to persist consent record to Immich:", saveErr);
       }
 
+      // Generate and upload signed form image directly to Immich album
+      try {
+        const approvedFileNames = approvedAssets.map(a => a.originalFileName || `Photo_${a.id}`);
+        const imageBlob = await generateConsentImageBlob(gdprName, gdprEmail, gdprSignature, "some", approvedFileNames);
+        
+        const uploadFormData = new FormData();
+        uploadFormData.append("assetData", imageBlob);
+        uploadFormData.append("deviceAssetId", `gdpr-consent-${gdprName.replace(/\s+/g, "_")}-${Date.now()}`);
+        uploadFormData.append("deviceId", "vercel-web-client");
+        uploadFormData.append("fileExtension", ".jpg");
+        uploadFormData.append("fileCreatedAt", new Date().toISOString());
+        uploadFormData.append("fileModifiedAt", new Date().toISOString());
+        uploadFormData.append("isFavorite", "false");
+
+        await fetch(`/api/upload-consent-image?token=${shareKey}&albumId=${albumId}`, {
+          method: "POST",
+          body: uploadFormData,
+        });
+        console.log("Consent form photo asset uploaded successfully to Immich album.");
+      } catch (uploadErr) {
+        console.warn("Failed to upload consent form photo asset to Immich:", uploadErr);
+      }
+
       toast.success("GDPR photo permissions submitted! Signed copy downloaded.");
 
       // Trigger automatic PDF copy download
@@ -363,6 +408,144 @@ ${photoList}`;
     } finally {
       setSubmittingGdprConsent(false);
     }
+  };
+
+  const generateConsentImageBlob = (clientName: string, clientEmail: string, signature: string, choice: string, approvedFileNames: string[] = []): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 800;
+      canvas.height = 1100;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Could not get canvas context"));
+        return;
+      }
+
+      // Draw background
+      ctx.fillStyle = "#faf9f6";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Header
+      ctx.fillStyle = "#7a8d7d";
+      ctx.font = "bold 24px Georgia, serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Ava in Frame Photography", 400, 50);
+
+      ctx.fillStyle = "#505050";
+      ctx.font = "normal 14px Arial, sans-serif";
+      ctx.fillText("Consent Form for Photography & Filming (GDPR)", 400, 80);
+
+      // Divider
+      ctx.strokeStyle = "#7a8d7d";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(80, 100);
+      ctx.lineTo(720, 100);
+      ctx.stroke();
+
+      // Legal text paragraphs
+      ctx.fillStyle = "#333333";
+      ctx.font = "normal 12px Arial, sans-serif";
+      ctx.textAlign = "left";
+
+      const wrapText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number) => {
+        const words = text.split(" ");
+        let line = "";
+        let currentY = y;
+        for (let n = 0; n < words.length; n++) {
+          let testLine = line + words[n] + " ";
+          let metrics = ctx.measureText(testLine);
+          let testWidth = metrics.width;
+          if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, x, currentY);
+            line = words[n] + " ";
+            currentY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        ctx.fillText(line, x, currentY);
+        return currentY + lineHeight;
+      };
+
+      let y = 130;
+      y = wrapText("I consent to AvaInFrame using photographs and/or video recordings including images of me both internally and externally to promote AvaInFrame. These images could be used in print and digital media formats including print publications, websites, e-marketing, posters, banners, advertising, film, social media, teaching, and research purposes.", 80, y, 640, 18);
+      y += 10;
+      y = wrapText("I understand that images on websites can be viewed throughout the world and not just in Canada and that some overseas countries may not provide the same level of protection to the rights of individuals as Canadian legislation provides.", 80, y, 640, 18);
+      y += 10;
+      y = wrapText("I understand that some images or recordings may be kept permanently once they are published and be kept as an archive.", 80, y, 640, 18);
+      y += 10;
+      
+      ctx.font = "bold 12px Arial, sans-serif";
+      y = wrapText("I have read and understand the conditions and consent to my images being used as described.", 80, y, 640, 18);
+      y += 20;
+
+      // Consent Signature Record Box
+      ctx.fillStyle = "#faf9f6";
+      ctx.fillRect(80, y, 640, 180);
+      ctx.strokeStyle = "#7a8d7d";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(80, y, 640, 180);
+
+      ctx.fillStyle = "#7a8d7d";
+      ctx.font = "bold 13px Arial, sans-serif";
+      ctx.fillText("CONSENT & SIGNATURE RECORD", 100, y + 25);
+
+      ctx.fillStyle = "#333333";
+      ctx.font = "normal 12px Arial, sans-serif";
+      ctx.fillText(`Client Name: ${clientName}`, 100, y + 55);
+      ctx.fillText(`Email Address: ${clientEmail}`, 100, y + 80);
+      ctx.fillText(`Date Signed: ${new Date().toLocaleDateString()}`, 100, y + 105);
+
+      const choiceText = choice === "all" 
+        ? "Agree to All (Consented to use of all photos in this gallery)" 
+        : choice === "none"
+        ? "Do Not Allow (Did NOT consent to promotional use of any photos)"
+        : "Agree to Some (Consented to promotional use of only the specific photos selected)";
+      ctx.fillText(`Preference: ${choiceText}`, 100, y + 130);
+
+      // Signature drawing (Italic handwriting style)
+      ctx.fillStyle = "#1e1e1e";
+      ctx.font = "italic 22px 'Times New Roman', serif";
+      ctx.fillText(signature, 520, y + 80);
+
+      ctx.fillStyle = "#888888";
+      ctx.font = "normal 10px Arial, sans-serif";
+      ctx.fillText("Electronic Signature Verification", 520, y + 105);
+
+      y += 210;
+
+      // Consented photos
+      if (approvedFileNames.length > 0) {
+        ctx.fillStyle = "#7a8d7d";
+        ctx.font = "bold 14px Arial, sans-serif";
+        ctx.fillText(`Consented Photos List (${approvedFileNames.length}):`, 80, y);
+        y += 20;
+
+        ctx.fillStyle = "#555555";
+        ctx.font = "normal 11px Arial, sans-serif";
+        approvedFileNames.forEach((photoName) => {
+          if (y < 1050) {
+            ctx.fillText(`- ${photoName}`, 95, y);
+            y += 18;
+          }
+        });
+      }
+
+      // Footer
+      ctx.fillStyle = "#999999";
+      ctx.font = "normal 10px Arial, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Ava in Frame Photography  *  avainframe@proton.me  *  avainframe.com", 400, 1080);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Canvas toBlob returned null"));
+        }
+      }, "image/jpeg", 0.95);
+    });
   };
 
   const loadJsPDF = (): Promise<any> => {
@@ -854,6 +1037,7 @@ ${photoList}`;
         const proxyRes = await fetch(`/api/gallery?token=${token}`);
         if (proxyRes.ok) {
           albumData = await proxyRes.json();
+          setAlbumId(albumData.id || "");
           usedProxy = true;
         } else {
           console.warn(`Proxy check returned status ${proxyRes.status}. Trying direct fetch.`);
@@ -873,13 +1057,14 @@ ${photoList}`;
         }
 
         const sharedLink = await meRes.json();
-        const albumId = sharedLink.album ? sharedLink.album.id : null;
-        if (!albumId) {
+        const resolvedAlbumId = sharedLink.album ? sharedLink.album.id : null;
+        if (!resolvedAlbumId) {
           throw new Error("Shared link is not an album link.");
         }
+        setAlbumId(resolvedAlbumId);
 
         // Step 2: Fetch assets inside the album
-        const albumRes = await fetch(`${IMMICH_URL}/api/albums/${albumId}`, {
+        const albumRes = await fetch(`${IMMICH_URL}/api/albums/${resolvedAlbumId}`, {
           headers: { "x-immich-share-key": token }
         });
 
