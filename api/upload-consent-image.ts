@@ -40,22 +40,34 @@ export default async function handler(req: Request) {
       );
     }
 
-    // 1. Resolve albumId of the central GDPR shared link using gdprToken
-    const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
-      headers: { "x-immich-share-key": gdprToken },
+    // 1. Resolve albumId of the central GDPR shared link using our admin API key and matching by slug
+    const linksRes = await fetch(`${immichUrl}/api/shared-links`, {
+      headers: { "x-api-key": apiKey },
     });
-    if (!meRes.ok) {
-      return new Response(JSON.stringify({ error: "Invalid GDPR token." }), {
-        status: 401,
+    if (!linksRes.ok) {
+      return new Response(JSON.stringify({ error: "Failed to fetch shared links from Immich." }), {
+        status: 500,
         headers: { "content-type": "application/json" },
       });
     }
-    const sharedLink = await meRes.json();
-    const albumId = sharedLink.album ? sharedLink.album.id : null;
+    const sharedLinks = await linksRes.json();
+    const gdprLink = sharedLinks.find((l: any) => l.slug && l.slug.toLowerCase() === gdprToken.toLowerCase());
+
+    if (!gdprLink) {
+      return new Response(
+        JSON.stringify({ error: `No shared link found with slug "${gdprToken}".` }),
+        {
+          status: 404,
+          headers: { "content-type": "application/json" },
+        }
+      );
+    }
+
+    const albumId = gdprLink.album ? gdprLink.album.id : null;
 
     if (!albumId) {
       return new Response(
-        JSON.stringify({ error: "No album found associated with the provided GDPR token." }),
+        JSON.stringify({ error: "No album found associated with the GDPR shared link." }),
         {
           status: 404,
           headers: { "content-type": "application/json" },

@@ -212,25 +212,34 @@ export default defineConfig({
                   return;
                 }
 
-                // 1. Resolve albumId of the central GDPR shared link using gdprToken
-                const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
-                  headers: { "x-immich-share-key": gdprToken },
+                // 1. Resolve albumId of the central GDPR shared link using our admin API key and matching by slug
+                const linksRes = await fetch(`${immichUrl}/api/shared-links`, {
+                  headers: { "x-api-key": apiKey },
                 });
 
-                if (!meRes.ok) {
-                  res.statusCode = 401;
+                if (!linksRes.ok) {
+                  res.statusCode = 500;
                   res.setHeader('Content-Type', 'application/json');
-                  res.end(JSON.stringify({ error: "Invalid GDPR token." }));
+                  res.end(JSON.stringify({ error: "Failed to fetch shared links from Immich." }));
                   return;
                 }
 
-                const sharedLink = await meRes.json();
-                const albumId = sharedLink.album ? sharedLink.album.id : null;
+                const sharedLinks = await linksRes.json();
+                const gdprLink = sharedLinks.find((l: any) => l.slug && l.slug.toLowerCase() === gdprToken.toLowerCase());
+
+                if (!gdprLink) {
+                  res.statusCode = 404;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: `No shared link found with slug "${gdprToken}".` }));
+                  return;
+                }
+
+                const albumId = gdprLink.album ? gdprLink.album.id : null;
 
                 if (!albumId) {
                   res.statusCode = 404;
                   res.setHeader('Content-Type', 'application/json');
-                  res.end(JSON.stringify({ error: "No album found associated with the provided GDPR token." }));
+                  res.end(JSON.stringify({ error: "No album found associated with the GDPR shared link." }));
                   return;
                 }
 
