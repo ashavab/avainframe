@@ -215,21 +215,34 @@ export function ClientGalleryAccess() {
           uploadFormData.append("fileModifiedAt", new Date().toISOString());
           uploadFormData.append("isFavorite", "false");
 
-          // Try uploading directly from client browser first using the shared link key
-          const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
-            method: "POST",
-            body: uploadFormData,
-          });
+          let uploadedSuccessfully = false;
 
-          if (directUploadRes.ok) {
-            console.log("Direct browser upload to central GDPR folder succeeded.");
-          } else {
-            console.warn("Direct browser upload failed or was rejected. Trying server-side proxy upload...");
+          // 1. Attempt direct browser upload first
+          try {
+            const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
+              method: "POST",
+              body: uploadFormData,
+            });
+            if (directUploadRes.ok) {
+              console.log("Direct browser upload to central GDPR folder succeeded.");
+              uploadedSuccessfully = true;
+            } else {
+              console.warn(`Direct browser upload returned status ${directUploadRes.status}.`);
+            }
+          } catch (directErr) {
+            console.warn("Direct browser upload threw exception (likely CORS or network offline):", directErr);
+          }
+
+          // 2. Fallback to server-side proxy upload if direct upload failed
+          if (!uploadedSuccessfully) {
+            console.log("Attempting server-side proxy upload...");
             const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
               method: "POST",
               body: uploadFormData,
             });
-            if (!proxyUploadRes.ok) {
+            if (proxyUploadRes.ok) {
+              console.log("Server-side proxy upload to central GDPR folder succeeded.");
+            } else {
               const errText = await proxyUploadRes.text();
               throw new Error(`Server-side proxy upload failed: ${errText}`);
             }
@@ -296,21 +309,34 @@ export function ClientGalleryAccess() {
         uploadFormData.append("fileModifiedAt", new Date().toISOString());
         uploadFormData.append("isFavorite", "false");
 
-        // Try uploading directly from client browser first using the shared link key
-        const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
-          method: "POST",
-          body: uploadFormData,
-        });
+        let uploadedSuccessfully = false;
 
-        if (directUploadRes.ok) {
-          console.log("Direct browser upload to central GDPR folder succeeded.");
-        } else {
-          console.warn("Direct browser upload failed or was rejected. Trying server-side proxy upload...");
+        // 1. Attempt direct browser upload first
+        try {
+          const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
+            method: "POST",
+            body: uploadFormData,
+          });
+          if (directUploadRes.ok) {
+            console.log("Direct browser upload to central GDPR folder succeeded.");
+            uploadedSuccessfully = true;
+          } else {
+            console.warn(`Direct browser upload returned status ${directUploadRes.status}.`);
+          }
+        } catch (directErr) {
+          console.warn("Direct browser upload threw exception (likely CORS or network offline):", directErr);
+        }
+
+        // 2. Fallback to server-side proxy upload if direct upload failed
+        if (!uploadedSuccessfully) {
+          console.log("Attempting server-side proxy upload...");
           const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
             method: "POST",
             body: uploadFormData,
           });
-          if (!proxyUploadRes.ok) {
+          if (proxyUploadRes.ok) {
+            console.log("Server-side proxy upload to central GDPR folder succeeded.");
+          } else {
             const errText = await proxyUploadRes.text();
             throw new Error(`Server-side proxy upload failed: ${errText}`);
           }
