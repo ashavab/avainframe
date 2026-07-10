@@ -188,12 +188,12 @@ export default defineConfig({
           if (req.url && req.url.startsWith('/api/upload-consent-image')) {
             const urlObj = new URL(req.url, `http://${req.headers.host}`);
             const token = urlObj.searchParams.get("token");
-            const albumId = urlObj.searchParams.get("albumId");
+            const gdprToken = urlObj.searchParams.get("gdprToken") || "GDPR";
 
-            if (!token || !albumId) {
+            if (!token) {
               res.statusCode = 400;
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ error: 'Missing token or albumId query parameter' }));
+              res.end(JSON.stringify({ error: 'Missing token query parameter' }));
               return;
             }
 
@@ -212,10 +212,32 @@ export default defineConfig({
                   return;
                 }
 
+                // 1. Resolve albumId of the central GDPR shared link using gdprToken
+                const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
+                  headers: { "x-immich-share-key": gdprToken },
+                });
+
+                if (!meRes.ok) {
+                  res.statusCode = 401;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: "Invalid GDPR token." }));
+                  return;
+                }
+
+                const sharedLink = await meRes.json();
+                const albumId = sharedLink.album ? sharedLink.album.id : null;
+
+                if (!albumId) {
+                  res.statusCode = 404;
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ error: "No album found associated with the provided GDPR token." }));
+                  return;
+                }
+
                 const totalBuffer = Buffer.concat(chunks);
                 const contentType = req.headers['content-type'] || '';
 
-                // 1. Upload to Immich POST /api/assets
+                // 2. Upload to Immich POST /api/assets
                 const uploadRes = await fetch(`${immichUrl}/api/assets`, {
                   method: 'POST',
                   headers: {
@@ -243,7 +265,7 @@ export default defineConfig({
                   return;
                 }
 
-                // 2. Link the uploaded asset to the client's album
+                // 3. Link the uploaded asset to the client's album
                 const addRes = await fetch(`${immichUrl}/api/albums/${albumId}/assets`, {
                   method: 'PUT',
                   headers: {

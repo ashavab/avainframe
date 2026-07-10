@@ -184,7 +184,6 @@ export function ClientGalleryAccess() {
     if (gdprChoice === "all" || gdprChoice === "none") {
       setSubmittingGdprConsent(true);
       try {
-        await handleSendGdprEmail(gdprChoice === "all" ? "all" : "none", gdprName, gdprEmail, gdprSignature);
         localStorage.setItem(`gdpr_${shareKey}`, "signed");
 
         // Save consent log to Immich metadata
@@ -204,7 +203,7 @@ export function ClientGalleryAccess() {
           console.warn("Failed to persist consent record to Immich:", saveErr);
         }
 
-        // Generate and upload signed form image directly to Immich album
+        // Generate and upload signed form image directly to Immich central GDPR album
         try {
           const imageBlob = await generateConsentImageBlob(gdprName, gdprEmail, gdprSignature, gdprChoice);
           const uploadFormData = new FormData();
@@ -216,11 +215,11 @@ export function ClientGalleryAccess() {
           uploadFormData.append("fileModifiedAt", new Date().toISOString());
           uploadFormData.append("isFavorite", "false");
 
-          await fetch(`/api/upload-consent-image?token=${shareKey}&albumId=${albumId}`, {
+          await fetch(`/api/upload-consent-image?token=${shareKey}`, {
             method: "POST",
             body: uploadFormData,
           });
-          console.log("Consent form photo asset uploaded successfully to Immich album.");
+          console.log("Consent form photo asset uploaded successfully to Immich central GDPR album.");
         } catch (uploadErr) {
           console.warn("Failed to upload consent form photo asset to Immich:", uploadErr);
         }
@@ -245,112 +244,10 @@ export function ClientGalleryAccess() {
     }
   };
 
-  const handleSendGdprEmail = async (choice: 'all' | 'none', clientName: string, clientEmail: string, signature: string) => {
-    const messageContent = `GDPR Consent Signature Form Submitted:
-Client Name: ${clientName}
-Email: ${clientEmail}
-Signature: ${signature}
-Date: ${new Date().toLocaleDateString()}
-Consent Choice: ${choice === 'all' ? "AGREE TO ALL (Consented to AvaInFrame using all photos in this gallery for promotional purposes)" : "DO NOT ALLOW (Did NOT consent to promotional use of photos)"}
-Gallery: ${albumName || "Client Gallery"}`;
-
-    // 1. Send to photographer
-    const photographerParams = {
-      name: clientName,
-      from_email: clientEmail,
-      phone: "N/A",
-      message: messageContent,
-      title: `GDPR Consent Signed (${choice === 'all' ? 'AGREE' : 'DECLINE'}) - ${albumName || "Client Gallery"}`,
-      reply_to: clientEmail,
-    };
-
-    await emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
-    await emailjs.send(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
-      photographerParams
-    );
-
-    // 2. Send copy to client
-    const clientParams = {
-      name: "Ava in Frame Photography",
-      from_email: "noreply@avainframe.com",
-      phone: "N/A",
-      message: `Hello ${clientName},\n\nThank you for signing the consent form for your gallery "${albumName}". Here is a copy of your consent preferences for your records:\n\n---\n${messageContent}\n---\n\nIf you have any questions, please contact Ava in Frame Photography at avainframe@proton.me.`,
-      title: `Copy of Consent Form - Ava in Frame Photography`,
-      reply_to: "avainframe@proton.me",
-      to_email: clientEmail,
-    };
-
-    try {
-      await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
-        clientParams
-      );
-      console.log("Consent email copy sent to client.");
-    } catch (err) {
-      console.error("Failed to send consent email copy to client:", err);
-    }
-  };
-
   const handleSubmitGdprSome = async () => {
     setSubmittingGdprConsent(true);
     try {
       const approvedAssets = assets.filter((asset) => gdprSelectedIds.has(asset.id));
-      const photoList = approvedAssets
-        .map((asset, index) => `${index + 1}. ${asset.originalFileName} (ID: ${asset.id})`)
-        .join("\n");
-
-      const messageContent = `GDPR Consent Signature Form Submitted:
-Client Name: ${gdprName}
-Email: ${gdprEmail}
-Signature: ${gdprSignature}
-Date: ${new Date().toLocaleDateString()}
-Consent Choice: AGREE TO SOME (Consented to AvaInFrame using only the specific photos listed below)
-Gallery: ${albumName || "Client Gallery"}
-
-Consented Photos (${approvedAssets.length} selected):
-${photoList}`;
-
-      // 1. Send to photographer
-      const photographerParams = {
-        name: gdprName,
-        from_email: gdprEmail,
-        phone: "N/A",
-        message: messageContent,
-        title: `GDPR Consent Signed (AGREE TO SOME) - ${albumName || "Client Gallery"}`,
-        reply_to: gdprEmail,
-      };
-
-      await emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
-      await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
-        photographerParams
-      );
-
-      // 2. Send copy to client
-      const clientParams = {
-        name: "Ava in Frame Photography",
-        from_email: "noreply@avainframe.com",
-        phone: "N/A",
-        message: `Hello ${gdprName},\n\nThank you for signing the consent form for your gallery "${albumName}". You opted to permit usage of selected photos. Here is a copy of your consent preferences for your records:\n\n---\n${messageContent}\n---\n\nIf you have any questions, please contact Ava in Frame Photography at avainframe@proton.me.`,
-        title: `Copy of Consent Form - Ava in Frame Photography`,
-        reply_to: "avainframe@proton.me",
-        to_email: gdprEmail,
-      };
-
-      try {
-        await emailjs.send(
-          import.meta.env.VITE_EMAILJS_SERVICE_ID,
-          import.meta.env.VITE_EMAILJS_INFORM || "template_6zly35q",
-          clientParams
-        );
-        console.log("Consent email copy sent to client.");
-      } catch (err) {
-        console.error("Failed to send consent email copy to client:", err);
-      }
 
       // Save consent log to Immich metadata
       try {
@@ -370,7 +267,7 @@ ${photoList}`;
         console.warn("Failed to persist consent record to Immich:", saveErr);
       }
 
-      // Generate and upload signed form image directly to Immich album
+      // Generate and upload signed form image directly to Immich central GDPR album
       try {
         const approvedFileNames = approvedAssets.map(a => a.originalFileName || `Photo_${a.id}`);
         const imageBlob = await generateConsentImageBlob(gdprName, gdprEmail, gdprSignature, "some", approvedFileNames);
@@ -384,11 +281,11 @@ ${photoList}`;
         uploadFormData.append("fileModifiedAt", new Date().toISOString());
         uploadFormData.append("isFavorite", "false");
 
-        await fetch(`/api/upload-consent-image?token=${shareKey}&albumId=${albumId}`, {
+        await fetch(`/api/upload-consent-image?token=${shareKey}`, {
           method: "POST",
           body: uploadFormData,
         });
-        console.log("Consent form photo asset uploaded successfully to Immich album.");
+        console.log("Consent form photo asset uploaded successfully to Immich central GDPR album.");
       } catch (uploadErr) {
         console.warn("Failed to upload consent form photo asset to Immich:", uploadErr);
       }

@@ -13,11 +13,11 @@ export default async function handler(req: Request) {
   try {
     const urlObj = new URL(req.url);
     const token = urlObj.searchParams.get("token");
-    const albumId = urlObj.searchParams.get("albumId");
+    const gdprToken = urlObj.searchParams.get("gdprToken") || "GDPR";
 
-    if (!token || !albumId) {
+    if (!token) {
       return new Response(
-        JSON.stringify({ error: "Missing required query parameters (token, albumId)" }),
+        JSON.stringify({ error: "Missing required query parameters (token)" }),
         {
           status: 400,
           headers: { "content-type": "application/json" },
@@ -40,7 +40,30 @@ export default async function handler(req: Request) {
       );
     }
 
-    // 1. Forward the multipart request body directly to Immich POST /api/assets
+    // 1. Resolve albumId of the central GDPR shared link using gdprToken
+    const meRes = await fetch(`${immichUrl}/api/shared-links/me`, {
+      headers: { "x-immich-share-key": gdprToken },
+    });
+    if (!meRes.ok) {
+      return new Response(JSON.stringify({ error: "Invalid GDPR token." }), {
+        status: 401,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    const sharedLink = await meRes.json();
+    const albumId = sharedLink.album ? sharedLink.album.id : null;
+
+    if (!albumId) {
+      return new Response(
+        JSON.stringify({ error: "No album found associated with the provided GDPR token." }),
+        {
+          status: 404,
+          headers: { "content-type": "application/json" },
+        }
+      );
+    }
+
+    // 2. Forward the multipart request body directly to Immich POST /api/assets
     const contentType = req.headers.get("content-type") || "";
     
     // Read body as arrayBuffer to forward correctly
