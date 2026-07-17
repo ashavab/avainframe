@@ -1592,10 +1592,8 @@ export function ClientGalleryAccess() {
                 <>
                   {gdprMode === "viewing" ? (
                     <a
-                      href={`${IMMICH_URL}/api/assets/${currentLightboxAsset.id}/original?key=${shareKey}`}
+                      href={`/api/download-single?assetId=${currentLightboxAsset.id}&shareKey=${shareKey}&fileName=${encodeURIComponent(currentLightboxAsset.originalFileName)}`}
                       download={currentLightboxAsset.originalFileName}
-                      target="_blank"
-                      rel="noreferrer"
                       className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
                     >
                       <Download className="h-3.5 w-3.5" />

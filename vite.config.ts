@@ -332,7 +332,7 @@ export default defineConfig({
                     'x-immich-share-key': shareKey || ""
                   },
                   body: JSON.stringify({
-                    ids: assetIds
+                    assetIds: assetIds
                   })
                 });
 
@@ -352,7 +352,7 @@ export default defineConfig({
                     'x-immich-share-key': shareKey || ""
                   },
                   body: JSON.stringify({
-                    ids: assetIds
+                    assetIds: assetIds
                   })
                 });
 
@@ -378,6 +378,54 @@ export default defineConfig({
                 res.end(JSON.stringify({ error: err.message || 'Internal Server Error' }));
               }
             });
+            return;
+          }
+
+          // 1.6. Handle download single
+          if (req.url && req.url.startsWith('/api/download-single')) {
+            try {
+              const url = new URL(req.url, 'http://localhost');
+              const assetId = url.searchParams.get('assetId');
+              const shareKey = url.searchParams.get('shareKey') || '';
+              const fileName = url.searchParams.get('fileName') || 'image.jpg';
+
+              if (!assetId) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: 'Missing assetId' }));
+                return;
+              }
+
+              // Load config using loadEnv in development
+              const env = loadEnv(server.config.mode, process.cwd(), '');
+              const immichUrl = env.VITE_IMMICH_URL || "https://photos.avainframe.com";
+
+              const assetRes = await fetch(`${immichUrl}/api/assets/${assetId}/original`, {
+                headers: {
+                  'x-immich-share-key': shareKey
+                }
+              });
+
+              if (!assetRes.ok) {
+                const errorText = await assetRes.text();
+                res.statusCode = assetRes.status;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: `Failed to download asset: ${errorText}` }));
+                return;
+              }
+
+              const contentType = assetRes.headers.get('content-type') || 'application/octet-stream';
+              res.statusCode = 200;
+              res.setHeader('Content-Type', contentType);
+              res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(fileName)}"`);
+
+              const arrayBuffer = await assetRes.arrayBuffer();
+              res.end(Buffer.from(arrayBuffer));
+            } catch (err: any) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: err.message || 'Internal Server Error' }));
+            }
             return;
           }
 

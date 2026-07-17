@@ -30,7 +30,7 @@ export default async function handler(req: Request) {
         "x-immich-share-key": shareKey || "",
       },
       body: JSON.stringify({
-        ids: assetIds,
+        assetIds: assetIds,
       }),
     });
 
@@ -50,7 +50,7 @@ export default async function handler(req: Request) {
         "x-immich-share-key": shareKey || "",
       },
       body: JSON.stringify({
-        ids: assetIds,
+        assetIds: assetIds,
       }),
     });
 
