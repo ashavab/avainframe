@@ -142,6 +142,7 @@ export function ClientGalleryAccess() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [submittingSelection, setSubmittingSelection] = useState(false);
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState<{ done: number; total: number }>({ done: 0, total: 0 });
 
   // GDPR Consent states
   const [showGdprModal, setShowGdprModal] = useState(false);
@@ -924,6 +925,7 @@ export function ClientGalleryAccess() {
   const handleDownloadAll = async () => {
     if (assets.length === 0) return;
     setDownloadingAll(true);
+    setDownloadProgress({ done: 0, total: assets.length });
     let ok = 0;
     let failed = 0;
     try {
@@ -946,6 +948,7 @@ export function ClientGalleryAccess() {
         } catch {
           failed++;
         }
+        setDownloadProgress((p) => ({ done: p.done + 1, total: p.total }));
         // stagger so the browser does not block multiple downloads
         await new Promise((r) => setTimeout(r, 300));
       }
@@ -956,6 +959,7 @@ export function ClientGalleryAccess() {
       toast.error(err.message || "Failed to download photos.");
     } finally {
       setDownloadingAll(false);
+      setDownloadProgress({ done: 0, total: 0 });
     }
   };
   const shareUrl = useMemo(() => toShareUrl(password), [password]);
@@ -1222,7 +1226,13 @@ export function ClientGalleryAccess() {
                             {downloadingAll ? (
                               <>
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                <span>Downloading...</span>
+                                <span>Downloading {downloadProgress.done} / {downloadProgress.total}</span>
+                                <span className="ml-1 inline-block h-1.5 w-16 overflow-hidden rounded-full bg-white/30 align-middle">
+                                  <span
+                                    className="block h-full rounded-full bg-white transition-all duration-200"
+                                    style={{ width: `${downloadProgress.total ? (downloadProgress.done / downloadProgress.total) * 100 : 0}%` }}
+                                  />
+                                </span>
                               </>
                             ) : (
                               <>
