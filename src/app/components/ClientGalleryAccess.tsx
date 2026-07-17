@@ -924,44 +924,40 @@ export function ClientGalleryAccess() {
   const handleDownloadAll = async () => {
     if (assets.length === 0) return;
     setDownloadingAll(true);
-
+    let ok = 0;
+    let failed = 0;
     try {
-      const res = await fetch("/api/download-all", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          assetIds: assets.map((a) => a.id),
-          shareKey,
-        }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({ error: "Failed to download zip of photos." }));
-        throw new Error(errData.error || "Failed to download zip of photos.");
+      for (const a of assets) {
+        const fileName = a.originalFileName || `Photo_${a.id}`;
+        const url = `/api/download-single?assetId=${encodeURIComponent(a.id)}&shareKey=${encodeURIComponent(shareKey)}&fileName=${encodeURIComponent(fileName)}`;
+        try {
+          const res = await fetch(url);
+          if (!res.ok) { failed++; continue; }
+          const blob = await res.blob();
+          const objUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = objUrl;
+          link.setAttribute("download", fileName);
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          window.URL.revokeObjectURL(objUrl);
+          ok++;
+        } catch {
+          failed++;
+        }
+        // stagger so the browser does not block multiple downloads
+        await new Promise((r) => setTimeout(r, 300));
       }
-
-      // Read response body as blob and download it
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${albumName || "gallery"}_photos.zip`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      toast.success("Download started successfully!");
+      if (failed === 0) toast.success(`Started downloading ${ok} photos.`);
+      else toast.warning(`Downloaded ${ok} photos, ${failed} failed.`);
     } catch (err: any) {
       console.error("Download all error:", err);
-      toast.error(err.message || "Failed to download all photos. Please try downloading them individually.");
+      toast.error(err.message || "Failed to download photos.");
     } finally {
       setDownloadingAll(false);
     }
   };
-
   const shareUrl = useMemo(() => toShareUrl(password), [password]);
 
   const handleSubmit = async (event: FormEvent) => {
@@ -1231,7 +1227,7 @@ export function ClientGalleryAccess() {
                             ) : (
                               <>
                                 <Download className="h-3.5 w-3.5" />
-                                <span>Download All (ZIP)</span>
+                                <span>Download All</span>
                               </>
                             )}
                           </button>
