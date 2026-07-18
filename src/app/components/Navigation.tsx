@@ -51,8 +51,7 @@ export function Navigation() {
   };
 
   const goToClients = () => {
-    const normalized = clientPath.startsWith("/") ? clientPath : `/${clientPath}`;
-    window.location.hash = normalized;
+    window.location.href = "https://albums.avainframe.com";
     setIsOpen(false);
   };
 
