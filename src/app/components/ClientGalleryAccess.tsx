@@ -1207,6 +1207,9 @@ export function ClientGalleryAccess() {
               <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
                 <div>
                   <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
+                  <a href={'https://albums.avainframe.com/album/'+encodeURIComponent(albumName)} target="_blank" rel="noreferrer" className="ml-3 inline-flex items-center gap-1.5 rounded-full bg-[#819184] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#556b53] transition">
+                    <ExternalLink className="h-3.5 w-3.5" /> Open full web gallery
+                  </a>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
                 </div>
                 <div className="flex items-center gap-3">
