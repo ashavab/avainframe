@@ -34,7 +34,7 @@ jobs:
         run: npm run portfolio:sync
 
       - name: Commit and Push Changes
-        uses: stefanzweifel/git-commit-push-action@v10
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: auto-sync portfolio photos [skip ci]"
           file_pattern: 'public/galleries/ src/app/data/portfolioGenerated.ts'
