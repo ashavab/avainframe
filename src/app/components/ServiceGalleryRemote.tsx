@@ -96,23 +96,41 @@ export function RemoteGallery({
 
   return (
     <section className="mt-8">
-      <div
-        className="rounded-2xl overflow-hidden shadow-lg mb-6 cursor-pointer group"
-        onClick={() => open(0)}
-      >
-        <img
-          src={thumbUrl(assets[0].id, key, "preview")}
-          alt={name}
-          className="w-full h-[420px] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          loading="eager"
-        />
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => open(0)}
+          className="block w-full rounded-2xl overflow-hidden shadow-lg group"
+          aria-label={'View ' + name + ' gallery'}
+        >
+          <img
+            src={thumbUrl(assets[0].id, key, "preview")}
+            alt={name}
+            className="w-full h-[420px] object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            loading="eager"
+          />
+          <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-colors">
+            <span className="opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all rounded-full bg-white/90 text-[#4a524c] px-5 py-2 text-sm font-medium shadow">View Gallery</span>
+          </span>
+        </button>
+      </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-serif text-xl">{name} Gallery</h3>
+        <button
+          type="button"
+          onClick={() => open(0)}
+          className="rounded-xl bg-[#819184] text-white px-5 py-2.5 text-sm font-medium hover:opacity-90 transition"
+        >
+          View Gallery
+        </button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         {assets.map((img, i) => (
           <figure
             key={img.id}
-            className="group overflow-hidden rounded-xl bg-white cursor-pointer"
+            className="group overflow-hidden rounded-xl bg-white cursor-pointer relative"
             onClick={() => open(i)}
           >
             <img
@@ -121,6 +139,9 @@ export function RemoteGallery({
               loading="lazy"
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             />
+            <span className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors pointer-events-none">
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-white/90 text-[#4a524c] px-4 py-1.5 text-xs font-medium shadow">View</span>
+            </span>
             <figcaption className="p-3 text-sm text-gray-700">
               {img.originalFileName}
             </figcaption>
