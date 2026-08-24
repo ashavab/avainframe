@@ -90,6 +90,8 @@ export default function App() {
   const boudoirPath = normalizePath(SERVICES_PATHS.boudoir);
   const travelPath = normalizePath(SERVICES_PATHS.travel);
   const landscapePath = normalizePath(SERVICES_PATHS.landscape);
+  const portraitsPath = normalizePath(SERVICES_PATHS.portraits);
+  const eventsPath = normalizePath(SERVICES_PATHS.events);
 
   const isImmichPath = path === hiddenPath || hash === hiddenPath;
   const isClientPath = path === clientPath || hash === clientPath;
