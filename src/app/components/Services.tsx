@@ -96,11 +96,11 @@ export function Services() {
                 <li><a href="/#/weddings" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Wedding Photography</a></li>
                 <li><a href="/#/engagements" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Engagement Sessions</a></li>
                 <li><a href="/#/family" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Family Photography</a></li>
-                <li><a href="/galleries/portraits/" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Portrait Photography</a></li>
+                <li><a href="/#/portraits" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Portrait Photography</a></li>
                 <li><a href="/galleries/newborn/" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Newborn Photography</a></li>
                 <li><a href="/#/headshots" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Professional Headshots</a></li>
                 <li><a href="/#/boudoir" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Boudoir Photography</a></li>
-                <li><a href="/galleries/events/" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Event Photography</a></li>
+                <li><a href="/#/events" className="block rounded-lg border border-black/10 px-4 py-3 text-sm hover:bg-[#819184]/10 dark:border-white/15 dark:hover:bg-white/10">Event Photography</a></li>
               </ul>
             </div>
             {/* Commercial & Pets */}

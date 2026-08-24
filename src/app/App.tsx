@@ -17,6 +17,8 @@ import { WeddingsService } from "./components/WeddingsService";
 import { Portfolio } from "./components/Portfolio";
 import { EngagementsService } from "./components/EngagementsService";
 import { FamilyService } from "./components/FamilyService";
+import { PortraitsService } from "./components/PortraitsService";
+import { EventsService } from "./components/EventsService";
 import { TorontoPhotographerService } from "./components/TorontoPhotographerService";
 import RealEstateService from "./components/RealEstateService";
 import HeadshotsService from "./components/HeadshotsService";
@@ -41,7 +43,9 @@ const SERVICES_PATHS = {
   pets: "/pets",
   boudoir: "/boudoir",
   travel: "/travel",
-  landscape: "/landscape"
+  landscape: "/landscape",
+  portraits: "/portraits",
+  events: "/events"
 };
 
 function normalizePath(path: string) {
@@ -99,6 +103,8 @@ export default function App() {
   const isBoudoirPath = path === boudoirPath || hash === boudoirPath;
   const isTravelPath = path === travelPath || hash === travelPath;
   const isLandscapePath = path === landscapePath || hash === landscapePath;
+  const isPortraitsPath = path === portraitsPath || hash === portraitsPath;
+  const isEventsPath = path === eventsPath || hash === eventsPath;
   const isBlogPath = hash === "/blog";
     if (isRealEstatePath) {
       return <RealEstateService />;
@@ -194,6 +200,38 @@ export default function App() {
           imagePath="/IMG_0158.jpeg"
         />
         <FamilyService />
+      </>
+    );
+  }
+
+  if (isPortraitsPath) {
+    return (
+      <>
+        <SeoHead
+          title="Toronto Portrait Photographer | Ava in Frame"
+          description="Timeless personal and lifestyle portraits in Toronto."
+          canonicalPath="/portraits"
+          type="article"
+          keywords="Toronto portrait photographer, portrait photography GTA"
+          imagePath="/IMG_0158.jpeg"
+        />
+        <PortraitsService />
+      </>
+    );
+  }
+
+  if (isEventsPath) {
+    return (
+      <>
+        <SeoHead
+          title="Toronto Event Photographer | Ava in Frame"
+          description="Candid event and celebration photography in Toronto."
+          canonicalPath="/events"
+          type="article"
+          keywords="Toronto event photographer, event photography GTA"
+          imagePath="/IMG_0158.jpeg"
+        />
+        <EventsService />
       </>
     );
   }
