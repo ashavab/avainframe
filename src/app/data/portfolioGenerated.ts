@@ -12,8 +12,7 @@ export const generatedEntries = [
     "category": "family",
     "date": "",
     "description": "Warm and authentic lifestyle photography celebrating family connections.",
-    "imageUrl": "/galleries/family/DSC04632.jpg",
-    "galleryLink": "/galleries/family/"
+    "imageUrl": "https://backup.avainframe.com/api/assets/02092c5b-d8d5-4d14-b92e-87faac7c8cba/thumbnail?key=GAyAjlEkY1sP4vBh_lUQxC86vpAFkV1cV6E-cihzsYs6FXYkgaSsWmRWGvKxCHKjG-w&size=preview",
   },
   {
     "title": "Events",

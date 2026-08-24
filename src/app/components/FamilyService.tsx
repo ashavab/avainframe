@@ -1,6 +1,6 @@
 import { Users, Smile, MapPin, Sun } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
-import ServiceGallery from "./ServiceGallery";
+import ServiceGalleryRemote from "./ServiceGalleryRemote";
 
 export function FamilyService() {
   return (
@@ -87,7 +87,7 @@ export function FamilyService() {
             </p>
           </header>
 
-          <ServiceGallery category="family" />
+          <ServiceGalleryRemote />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">
