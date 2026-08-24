@@ -2,45 +2,34 @@ export const config = {
   runtime: "edge",
 };
 
-// Server-side proxy for the Ava in Frame *Family* service gallery.
+// Server-side proxy for the Ava in Frame *remote* service galleries (Family,
+// Portraits, Events, ...). Each gallery maps to an album on the Windows
+// desktop Immich (backup.avainframe.com, exposed via Cloudflare tunnel).
 //
-// Why a proxy: the browser cannot call the Windows Immich API directly
-// (CORS), so we resolve the shared-link album + its assets here on Vercel,
-// then hand the browser a plain list + the public share key it uses to
-// request the actual image bytes (a GET to /api/assets/<id>/thumbnail is an
-// <img> request, which is NOT subject to CORS — same pattern the client
-// gallery uses against photos.avainframe.com).
+// Why a proxy: the browser cannot call the Windows Immich API directly (CORS),
+// so we resolve the shared-link album + its assets here on Vercel and hand the
+// browser a plain list + the public share key it uses to request the actual
+// image bytes (a GET to /api/assets/<id>/thumbnail is an <img> request, which
+// is NOT subject to CORS — same pattern the client gallery uses).
 //
-// The source album lives on the Windows desktop Immich (v2.7), exposed via
-// the backup.avainframe.com Cloudflare tunnel. v2.7 lists an album's assets
-// via POST /api/search/metadata (not GET /api/albums/<id>).
+// v2.7 listing: POST /api/search/metadata returns { assets: { total, items } }.
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);
-  // ?albumId= overrides the default configured album (handy for future galleries).
-  // The default album id is public (not a secret); only the share key must be set.
   const albumId =
     url.searchParams.get("albumId") ||
     process.env.FAMILY_ALBUM_ID ||
     "154e07a8-48c1-403c-8d14-f9332ed541ac";
-  // Server-side reads the Vite-prefixed name too (Vercel exposes all project
-  // env vars to edge functions). A committed fallback keeps prod working even
-  // if the var isn't set in the dashboard — this is a *public* shared-link key.
+  // Per-album share key may be passed (?key=...) so a single proxy serves any
+  // shared album. Falls back to the configured Family key.
   const shareKey =
+    url.searchParams.get("key") ||
     process.env.FAMILY_SHARE_KEY ||
     process.env.VITE_FAMILY_SHARE_KEY ||
     "GAyAjlEkY1sP4vBh_lUQxC86vpAFkV1cV6E-cihzsYs6FXYkgaSsWmRWGvKxCHKjG-w";
   const immichUrl = process.env.FAMILY_IMMICH_URL || "https://backup.avainframe.com";
 
-  if (!shareKey) {
-    return new Response(
-      JSON.stringify({ error: "Family gallery not configured (missing share key)" }),
-      { status: 500, headers: { "content-type": "application/json" } }
-    );
-  }
-
   try {
-    // v2.7: POST /api/search/metadata returns { assets: { total, items: [...] } }
     const searchRes = await fetch(`${immichUrl}/api/search/metadata`, {
       method: "POST",
       headers: {
@@ -64,8 +53,7 @@ export default async function handler(req: Request) {
       description?: string | null;
     }>;
 
-    // Resolve album name for the heading.
-    let albumName = "Family";
+    let albumName = "Gallery";
     try {
       const albumRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
         headers: { "x-immich-share-key": shareKey },
@@ -86,7 +74,7 @@ export default async function handler(req: Request) {
           originalFileName: a.originalFileName,
           description: a.description ?? null,
         })),
-        shareKey, // browser uses this to request image bytes
+        shareKey,
       }),
       {
         status: 200,
