@@ -2,7 +2,7 @@ import { portfolioEntries as manualEntries } from "../data/portfolioData";
 import { generatedEntries } from "../data/portfolioGenerated";
 
 export function Portfolio() {
-  const entries = (generatedEntries && generatedEntries.length > 0) ? generatedEntries : manualEntries;
+  const entries = (manualEntries && manualEntries.length > 0) ? manualEntries : generatedEntries;
 
   return (
     <section id="portfolio" className="py-20 bg-transparent transition-colors duration-1000">
