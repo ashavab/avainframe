@@ -43,7 +43,7 @@ const CATEGORY_ALBUM: Record<string, keyof typeof ALBUMS> = {
 const IMMICH_URL = "https://backup.avainframe.com";
 
 async function fetchAlbumAssets(albumId: string, shareKey: string, size = 50) {
-  const res = await fetch(, {
+  const res = await fetch("https://backup.avainframe.com/api/search/metadata", {
     method: "POST",
     headers: { "x-immich-share-key": shareKey, "content-type": "application/json" },
     body: JSON.stringify({ albumIds: [albumId], size, page: 1 }),
