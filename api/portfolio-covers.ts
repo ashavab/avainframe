@@ -23,6 +23,11 @@ const ALBUMS: Record<string, { albumId: string; shareKey: string }> = {
     albumId: "154e07a8-48c1-403c-8d14-f9332ed541ac",
     shareKey: "GAyAjlEkY1sP4vBh_lUQxC86vpAFkV1cV6E-cihzsYs6FXYkgaSsWmRWGvKxCHKjG-w",
   },
+  pets: {
+    // TODO: drop in the Pets share key from Immich once the album is shared.
+    albumId: "28701ec3-020c-4c54-b752-decfd5a77a5f",
+    shareKey: "REPLACE_WITH_PETS_SHARE_KEY",
+  },
 };
 
 // Category (as used in portfolioData.ts) -> which album supplies its cover.
@@ -30,6 +35,7 @@ const CATEGORY_ALBUM: Record<string, keyof typeof ALBUMS> = {
   "Events": "events",
   "Portraits": "portraits",
   "Website Family": "websiteFamily",
+  "Pets": "pets",
 };
 
 async function fetchAlbumAssets(albumId: string, shareKey: string, size = 50) {

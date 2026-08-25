@@ -2,7 +2,8 @@
 // via the /api/portfolio-covers proxy + direct Immich asset URLs (no local
 // image files, no Vercel/Cloudflare bandwidth cost).
 //
-// Exactly 3 cards, one per Immich folder:
+// Exactly 4 cards, one per Immich folder:
+//   - Events / Portraits / Website Family (Family) / Pets
 //   - Events      -> Events album
 //   - Portraits   -> Portraits album
 //   - Website Family (shown as "Family") -> Website Family album
@@ -45,5 +46,16 @@ export const portfolioEntries: PortfolioEntry[] = [
     galleryLink: "/galleries/family/",
     albumId: "154e07a8-48c1-403c-8d14-f9332ed541ac",
     shareKey: "GAyAjlEkY1sP4vBh_lUQxC86vpAFkV1cV6E-cihzsYs6FXYkgaSsWmRWGvKxCHKjG-w",
+  },
+
+  {
+    title: "Pets",
+    category: "Pets",
+    date: "",
+    description: "Fun, character-driven portraits of pets and their people.",
+    galleryLink: "/galleries/pets/",
+    // TODO: drop in the Pets share key from Immich once the album is shared.
+    albumId: "28701ec3-020c-4c54-b752-decfd5a77a5f",
+    shareKey: "REPLACE_WITH_PETS_SHARE_KEY",
   },
 ];
