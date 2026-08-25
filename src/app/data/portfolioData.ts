@@ -54,8 +54,7 @@ export const portfolioEntries: PortfolioEntry[] = [
     date: "",
     description: "Fun, character-driven portraits of pets and their people.",
     galleryLink: "/galleries/pets/",
-    // TODO: drop in the Pets share key from Immich once the album is shared.
     albumId: "28701ec3-020c-4c54-b752-decfd5a77a5f",
-    shareKey: "REPLACE_WITH_PETS_SHARE_KEY",
+    shareKey: "j7UfMgT3lVfL_u5BXSOxvEfeFvc9A8IkMdKLGunTmum2sNdNXfO1MkNA512b8fE_Xbk",
   },
 ];

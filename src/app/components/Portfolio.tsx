@@ -38,7 +38,7 @@ export function Portfolio() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {portfolioEntries.map((entry: any) => {
             const cover = covers?.[entry.category] ?? null;
             const imgSrc = cover
