@@ -136,9 +136,6 @@ export function RemoteGallery({
               loading="lazy"
               className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
             />
-            <figcaption className="p-3 text-sm text-gray-700">
-              {img.originalFileName}
-            </figcaption>
           </button>
         ))}
       </div>

@@ -56,7 +56,7 @@ export function FamilyService() {
               "name": "What should we wear for a family photo session?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Neutral, coordinated tones and comfortable outfits photograph best. We provide guidance before your Toronto family session."
+                "text": "Neutral, coordinated tones and comfortable outfits photograph best."
               }
             },
             {
@@ -143,14 +143,6 @@ export function FamilyService() {
                   <span className="text-[#819184] font-bold mt-1">•</span>
                   <span>Individual or sibling portraits</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#819184] font-bold mt-1">•</span>
-                  <span>150-250 edited photos included</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-[#819184] font-bold mt-1">•</span>
-
-                </li>
               </ul>
 
               <button
@@ -221,7 +213,7 @@ export function FamilyService() {
             <div className="space-y-4 text-gray-700">
               <div>
                 <h3 className="font-medium">What should we wear for family photos?</h3>
-                <p>Coordinated neutrals and simple textures work best. We'll help you choose outfits before your session.</p>
+                <p>Coordinated neutrals and simple textures work best.</p>
               </div>
               <div>
                 <h3 className="font-medium">Can extended family join the session?</h3>
@@ -229,7 +221,7 @@ export function FamilyService() {
               </div>
               <div>
                 <h3 className="font-medium">How many edited photos do we receive?</h3>
-                <p>Most Toronto family sessions receive 150-250 edited images delivered in a private online gallery.</p>
+                <p>Most Toronto family sessions receive a full gallery of edited images delivered in a private online gallery.</p>
               </div>
             </div>
           </section>
