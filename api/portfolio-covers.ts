@@ -62,23 +62,17 @@ export default async function handler(req: Request) {
       byAlbum.get(album)!.push(cat);
     }
 
-    const covers: Record<string, any> = {};
-    const albumErrors: Record<string, string> = {};
+    const covers: Record<string, { id: string; key: string } | null> = {};
     for (const [albumKey, cats] of byAlbum.entries()) {
       const { albumId, shareKey } = ALBUMS[albumKey];
-      try {
-        const assets = await fetchAlbumAssets(albumId, shareKey);
-        cats.forEach((cat, i) => {
-          const asset = assets[i % Math.max(assets.length, 1)] || assets[0];
-          covers[cat] = asset ? { id: asset.id, key: shareKey } : null;
-        });
-      } catch (e: any) {
-        albumErrors[albumKey] = String(e?.message || e);
-        cats.forEach((cat) => { covers[cat] = { error: String(e?.message || e) }; });
-      }
+      const assets = await fetchAlbumAssets(albumId, shareKey);
+      cats.forEach((cat, i) => {
+        const asset = assets[i % Math.max(assets.length, 1)] || assets[0];
+        covers[cat] = asset ? { id: asset.id, key: shareKey } : null;
+      });
     }
 
-    return new Response(JSON.stringify({ covers, albumErrors }), {
+    return new Response(JSON.stringify({ covers }), {
       status: 200,
       headers: {
         "content-type": "application/json",
