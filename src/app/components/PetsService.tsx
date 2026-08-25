@@ -1,7 +1,10 @@
 import { PawPrint, Smile, MapPin, Camera } from "lucide-react";
 import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
-import ServiceGallery from "./ServiceGallery";
+import RemoteGallery from "./ServiceGalleryRemote";
+
+const PETS_ALBUM_ID = "28701ec3-020c-4c54-b752-decfd5a77a5f";
+const PETS_SHARE_KEY = "j7UfMgT3lVfL_u5BXSOxvEfeFvc9A8IkMdKLGunTmum2sNdNXfO1MkNA512b8fE_Xbk";
 
 export default function PetsService() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -81,7 +84,7 @@ export default function PetsService() {
             </p>
           </header>
 
-          <ServiceGallery category="pets" />
+          <RemoteGallery albumId={PETS_ALBUM_ID} albumName="Pets" shareKey={PETS_SHARE_KEY} />
 
           <div className="grid md:grid-cols-2 gap-8 my-8">
             <div className="space-y-4">

@@ -38,7 +38,7 @@ export function Portfolio() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {portfolioEntries.map((entry: any) => {
             const cover = covers?.[entry.category] ?? null;
             const imgSrc = cover
@@ -46,14 +46,14 @@ export function Portfolio() {
               : "";
             return (
               <article key={entry.title} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">
-                {cover ? (
-                  <img
-                    src={imgSrc}
-                    alt={entry.title}
-                    loading="lazy"
-                    className="h-72 w-full object-cover transition duration-500 hover:scale-105"
-                  />
-                ) : (
+              {cover ? (
+              <img
+                src={imgSrc}
+                alt={entry.title}
+                loading="lazy"
+                className="h-56 w-full object-cover transition duration-500 hover:scale-105 md:h-72"
+              />
+              ) : (
                   <div className="flex h-72 w-full items-center justify-center bg-slate-100 text-sm text-slate-400 dark:bg-slate-800">
                     {covers ? "No photo in album yet" : "Loading…"}
                   </div>

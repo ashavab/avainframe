@@ -80,7 +80,7 @@ export default async function handler(req: Request) {
         status: 200,
         headers: {
           "content-type": "application/json",
-          "Cache-Control": "public, max-age=60, s-maxage=600",
+          "Cache-Control": "public, max-age=60, s-maxage=120",
         },
       }
     );

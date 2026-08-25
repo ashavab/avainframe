@@ -28,15 +28,11 @@ if (!SHARE_KEY) {
 
 // Categories list
 const CATEGORIES = [
-  'portraits',
-  'family',
   'newborn',
   'boudoir',
   'headshots',
   'weddings',
-  'events',
-  'real-estate',
-  'pets'
+  'real-estate'
 ];
 
 // Hardcoded mapping for existing 60 photos

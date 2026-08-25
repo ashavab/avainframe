@@ -42,15 +42,11 @@ function generateEmptyGalleryHTML(category) {
 }
 
 const CATEGORIES = [
-  'portraits',
-  'family',
   'newborn',
   'boudoir',
   'headshots',
   'weddings',
-  'events',
-  'real-estate',
-  'pets'
+  'real-estate'
 ];
 
 const CATEGORY_METADATA = {
