@@ -80,7 +80,7 @@ export default async function handler(req: Request) {
       },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err?.message || "Internal Server Error" }), {
+    return new Response(JSON.stringify({ error: String(err?.message || err), stack: String(err?.stack || "").slice(0,400) }), {
       status: 500,
       headers: { "content-type": "application/json" },
     });
