@@ -66,9 +66,15 @@ export default async function handler(req: Request) {
       );
     }
 
-    // 3. Fetch album assets using the resolved key
-    const albumRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
-      headers: { "x-immich-share-key": resolvedKey },
+    // 3. Fetch album assets via search/metadata (Immich v3 does NOT embed
+    //    assets in /api/albums/{id}, so we use the search endpoint instead).
+    const albumRes = await fetch(`${immichUrl}/api/search/metadata`, {
+      method: "POST",
+      headers: {
+        "x-immich-share-key": resolvedKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ albumIds: [albumId], size: 500, page: 1 }),
     });
 
     if (!albumRes.ok) {
@@ -82,8 +88,7 @@ export default async function handler(req: Request) {
     }
 
     const albumData = await albumRes.json();
-    const allAssets = albumData.assets || [];
-    const limitedAssets = allAssets.slice(0, 500);
+    const allAssets = (albumData.assets?.items || []).slice(0, 500);
 
     return new Response(
       JSON.stringify({

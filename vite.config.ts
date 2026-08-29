@@ -490,9 +490,15 @@ export default defineConfig({
                 return;
               }
 
-              // Fetch album assets using the resolved key
-              const albumRes = await fetch(`${immichUrl}/api/albums/${albumId}`, {
-                headers: { "x-immich-share-key": resolvedKey },
+              // Fetch album assets via search/metadata (Immich v3 does NOT
+              // embed assets in /api/albums/{id}).
+              const albumRes = await fetch(`${immichUrl}/api/search/metadata`, {
+                method: "POST",
+                headers: {
+                  "x-immich-share-key": resolvedKey,
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify({ albumIds: [albumId], size: 500, page: 1 }),
               });
 
               if (!albumRes.ok) {
@@ -503,8 +509,7 @@ export default defineConfig({
               }
 
               const albumData = await albumRes.json();
-              const allAssets = albumData.assets || [];
-              const limitedAssets = allAssets.slice(0, 500);
+              const allAssets = (albumData.assets?.items || []).slice(0, 500);
 
               res.statusCode = 200;
               res.setHeader('Content-Type', 'application/json');

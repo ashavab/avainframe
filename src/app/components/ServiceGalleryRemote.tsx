@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 // Remote (live) service gallery backed by an Immich shared-link album on the
-// Windows desktop (backup.avainframe.com). The browser fetches the asset list
-// from our Vercel proxy (/api/family-gallery) — a direct call to Immich is
-// blocked by CORS — then requests each image's bytes directly from Immich as
-// an <img> (not CORS-restricted, same as the client gallery).
-//
+// production Immich (photos.avainframe.com, hosted on photoprison). The
+// browser fetches the asset list from our Vercel proxy (/api/family-gallery) —
+// a direct call to Immich is blocked by CORS — then requests each image's
+// bytes directly from Immich as an <img> (not CORS-restricted, same as the
+// client gallery).
+
+const IMMICH_URL = "https://photos.avainframe.com";
+
 // Each thumbnail is a real <button> (always clickable, keyboard accessible)
 // and there is an explicit "View Gallery" button that opens the lightbox.
-
-const IMMICH_URL = "https://backup.avainframe.com";
 
 type RemoteAsset = {
   id: string;

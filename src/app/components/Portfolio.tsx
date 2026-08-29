@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { portfolioEntries } from "../data/portfolioData";
 
-const IMMICH_URL = "https://backup.avainframe.com";
+const IMMICH_URL = "https://photos.avainframe.com";
 
 // Cover image is fetched live from Immich (served via the Vercel proxy
 // /api/portfolio-covers to avoid CORS). The browser then loads the bytes

@@ -1,31 +1,31 @@
 export const config = { runtime: "edge" };
 
 // Returns one cover image per portfolio category, pulled LIVE from Immich
-// (backup.avainframe.com, Windows desktop via Cloudflare tunnel). The browser
-// cannot call Immich directly (CORS), so we resolve the album assets here on
-// Vercel and hand back a tiny map: { category -> { id, key } }. The browser
-// then loads the bytes directly from Immich as an <img> (not CORS-restricted,
-// same pattern as /api/family-gallery and the client gallery).
+// (photos.avainframe.com, hosted on photoprison — no Cloudflare/Win dep). The
+// browser cannot call Immich directly (CORS), so we resolve the album assets
+// here on Vercel and hand back a tiny map: { category -> { id, key } }. The
+// browser then loads the bytes directly from Immich as an <img> (not
+// CORS-restricted, same pattern as /api/family-gallery and the client gallery).
 //
-// There are exactly 3 portfolio cards, one per Immich folder. The categories
-// below must match the  field in src/app/data/portfolioData.ts.
+// There are exactly 4 portfolio cards, one per Immich folder. The categories
+// below must match the field in src/app/data/portfolioData.ts.
 
 const ALBUMS: Record<string, { albumId: string; shareKey: string }> = {
   events: {
-    albumId: "947c8145-8f27-416f-9286-5abdf4aa8df3",
-    shareKey: "Jqq3wKmF-XhOq38DGKwgblcqX7_9USMnbBO4g-750ZrHUqMO1U8GgKqR4b7NuzygLkk",
+    albumId: "68229603-ffc3-42f1-812e-0039fdab17da",
+    shareKey: "FYTRVVpjaSz6jvvkRsTQlVmMZA1xPwciLfgaXdmzrhOeQJb3au8z2CEo99dXpJUcJCU",
   },
   portraits: {
-    albumId: "739b8c11-2a73-477a-8029-97b83e1a9ed5",
-    shareKey: "qYe334YQwzxNCp_nyS3_bDXMTsUFq8qDf7MvjLQxbqMqV5NYKjlc0uu6M1cWIKA5_50",
+    albumId: "cf767bd8-cfa5-4be4-abf6-6752ec970b46",
+    shareKey: "j0Re9rNpQfVkTZ1Q9jjBEqr-SvrzK30JutcgHkbw7iKYqc_SocMWs0VNOlO5xZE5CD0",
   },
   websiteFamily: {
-    albumId: "154e07a8-48c1-403c-8d14-f9332ed541ac",
-    shareKey: "GAyAjlEkY1sP4vBh_lUQxC86vpAFkV1cV6E-cihzsYs6FXYkgaSsWmRWGvKxCHKjG-w",
+    albumId: "9cbe82d0-02e3-400f-9cce-085fe4476488",
+    shareKey: "xsGQ9607vat8nBVK83visn6PGt76xCKkvWMB61vU24Y1PuakQiWJgY2bzB0o6yRN-kc",
   },
   pets: {
-    albumId: "28701ec3-020c-4c54-b752-decfd5a77a5f",
-    shareKey: "j7UfMgT3lVfL_u5BXSOxvEfeFvc9A8IkMdKLGunTmum2sNdNXfO1MkNA512b8fE_Xbk",
+    albumId: "f161ff64-5f4a-4290-88eb-7c46835a3901",
+    shareKey: "vJV7GZIk7Xv3zI13HxF029WEBU5dx-PljKq88tFLkYxn3I4HTIC4s5iiobFYeLMWs5s",
   },
 };
 
@@ -38,7 +38,7 @@ const CATEGORY_ALBUM: Record<string, keyof typeof ALBUMS> = {
 };
 
 async function fetchAlbumAssets(albumId: string, shareKey: string, size = 50) {
-  const res = await fetch("https://backup.avainframe.com/api/search/metadata", {
+  const res = await fetch("https://photos.avainframe.com/api/search/metadata", {
     method: "POST",
     headers: { "x-immich-share-key": shareKey, "content-type": "application/json" },
     body: JSON.stringify({ albumIds: [albumId], size, page: 1 }),
