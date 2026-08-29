@@ -1295,7 +1295,7 @@ export function ClientGalleryAccess() {
                   {assets.map((asset, index) => {
                     // Watermark unless the entire album is unlocked or the description contains a dot '.'
                     const shouldWatermark = !isAlbumUnlocked && (!asset.description || !asset.description.includes("."));
-                    const thumbUrl = `${IMMICH_URL}/api/assets/${asset.id}/thumbnail?key=${shareKey}&size=thumbnail`;
+                    const thumbUrl = `${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${asset.id}/thumbnail`)}&key=${encodeURIComponent(shareKey)}&size=thumbnail`;
 
                     return (
                       <div
@@ -1528,7 +1528,7 @@ export function ClientGalleryAccess() {
           {/* Large Image Container */}
           <div className="w-full max-w-5xl max-h-[80vh] px-4 flex items-center justify-center relative">
             <WatermarkedImage
-              src={`${IMMICH_URL}/api/assets/${currentLightboxAsset.id}/thumbnail?key=${shareKey}&size=${isFullscreen ? "preview" : "thumbnail"}`}
+              src={`${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${currentLightboxAsset.id}/thumbnail`)}&key=${encodeURIComponent(shareKey)}&size=${isFullscreen ? "preview" : "thumbnail"}`}
               alt={currentLightboxAsset.originalFileName}
               shouldWatermark={!isCurrentAssetClean}
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"

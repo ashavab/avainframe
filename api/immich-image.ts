@@ -3,26 +3,25 @@ export const config = {
 };
 
 // Server-side image proxy: the browser fetches gallery bytes from avainframe.com
-// (never photos.avainframe.com directly). Path mirrors Immich's asset endpoints:
-//   /api/immich-image/assets/<id>/thumbnail?key=<shareKey>&size=<thumbnail|preview>
-//   /api/immich-image/assets/<id}/original?key=<shareKey>
+// (never photos.avainframe.com directly). The Immich asset path is passed as a
+// query param (?path=/assets/<id>/thumbnail) to keep the route flat — Vercel's
+// SPA rewrite would otherwise swallow nested /api/immich-image/... paths.
+//   /api/immich-image?path=/assets/<id>/thumbnail&key=<shareKey>&size=<thumbnail|preview>
 export default async function handler(req: Request) {
   const url = new URL(req.url);
   const key = url.searchParams.get("key");
   const size = url.searchParams.get("size") || "thumbnail";
-  const path = url.pathname.replace(/^\/api\/immich-image/, "");
+  const assetPath = url.searchParams.get("path");
 
-  if (!key) {
-    return new Response(JSON.stringify({ error: "Missing key parameter" }), {
+  if (!key || !assetPath) {
+    return new Response(JSON.stringify({ error: "Missing key or path parameter" }), {
       status: 400,
       headers: { "content-type": "application/json" },
     });
   }
 
   const immichUrl = process.env.VITE_IMMICH_URL || "https://photos.avainframe.com";
-  // path is like /assets/<id>/thumbnail after stripping /api/immich-image; Immich
-  // expects /api/assets/..., so prepend /api.
-  const target = `${immichUrl}/api${path}?key=${encodeURIComponent(key)}&size=${encodeURIComponent(size)}`;
+  const target = `${immichUrl}${assetPath}?key=${encodeURIComponent(key)}&size=${encodeURIComponent(size)}`;
 
   try {
     const upstream = await fetch(target, { headers: { "x-immich-share-key": key } });

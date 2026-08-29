@@ -3,11 +3,10 @@ import { portfolioEntries } from "../data/portfolioData";
 
 const IMMICH_URL = "/api/immich-image";
 
-// Cover image is fetched live from Immich (served via the Vercel proxy
-// /api/portfolio-covers for the asset list, and /api/immich-image for bytes —
-// the browser never talks to Immich directly).
-function immichThumb(id: string, key: string, size: "thumbnail" | "preview") {
-  return `${IMMICH_URL}/api/assets/${id}/thumbnail?key=${key}&size=${size}`;
+// Build a proxied image URL: browser only ever hits avainframe.com, which
+// forwards to Immich server-side (?path carries the Immich asset route).
+function immichImageUrl(id: string, key: string, size: "thumbnail" | "preview") {
+  return `${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${id}/thumbnail`)}&key=${encodeURIComponent(key)}&size=${encodeURIComponent(size)}`;
 }
 
 type Covers = Record<string, { id: string; key: string } | null>;
@@ -41,7 +40,7 @@ export function Portfolio() {
           {portfolioEntries.map((entry: any) => {
             const cover = covers?.[entry.category] ?? null;
             const imgSrc = cover
-              ? immichThumb(cover.id, cover.key, "preview")
+              ? immichImageUrl(cover.id, cover.key, "preview")
               : "";
             return (
               <article key={entry.title} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900">

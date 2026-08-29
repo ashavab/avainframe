@@ -18,8 +18,10 @@ type RemoteAsset = {
   description: string | null;
 };
 
+// Build a proxied image URL: browser only hits avainframe.com, which forwards
+// to Immich server-side (?path carries the Immich asset route).
 function thumbUrl(id: string, key: string, size: "thumbnail" | "preview") {
-  return `${IMMICH_URL}/api/assets/${id}/thumbnail?key=${key}&size=${size}`;
+  return `${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${id}/thumbnail`)}&key=${encodeURIComponent(key)}&size=${encodeURIComponent(size)}`;
 }
 
 export function RemoteGallery({
