@@ -978,6 +978,53 @@ export function ClientGalleryAccess() {
     }
   };
 
+  // Real-time refresh: poll the gallery proxy for album changes (added/removed/
+  // reordered photos, album name/description) while the gallery is open, so
+  // edits made in Immich show up without a manual reload + re-entering the code.
+  const REFRESH_INTERVAL_MS = 5000;
+  const tokenRef = useRef(shareKey);
+  tokenRef.current = shareKey;
+
+  useEffect(() => {
+    if (!shareKey) return;
+    let cancelled = false;
+
+    const fetchLatest = async () => {
+      // Skip background refreshes when the tab is hidden to save requests.
+      if (document.visibilityState === "hidden") return;
+      try {
+        const proxyRes = await fetch(`/api/gallery?token=${tokenRef.current}`);
+        if (cancelled || !proxyRes.ok) return;
+        const albumData: any = await proxyRes.json();
+
+        const fetchedAssets = albumData.assets || [];
+        setAssets(fetchedAssets);
+        setAlbumName((prev) => albumData.albumName || prev);
+        setAlbumDescription((prev) => albumData.albumDescription || albumData.description || prev);
+
+        // Reflect Immich "Selected" marks on newly-added assets, but never drop a
+        // client's in-progress (unsaved) selection for an asset still present.
+        setSelectedIds((prev) => {
+          const next = new Set(prev);
+          const ids = new Set(fetchedAssets.map((a: any) => a.id));
+          fetchedAssets.forEach((a: any) => {
+            if (a.description === "Selected") next.add(a.id);
+          });
+          for (const id of Array.from(next)) if (!ids.has(id)) next.delete(id);
+          return next;
+        });
+      } catch {
+        /* transient network error — keep current view */
+      }
+    };
+
+    const id = window.setInterval(fetchLatest, REFRESH_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [shareKey]);
+
   // Keyboard navigation for lightbox
   useEffect(() => {
     if (lightboxIndex === null) return;
