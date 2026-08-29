@@ -51,7 +51,7 @@ export function Navigation() {
   };
 
   const goToClients = () => {
-    window.location.href = "https://photos.avainframe.com";
+    window.location.href = "https://avainframe.com/#/clients";
     setIsOpen(false);
   };
 

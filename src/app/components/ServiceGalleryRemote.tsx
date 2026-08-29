@@ -4,10 +4,10 @@ import React, { useEffect, useState, useCallback } from "react";
 // production Immich (photos.avainframe.com, hosted on photoprison). The
 // browser fetches the asset list from our Vercel proxy (/api/family-gallery) —
 // a direct call to Immich is blocked by CORS — then requests each image's
-// bytes directly from Immich as an <img> (not CORS-restricted, same as the
-// client gallery).
+// bytes via our /api/immich-image proxy (same pattern as the client gallery),
+// so the browser never talks to Immich directly.
 
-const IMMICH_URL = "https://photos.avainframe.com";
+const IMMICH_URL = "/api/immich-image";
 
 // Each thumbnail is a real <button> (always clickable, keyboard accessible)
 // and there is an explicit "View Gallery" button that opens the lightbox.

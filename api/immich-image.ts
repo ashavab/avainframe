@@ -20,7 +20,9 @@ export default async function handler(req: Request) {
   }
 
   const immichUrl = process.env.VITE_IMMICH_URL || "https://photos.avainframe.com";
-  const target = `${immichUrl}${path}?key=${encodeURIComponent(key)}&size=${encodeURIComponent(size)}`;
+  // path is like /assets/<id>/thumbnail after stripping /api/immich-image; Immich
+  // expects /api/assets/..., so prepend /api.
+  const target = `${immichUrl}/api${path}?key=${encodeURIComponent(key)}&size=${encodeURIComponent(size)}`;
 
   try {
     const upstream = await fetch(target, { headers: { "x-immich-share-key": key } });

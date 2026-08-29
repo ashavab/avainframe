@@ -101,7 +101,7 @@ export function PortraitsService() {
                   <li className="flex items-start gap-3"><span className="text-[#819184] font-bold mt-1">•</span><span>150-250 edited photos included</span></li>
                 </ul>
                 <button
-                  onClick={() => (window.location.href = "https://photos.avainframe.com")}
+                  onClick={() => (window.location.href = "https://avainframe.com/#/clients")}
                   className="w-full rounded-xl bg-[#819184] text-white py-3 font-medium hover:opacity-90"
                 >
                   Book Your Session

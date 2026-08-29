@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { portfolioEntries } from "../data/portfolioData";
 
-const IMMICH_URL = "https://photos.avainframe.com";
+const IMMICH_URL = "/api/immich-image";
 
 // Cover image is fetched live from Immich (served via the Vercel proxy
-// /api/portfolio-covers to avoid CORS). The browser then loads the bytes
-// directly from Immich as an <img> — same pattern as the client/family
-// galleries. No local image files are used.
+// /api/portfolio-covers for the asset list, and /api/immich-image for bytes —
+// the browser never talks to Immich directly).
 function immichThumb(id: string, key: string, size: "thumbnail" | "preview") {
   return `${IMMICH_URL}/api/assets/${id}/thumbnail?key=${key}&size=${size}`;
 }
