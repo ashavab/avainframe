@@ -19,6 +19,7 @@ export default async function handler(req: Request) {
     let resolvedKey = token;
     let albumId = "";
     let albumName = "Client Gallery";
+    let albumDesc = "";
 
     // 1. Try to resolve as a slug first (e.g. "beth")
     try {
@@ -29,6 +30,7 @@ export default async function handler(req: Request) {
           resolvedKey = slugData.key;
           albumId = slugData.album.id;
           albumName = slugData.album.albumName || albumName;
+          albumDesc = slugData.album.description || albumDesc;
         }
       }
     } catch (slugErr) {
@@ -54,6 +56,7 @@ export default async function handler(req: Request) {
       const sharedLink = await meRes.json();
       albumId = sharedLink.album?.id;
       albumName = sharedLink.album?.albumName || albumName;
+      albumDesc = sharedLink.album?.description || albumDesc;
     }
 
     if (!albumId) {
@@ -90,10 +93,36 @@ export default async function handler(req: Request) {
     const albumData = await albumRes.json();
     const allAssets = (albumData.assets?.items || []).slice(0, 500);
 
+    // /api/search/metadata does NOT return per-asset `description`, which the
+    // frontend uses for per-photo watermark unlock (a "." in the description).
+    // Pull descriptions from the album's asset list instead and merge by id.
+    try {
+      const assetsRes = await fetch(
+        `${immichUrl}/api/albums/${albumId}/assets`,
+        { headers: { "x-immich-share-key": resolvedKey } }
+      );
+      if (assetsRes.ok) {
+        const albumAssets: any[] = await assetsRes.json();
+        const descById = new Map<string, string>();
+        for (const a of albumAssets) {
+          if (a?.id && typeof a.description === "string") {
+            descById.set(a.id, a.description);
+          }
+        }
+        for (const asset of allAssets) {
+          if (asset?.id && descById.has(asset.id)) {
+            asset.description = descById.get(asset.id)!;
+          }
+        }
+      }
+    } catch (descErr) {
+      console.warn("Failed to fetch per-asset descriptions:", descErr);
+    }
+
     return new Response(
       JSON.stringify({
         albumName: albumData.albumName || albumName,
-        albumDescription: albumData.description || "",
+        albumDescription: albumData.description || albumDesc || "",
         assets: allAssets,
         shareKey: resolvedKey, // return resolved key so the frontend can request images
       }),
