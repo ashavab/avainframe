@@ -964,6 +964,33 @@ export function ClientGalleryAccess() {
   };
   const shareUrl = useMemo(() => toShareUrl(password), [password]);
 
+  // Support deep-linking a gallery via ?token=<name|key> in the URL (e.g. from
+  // the "Open full web gallery" link) so the client lands directly in the
+  // branded gallery instead of retyping the code. The SPA is hash-routed, so
+  // the token may live in the hash query (#/clients?token=...) or the real one.
+  useEffect(() => {
+    let urlToken: string | null = null;
+    if (typeof window !== "undefined") {
+      urlToken = new URLSearchParams(window.location.search).get("token");
+      if (!urlToken) {
+        const hash = window.location.hash || "";
+        const qIndex = hash.indexOf("?");
+        if (qIndex >= 0) {
+          urlToken = new URLSearchParams(hash.slice(qIndex + 1)).get("token");
+        }
+      }
+    }
+    if (urlToken && !loading && assets.length === 0 && !error) {
+      setPassword(urlToken);
+      // Submit on next tick so the controlled input reflects the value.
+      setTimeout(() => {
+        const form = document.querySelector<HTMLFormElement>("form");
+        form?.requestSubmit();
+      }, 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
@@ -1207,7 +1234,7 @@ export function ClientGalleryAccess() {
               <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
                 <div>
                   <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
-                  <a href={'https://photos.avainframe.com/album/'+encodeURIComponent(albumName)} target="_blank" rel="noreferrer" className="ml-3 inline-flex items-center gap-1.5 rounded-full bg-[#819184] px-4 py-1.5 text-xs font-semibold text-white hover:bg-[#556b53] transition">
+                  <a href={'https://avainframe.com/#/clients?token='+encodeURIComponent(albumName)} target="_blank" rel="noreferrer" className="ml-3 inline-flex items-center gap-1.5 rounded-full bg-[#819184] px-4 py-1.5 text-xs font-semibold text text-white hover:bg-[#556b53] transition">
                     <ExternalLink className="h-3.5 w-3.5" /> Open full web gallery
                   </a>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
