@@ -3,8 +3,8 @@ import { useState } from "react";
 import ConsultationModal from "./ConsultationModal";
 import RemoteGallery from "./ServiceGalleryRemote";
 
-const PETS_ALBUM_ID = "28701ec3-020c-4c54-b752-decfd5a77a5f";
-const PETS_SHARE_KEY = "j7UfMgT3lVfL_u5BXSOxvEfeFvc9A8IkMdKLGunTmum2sNdNXfO1MkNA512b8fE_Xbk";
+const PETS_ALBUM_ID = "f161ff64-5f4a-4290-88eb-7c46835a3901";
+const PETS_SHARE_KEY = "e9fa53e0d31cd5ebeb2dd5877262a50c65182885e2d0d046406fbf590603ef5cf1241987c78138b92898174a2ce337be82b1";
 
 export default function PetsService() {
   const [modalOpen, setModalOpen] = useState(false);

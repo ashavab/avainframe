@@ -3,8 +3,8 @@ import { Users, Smile, MapPin, Sun } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
 import RemoteGallery from "./ServiceGalleryRemote";
 
-const ALBUM_ID = "739b8c11-2a73-477a-8029-97b83e1a9ed5";
-const SHARE_KEY = "qYe334YQwzxNCp_nyS3_bDXMTsUFq8qDf7MvjLQxbqMqV5NYKjlc0uu6M1cWIKA5_50";
+const ALBUM_ID = "cf767bd8-cfa5-4be4-abf6-6752ec970b46";
+const SHARE_KEY = "58c7c293c647eb893580cf7f83dda15d4b06b8d80407177ded71bda2cebe394b46d92eb12976f09965852a026f026b135e22";
 
 export function PortraitsService() {
   return (

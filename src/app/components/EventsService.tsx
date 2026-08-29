@@ -3,8 +3,8 @@ import { CalendarDays, Music, Camera, Heart } from "lucide-react";
 import { serviceReviews } from "./serviceReviews";
 import RemoteGallery from "./ServiceGalleryRemote";
 
-const ALBUM_ID = "947c8145-8f27-416f-9286-5abdf4aa8df3";
-const SHARE_KEY = "Jqq3wKmF-XhOq38DGKwgblcqX7_9USMnbBO4g-750ZrHUqMO1U8GgKqR4b7NuzygLkk";
+const ALBUM_ID = "68229603-ffc3-42f1-812e-0039fdab17da";
+const SHARE_KEY = "6ad71d4963238ab041913e111149acd5805b78476edd43082cd14bafe8208ef138743629aad95e508e903afd28867b192561";
 
 export function EventsService() {
   return (
