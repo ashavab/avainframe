@@ -69,6 +69,26 @@ export default async function handler(req: Request) {
       );
     }
 
+    // 2b. Fetch the album itself to get its authoritative description (used for
+    //     the "." watermark-unlock). Search/metadata responses don't include it.
+    try {
+      const albumRes = await fetch(
+        `${immichUrl}/api/albums/${albumId}`,
+        { headers: { "x-immich-share-key": resolvedKey } }
+      );
+      if (albumRes.ok) {
+        const albumObj: any = await albumRes.json();
+        if (typeof albumObj?.description === "string") {
+          albumDesc = albumObj.description;
+        }
+        if (typeof albumObj?.albumName === "string" && albumObj.albumName) {
+          albumName = albumObj.albumName;
+        }
+      }
+    } catch (albumErr) {
+      console.warn("Failed to fetch album metadata:", albumErr);
+    }
+
     // 3. Fetch album assets via search/metadata (Immich v3 does NOT embed
     //    assets in /api/albums/{id}, so we use the search endpoint instead).
     const albumRes = await fetch(`${immichUrl}/api/search/metadata`, {
