@@ -55,7 +55,10 @@ function normalizePath(path: string) {
 function getRouteCandidates() {
   const path = normalizePath(window.location.pathname);
   const rawHash = window.location.hash.replace(/^#/, "");
-  const hashPath = rawHash ? (rawHash.startsWith("/") ? rawHash : `/${rawHash}`) : "/";
+  // Split off any query string so #/clients?token=jasmine routes to /clients
+  // (the token stays readable via window.location.hash's query portion).
+  const hashNoQuery = rawHash.split("?")[0];
+  const hashPath = hashNoQuery ? (hashNoQuery.startsWith("/") ? hashNoQuery : `/${hashNoQuery}`) : "/";
   const hash = normalizePath(hashPath);
   return { path, hash };
 }
