@@ -153,7 +153,7 @@ export function WeddingsService() {
               </ul>
 
               <button
-                onClick={() => (window.location.href = "https://albums.avainframe.com")}
+                onClick={() => (window.location.href = "https://photos.avainframe.com")}
                 className="mt-8 w-full rounded-xl bg-[#819184] text-white py-3 font-medium hover:opacity-90"
               >
                 Book a Consultation
