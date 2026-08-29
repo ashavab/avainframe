@@ -953,7 +953,6 @@ export function ClientGalleryAccess() {
       setAlbumDescription(albumData.albumDescription || albumData.description || "");
       setAssets(fetchedAssets);
       setShareKey(albumData.shareKey || token);
-      setFallbackToIframe(false);
 
       // Pre-populate selections for already submitted assets
       const initiallySelected = new Set(
