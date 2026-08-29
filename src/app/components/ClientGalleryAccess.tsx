@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
-const IMMICH_URL = "https://photos.avainframe.com";
+const IMMICH_URL = "/api/immich-image";
 
 interface ImmichAsset {
   id: string;
@@ -29,47 +29,6 @@ interface ImmichAsset {
   exifInfo?: {
     description?: string;
   };
-}
-
-function toShareUrl(input: string) {
-  const raw = input.trim();
-  if (!raw || !IMMICH_URL) {
-    return "";
-  }
-
-  try {
-    const baseUrl = new URL(IMMICH_URL);
-    const cleaned = raw.replace(/^\/+/, "");
-
-    // Accept full links and extract only the share token segment.
-    if (cleaned.startsWith("http://") || cleaned.startsWith("https://")) {
-      const candidate = new URL(cleaned);
-      if (candidate.origin !== baseUrl.origin) {
-        return "";
-      }
-
-      const parts = candidate.pathname.split("/").filter(Boolean);
-      const token = parts[1] || "";
-      if (!token || (parts[0] !== "s" && parts[0] !== "share")) {
-        return "";
-      }
-      return `${baseUrl.origin}/s/${token}`;
-    }
-
-    // Accept token-only input and always build the /s/<token> URL.
-    const pathParts = cleaned.split("/").filter(Boolean);
-    const token = pathParts.length >= 2 && (pathParts[0] === "s" || pathParts[0] === "share")
-      ? pathParts[1]
-      : pathParts[pathParts.length - 1];
-
-    if (!token) {
-      return "";
-    }
-
-    return `${baseUrl.origin}/s/${token}`;
-  } catch {
-    return "";
-  }
 }
 
 function extractShareKey(input: string): string {
@@ -105,8 +64,6 @@ export function ClientGalleryAccess() {
   const [albumDescription, setAlbumDescription] = useState("");
   const [shareKey, setShareKey] = useState("");
   const [albumId, setAlbumId] = useState("");
-  const [fallbackToIframe, setFallbackToIframe] = useState(false);
-  const [activeUrl, setActiveUrl] = useState("");
 
   // Lightbox State
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -216,37 +173,17 @@ export function ClientGalleryAccess() {
           uploadFormData.append("fileModifiedAt", new Date().toISOString());
           uploadFormData.append("isFavorite", "false");
 
-          let uploadedSuccessfully = false;
-
-          // 1. Attempt direct browser upload first
-          try {
-            const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
-              method: "POST",
-              body: uploadFormData,
-            });
-            if (directUploadRes.ok) {
-              console.log("Direct browser upload to central GDPR folder succeeded.");
-              uploadedSuccessfully = true;
-            } else {
-              console.warn(`Direct browser upload returned status ${directUploadRes.status}.`);
-            }
-          } catch (directErr) {
-            console.warn("Direct browser upload threw exception (likely CORS or network offline):", directErr);
-          }
-
-          // 2. Fallback to server-side proxy upload if direct upload failed
-          if (!uploadedSuccessfully) {
-            console.log("Attempting server-side proxy upload...");
-            const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
-              method: "POST",
-              body: uploadFormData,
-            });
-            if (proxyUploadRes.ok) {
-              console.log("Server-side proxy upload to central GDPR folder succeeded.");
-            } else {
-              const errText = await proxyUploadRes.text();
-              throw new Error(`Server-side proxy upload failed: ${errText}`);
-            }
+          // Upload consent form image via server-side proxy (stays on avainframe.com,
+          // never touches photos.avainframe.com directly from the browser).
+          const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
+            method: "POST",
+            body: uploadFormData,
+          });
+          if (proxyUploadRes.ok) {
+            console.log("Server-side proxy upload to central GDPR folder succeeded.");
+          } else {
+            const errText = await proxyUploadRes.text();
+            throw new Error(`Server-side proxy upload failed: ${errText}`);
           }
           console.log("Consent form photo asset uploaded successfully to Immich central GDPR album.");
         } catch (uploadErr) {
@@ -310,37 +247,16 @@ export function ClientGalleryAccess() {
         uploadFormData.append("fileModifiedAt", new Date().toISOString());
         uploadFormData.append("isFavorite", "false");
 
-        let uploadedSuccessfully = false;
-
-        // 1. Attempt direct browser upload first
-        try {
-          const directUploadRes = await fetch(`${IMMICH_URL}/api/assets?key=GDPR`, {
-            method: "POST",
-            body: uploadFormData,
-          });
-          if (directUploadRes.ok) {
-            console.log("Direct browser upload to central GDPR folder succeeded.");
-            uploadedSuccessfully = true;
-          } else {
-            console.warn(`Direct browser upload returned status ${directUploadRes.status}.`);
-          }
-        } catch (directErr) {
-          console.warn("Direct browser upload threw exception (likely CORS or network offline):", directErr);
-        }
-
-        // 2. Fallback to server-side proxy upload if direct upload failed
-        if (!uploadedSuccessfully) {
-          console.log("Attempting server-side proxy upload...");
-          const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
-            method: "POST",
-            body: uploadFormData,
-          });
-          if (proxyUploadRes.ok) {
-            console.log("Server-side proxy upload to central GDPR folder succeeded.");
-          } else {
-            const errText = await proxyUploadRes.text();
-            throw new Error(`Server-side proxy upload failed: ${errText}`);
-          }
+        // Upload consent form image via server-side proxy (stays on avainframe.com).
+        const proxyUploadRes = await fetch(`/api/upload-consent-image?token=${shareKey}`, {
+          method: "POST",
+          body: uploadFormData,
+        });
+        if (proxyUploadRes.ok) {
+          console.log("Server-side proxy upload to central GDPR folder succeeded.");
+        } else {
+          const errText = await proxyUploadRes.text();
+          throw new Error(`Server-side proxy upload failed: ${errText}`);
         }
         console.log("Consent form photo asset uploaded successfully to Immich central GDPR album.");
       } catch (uploadErr) {
@@ -962,7 +878,6 @@ export function ClientGalleryAccess() {
       setDownloadProgress({ done: 0, total: 0 });
     }
   };
-  const shareUrl = useMemo(() => toShareUrl(password), [password]);
 
   // Support deep-linking a gallery via ?token=<name|key> in the URL (e.g. from
   // the "Open full web gallery" link) so the client lands directly in the
@@ -1027,32 +942,10 @@ export function ClientGalleryAccess() {
       }
 
       if (!usedProxy) {
-        // Step 1: Validate share key and retrieve shared link properties
-        const meRes = await fetch(`${IMMICH_URL}/api/shared-links/me`, {
-          headers: { "x-immich-share-key": token }
-        });
-
-        if (!meRes.ok) {
-          throw new Error(`Failed to access link: Status ${meRes.status}`);
-        }
-
-        const sharedLink = await meRes.json();
-        const resolvedAlbumId = sharedLink.album ? sharedLink.album.id : null;
-        if (!resolvedAlbumId) {
-          throw new Error("Shared link is not an album link.");
-        }
-        setAlbumId(resolvedAlbumId);
-
-        // Step 2: Fetch assets inside the album
-        const albumRes = await fetch(`${IMMICH_URL}/api/albums/${resolvedAlbumId}`, {
-          headers: { "x-immich-share-key": token }
-        });
-
-        if (!albumRes.ok) {
-          throw new Error(`Failed to fetch album: Status ${albumRes.status}`);
-        }
-
-        albumData = await albumRes.json();
+        // The edge proxy (/api/gallery) is the only supported path; if it failed
+        // there is no browser-side Immich call to fall back to (keeps the gallery
+        // fully hosted on avainframe.com). Surface a clear error instead.
+        throw new Error("Gallery unavailable. Please try again or contact us.");
       }
 
       const fetchedAssets = albumData.assets || [];
@@ -1078,15 +971,9 @@ export function ClientGalleryAccess() {
         setShowGdprModal(true);
       }
     } catch (err: any) {
-      console.warn("Immich API direct fetch failed (likely CORS or network permissions). Falling back to iframe view.", err);
-      
-      if (shareUrl) {
-        setShareKey(token);
-        setFallbackToIframe(true);
-        setActiveUrl(shareUrl);
-      } else {
-        setError("Could not access gallery. Please verify your password/link.");
-      }
+      // No browser-side Immich fallback: the gallery is fully hosted on
+      // avainframe.com, so any failure surfaces as a clear message.
+      setError(err?.message || "Could not access gallery. Please verify your password/link.");
     } finally {
       setLoading(false);
     }
@@ -1199,37 +1086,8 @@ export function ClientGalleryAccess() {
 
           {error && <p className="text-sm text-red-600 mt-4">{error}</p>}
 
-          {/* Render Fallback Iframe */}
-          {fallbackToIframe && !!activeUrl && (
-            <div className="mt-8">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
-                <div className="flex items-center gap-2 text-amber-800 text-sm">
-                  <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                  <span>Showing standard layout (CORS direct access disabled on server).</span>
-                </div>
-                <a
-                  href={activeUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full border border-black/20 px-4 py-2 text-sm hover:bg-black/5 flex items-center gap-1.5 bg-white"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Open in new tab
-                </a>
-              </div>
-
-              <iframe
-                src={activeUrl}
-                title="Client gallery"
-                className="w-full min-h-[72vh] rounded-2xl border border-black/15 bg-white"
-                allow="fullscreen; autoplay; clipboard-read; clipboard-write"
-                allowFullScreen
-              />
-            </div>
-          )}
-
           {/* Render Custom Dynamic Watermarked Gallery */}
-          {!fallbackToIframe && assets.length > 0 && (
+          {assets.length > 0 && (
             <div className="mt-12">
               <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
                 <div>
