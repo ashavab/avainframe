@@ -1,0 +1,41 @@
+name: Sync Immich Portfolio
+
+# DISABLED — workflow was failing (see GitHub run history). The gallery no longer
+# depends on this auto-sync, so it is switched off. To re-enable: restore the
+# `schedule` block and remove `if: false` from the job below.
+on:
+  workflow_dispatch:
+    # Manual trigger only (kept so it can be re-run intentionally if needed)
+
+permissions:
+  contents: write # Needed to commit and push changes back to the repository
+
+jobs:
+  sync:
+    if: false # disabled
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Portfolio Sync
+        env:
+          VITE_IMMICH_URL: https://photos.avainframe.com
+          VITE_IMMICH_SHARE_KEY: ${{ secrets.VITE_IMMICH_SHARE_KEY }}
+        run: npm run portfolio:sync
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: auto-sync portfolio photos [skip ci]"
+          file_pattern: 'public/galleries/ src/app/data/portfolioGenerated.ts'
