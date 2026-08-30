@@ -99,6 +99,23 @@ export function ClientGalleryAccess() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const lightboxRef = useRef<HTMLDivElement>(null);
 
+  // Idle auto-hide for the lightbox chrome (back button, controls, nav, cursor).
+  // Any mouse movement reveals everything and restarts the hide timer.
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const idleTimer = useRef<number | null>(null);
+  const revealLightboxChrome = useCallback(() => {
+    setControlsVisible(true);
+    if (idleTimer.current) window.clearTimeout(idleTimer.current);
+    idleTimer.current = window.setTimeout(() => setControlsVisible(false), 2500);
+  }, []);
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    revealLightboxChrome();
+    return () => {
+      if (idleTimer.current) window.clearTimeout(idleTimer.current);
+    };
+  }, [lightboxIndex, revealLightboxChrome]);
+
   // Sync fullscreen state when user exits native full screen via Esc key
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -1697,20 +1714,31 @@ export function ClientGalleryAccess() {
       {lightboxIndex !== null && currentLightboxAsset && (
         <div
           ref={lightboxRef}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-white select-none"
+          onMouseMove={revealLightboxChrome}
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-white select-none transition-[cursor] duration-300 ${controlsVisible ? "" : "cursor-none"}`}
         >
           {/* Header Controls */}
-          <div className="absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10 bg-gradient-to-b from-black/60 to-transparent">
-            <div>
-              <p className="text-sm font-medium tracking-wide text-neutral-300">
-                {currentLightboxAsset.originalFileName}
-              </p>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                {lightboxIndex + 1} of {assets.length}
-              </p>
+          <div className={`absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10 bg-gradient-to-b from-black/60 to-transparent transition-opacity duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+            <div className="flex items-center gap-4">
+              {/* Back button — returns to the gallery grid */}
+              <button
+                onClick={() => setLightboxIndex(null)}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition cursor-pointer"
+                title="Back to gallery"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <div>
+                <p className="text-sm font-medium tracking-wide text-neutral-300">
+                  {currentLightboxAsset.originalFileName}
+                </p>
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  {lightboxIndex + 1} of {assets.length}
+                </p>
+              </div>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-4 transition-opacity duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
               {/* Selection Toggle in Lightbox (for proof photos) */}
               {!isCurrentAssetClean && gdprMode === "viewing" && (
                 <button
@@ -1802,20 +1830,22 @@ export function ClientGalleryAccess() {
             </div>
           </div>
 
-          {/* Large Image Container */}
-          <div className="w-full max-w-5xl max-h-[80vh] px-4 flex items-center justify-center relative">
+          {/* Large Image Container — fills viewport minus control bars so the
+              photo reaches the screen edges; goes truly edge-to-edge in native
+              fullscreen (no padding, no max constraints). */}
+          <div className={`flex-1 min-h-0 w-full flex items-center justify-center ${isFullscreen ? "p-0" : "px-4 py-2"}`}>
             <WatermarkedImage
               src={`${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${currentLightboxAsset.id}/thumbnail`)}&key=${encodeURIComponent(shareKey)}&size=${isFullscreen ? "preview" : "thumbnail"}`}
               alt={currentLightboxAsset.originalFileName}
               shouldWatermark={!isCurrentAssetClean}
-              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
+              className={`w-full h-full object-contain rounded-lg shadow-2xl ${isFullscreen ? "rounded-none" : ""}`}
             />
           </div>
 
           {/* Navigation Controls */}
           <button
             onClick={handlePrev}
-            className="absolute left-6 p-3 rounded-full bg-white/5 hover:bg-white/15 transition cursor-pointer"
+            className={`absolute left-6 p-3 rounded-full bg-white/5 hover:bg-white/15 transition cursor-pointer duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             title="Previous Photo"
           >
             <ChevronLeft className="h-6 w-6" />
@@ -1823,7 +1853,7 @@ export function ClientGalleryAccess() {
           
           <button
             onClick={handleNext}
-            className="absolute right-6 p-3 rounded-full bg-white/5 hover:bg-white/15 transition cursor-pointer"
+            className={`absolute right-6 p-3 rounded-full bg-white/5 hover:bg-white/15 transition cursor-pointer duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             title="Next Photo"
           >
             <ChevronRight className="h-6 w-6" />
