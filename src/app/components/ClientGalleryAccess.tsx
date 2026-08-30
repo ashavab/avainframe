@@ -1835,7 +1835,7 @@ export function ClientGalleryAccess() {
               fullscreen (no padding, no max constraints). */}
           <div className={`flex-1 min-h-0 w-full flex items-center justify-center ${isFullscreen ? "p-0" : "px-4 py-2"}`}>
             <WatermarkedImage
-              src={`${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${currentLightboxAsset.id}/thumbnail`)}&key=${encodeURIComponent(shareKey)}&size=${isFullscreen ? "preview" : "thumbnail"}`}
+              src={`${IMMICH_URL}?path=${encodeURIComponent(`/api/assets/${currentLightboxAsset.id}/thumbnail`)}&key=${encodeURIComponent(shareKey)}&size=preview`}
               alt={currentLightboxAsset.originalFileName}
               shouldWatermark={!isCurrentAssetClean}
               className={`w-full h-full object-contain rounded-lg shadow-2xl ${isFullscreen ? "rounded-none" : ""}`}
