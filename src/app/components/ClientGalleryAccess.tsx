@@ -1,6 +1,31 @@
 import { FormEvent, useMemo, useState, useEffect, useRef } from "react";
 import { WatermarkedImage } from "./WatermarkedImage";
 import emailjs from '@emailjs/browser';
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
+
+// Downscale an image blob to social-ready dimensions (max 1080px long edge) and
+// re-encode as JPEG — small enough for phones, meets Instagram/Facebook upload
+// spec (1080px feed, 1200px shared image). Browser-native; no server load.
+async function resizeImageBlobToSocial(
+  blob: Blob,
+  maxEdge = 1080,
+  quality = 0.85,
+): Promise<Blob> {
+  const bitmap = await createImageBitmap(blob);
+  const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return blob;
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close?.();
+  return await new Promise<Blob>((resolve) =>
+    canvas.toBlob((b) => resolve(b ?? blob), "image/jpeg", quality),
+  );
+}
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import {
   ChevronLeft,
@@ -883,6 +908,66 @@ export function ClientGalleryAccess() {
     }
   };
 
+  const downloadResizedBlob = async (a: { id: string; originalFileName?: string }) => {
+    const base = a.originalFileName || `Photo_${a.id}`;
+    const name = base.replace(/\.[^.]+$/, "") + "_social.jpg";
+    const url = `/api/download-single?assetId=${encodeURIComponent(a.id)}&shareKey=${encodeURIComponent(shareKey)}&fileName=${encodeURIComponent(base)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("fetch failed");
+    return { blob: await resizeImageBlobToSocial(await res.blob()), name };
+  };
+
+  const handleDownloadAllLowRes = async () => {
+    if (assets.length === 0) return;
+    setDownloadingAll(true);
+    setDownloadProgress({ done: 0, total: assets.length });
+    let ok = 0, failed = 0;
+    try {
+      for (const a of assets) {
+        try {
+          const { blob, name } = await downloadResizedBlob(a);
+          const objUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = objUrl;
+          link.setAttribute("download", name);
+          document.body.appendChild(link);
+          link.click();
+          link.parentNode?.removeChild(link);
+          window.URL.revokeObjectURL(objUrl);
+          ok++;
+        } catch {
+          failed++;
+        }
+        setDownloadProgress((p) => ({ done: p.done + 1, total: p.total }));
+        await new Promise((r) => setTimeout(r, 300));
+      }
+      if (failed === 0) toast.success(`Started downloading ${ok} low-res photos.`);
+      else toast.warning(`Downloaded ${ok} low-res photos, ${failed} failed.`);
+    } catch (err: any) {
+      console.error("Low-res download error:", err);
+      toast.error(err.message || "Failed to download photos.");
+    } finally {
+      setDownloadingAll(false);
+      setDownloadProgress({ done: 0, total: 0 });
+    }
+  };
+
+  const handleDownloadSingleLowRes = async (a: { id: string; originalFileName?: string }) => {
+    try {
+      const { blob, name } = await downloadResizedBlob(a);
+      const objUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objUrl;
+      link.setAttribute("download", name);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(objUrl);
+    } catch {
+      toast.error("Failed to download low-res photo.");
+    }
+  };
+
   // Support deep-linking a gallery via ?token=<name|key> in the URL (e.g. from
   // the "Open full web gallery" link) so the client lands directly in the
   // branded gallery instead of retyping the code. The SPA is hash-routed, so
@@ -1251,29 +1336,57 @@ export function ClientGalleryAccess() {
                             <Unlock className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
                             <span className="text-emerald-700 font-medium">All photos unlocked</span>
                           </div>
-                          <button
-                            onClick={handleDownloadAll}
-                            disabled={downloadingAll}
-                            className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
-                          >
-                            {downloadingAll ? (
-                              <>
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                <span>Downloading {downloadProgress.done} / {downloadProgress.total}</span>
-                                <span className="ml-1 inline-block h-1.5 w-16 overflow-hidden rounded-full bg-white/30 align-middle">
-                                  <span
-                                    className="block h-full rounded-full bg-white transition-all duration-200"
-                                    style={{ width: `${downloadProgress.total ? (downloadProgress.done / downloadProgress.total) * 100 : 0}%` }}
-                                  />
-                                </span>
-                              </>
-                            ) : (
-                              <>
-                                <Download className="h-3.5 w-3.5" />
-                                <span>Download All</span>
-                              </>
-                            )}
-                          </button>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={handleDownloadAll}
+                                disabled={downloadingAll}
+                                className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
+                              >
+                                {downloadingAll ? (
+                                  <>
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                    <span>Downloading {downloadProgress.done} / {downloadProgress.total}</span>
+                                    <span className="ml-1 inline-block h-1.5 w-16 overflow-hidden rounded-full bg-white/30 align-middle">
+                                      <span
+                                        className="block h-full rounded-full bg-white transition-all duration-200"
+                                        style={{ width: `${downloadProgress.total ? (downloadProgress.done / downloadProgress.total) * 100 : 0}%` }}
+                                      />
+                                    </span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span>Download All</span>
+                                  </>
+                                )}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Full resolution for prints and large screens.</TooltipContent>
+                          </Tooltip>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={handleDownloadAllLowRes}
+                                disabled={downloadingAll}
+                                className="rounded-xl bg-[#819184] hover:bg-[#556b53] text-white px-4 py-2 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
+                              >
+                                {downloadingAll ? (
+                                  <>
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                    <span>Preparing…</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span>Download Low-Res (Social)</span>
+                                  </>
+                                )}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Smaller files for phones &amp; social media (Instagram, Facebook) — resized to 1080px, web-optimized JPEG.</TooltipContent>
+                          </Tooltip>
                         </>
                       ) : (
                         <div className="text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200 flex items-center gap-1.5 font-medium">
@@ -1630,14 +1743,33 @@ export function ClientGalleryAccess() {
               ) : (
                 <>
                   {gdprMode === "viewing" ? (
-                    <a
-                      href={`/api/download-single?assetId=${currentLightboxAsset.id}&shareKey=${shareKey}&fileName=${encodeURIComponent(currentLightboxAsset.originalFileName)}`}
-                      download={currentLightboxAsset.originalFileName}
-                      className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      Download High-Res Original
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={`/api/download-single?assetId=${currentLightboxAsset.id}&shareKey=${shareKey}&fileName=${encodeURIComponent(currentLightboxAsset.originalFileName)}`}
+                            download={currentLightboxAsset.originalFileName}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            Download High-Res Original
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent>Full resolution for prints and large screens.</TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => handleDownloadSingleLowRes(currentLightboxAsset)}
+                            className="bg-[#819184] hover:bg-[#556b53] text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            Download Low-Res (Social)
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>Smaller files for phones &amp; social media (Instagram, Facebook) — resized to 1080px, web-optimized JPEG.</TooltipContent>
+                      </Tooltip>
+                    </div>
                   ) : (
                     <div className="text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 font-medium">
                       <Lock className="h-3 w-3 text-amber-500" />
