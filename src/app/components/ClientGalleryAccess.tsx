@@ -1339,12 +1339,12 @@ export function ClientGalleryAccess() {
           {/* Render Custom Dynamic Watermarked Gallery */}
           {assets.length > 0 && (
             <div className="mt-12">
-              <div className="border-b border-neutral-200 pb-4 mb-6 flex justify-between items-end">
+              <div className="border-b border-neutral-200 pb-4 mb-6 flex flex-wrap justify-between items-end gap-y-3">
                 <div>
                   <h2 className="text-2xl font-serif text-[#7a8d7d]">{albumName}</h2>
                   <p className="text-sm text-neutral-500 mt-1">{assets.length} photos loaded</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   {isAlbumUnlocked ? (
                     <>
                       {gdprMode === "viewing" ? (
@@ -1374,7 +1374,7 @@ export function ClientGalleryAccess() {
                                 ) : (
                                   <>
                                     <Download className="h-3.5 w-3.5" />
-                                    <span>Download All</span>
+                                    <span className="hidden sm:inline">Download All</span>
                                   </>
                                 )}
                               </button>
@@ -1397,7 +1397,7 @@ export function ClientGalleryAccess() {
                                 ) : (
                                   <>
                                     <Download className="h-3.5 w-3.5" />
-                                    <span>Download Low-Res (Social)</span>
+                                    <span className="hidden sm:inline">Download Low-Res (Social)</span>
                                   </>
                                 )}
                               </button>
@@ -1718,7 +1718,7 @@ export function ClientGalleryAccess() {
           className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-md text-white select-none transition-[cursor] duration-300 ${controlsVisible ? "" : "cursor-none"}`}
         >
           {/* Header Controls */}
-          <div className={`absolute top-0 left-0 right-0 p-6 flex items-center justify-between z-10 bg-gradient-to-b from-black/60 to-transparent transition-opacity duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+          <div className={`absolute top-0 left-0 right-0 p-4 sm:p-6 flex flex-wrap items-start justify-between gap-y-2 z-10 bg-gradient-to-b from-black/60 to-transparent transition-opacity duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
             <div className="flex items-center gap-4">
               {/* Back button — returns to the gallery grid */}
               <button
@@ -1738,7 +1738,7 @@ export function ClientGalleryAccess() {
               </div>
             </div>
             
-            <div className={`flex items-center gap-4 transition-opacity duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+            <div className={`flex flex-wrap items-center justify-end gap-2 sm:gap-4 transition-opacity duration-300 ${controlsVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
               {/* Selection Toggle in Lightbox (for proof photos) */}
               {!isCurrentAssetClean && gdprMode === "viewing" && (
                 <button
@@ -1752,12 +1752,12 @@ export function ClientGalleryAccess() {
                   {selectedIds.has(currentLightboxAsset.id) ? (
                     <>
                       <Check className="h-3.5 w-3.5 stroke-[3]" />
-                      <span>Selected</span>
+                      <span className="hidden sm:inline">Selected</span>
                     </>
                   ) : (
                     <>
                       <Circle className="h-3.5 w-3.5" />
-                      <span>Select Photo</span>
+                      <span className="hidden sm:inline">Select Photo</span>
                     </>
                   )}
                 </button>
@@ -1780,7 +1780,7 @@ export function ClientGalleryAccess() {
                             className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
                           >
                             <Download className="h-3.5 w-3.5" />
-                            Download High-Res Original
+                            <span className="hidden sm:inline">Download High-Res Original</span>
                           </a>
                         </TooltipTrigger>
                         <TooltipContent>Full resolution for prints and large screens.</TooltipContent>
@@ -1792,7 +1792,7 @@ export function ClientGalleryAccess() {
                             className="bg-[#819184] hover:bg-[#556b53] text-white px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
                           >
                             <Download className="h-3.5 w-3.5" />
-                            Download Low-Res (Social)
+                            <span className="hidden sm:inline">Download Low-Res (Social)</span>
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>Smaller files for phones &amp; social media (Instagram, Facebook) — resized to 1080px, web-optimized JPEG.</TooltipContent>
