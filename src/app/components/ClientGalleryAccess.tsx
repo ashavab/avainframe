@@ -1166,35 +1166,20 @@ export function ClientGalleryAccess() {
               />
             </div>
 
-            <div className="flex items-end gap-2">
-              <button
-                type="submit"
-                disabled={loading || searching}
-                className="rounded-xl bg-[#7a8d7d] text-white px-8 py-3 font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2 justify-center transition"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Loading...
-                  </>
-                ) : searching ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Searching...
-                  </>
-                ) : (
-                  "View Gallery"
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => runNameSearch(password)}
-                disabled={loading || searching || !password.trim()}
-                className="rounded-xl border border-[#7a8d7d] text-[#7a8d7d] px-5 py-3 font-medium hover:bg-[#7a8d7d] hover:text-white disabled:opacity-40 transition"
-              >
-                Search by name
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading || searching}
+              className="rounded-xl bg-[#7a8d7d] text-white px-8 py-3 font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2 justify-center transition"
+            >
+              {loading || searching ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  {searching ? "Searching..." : "Loading..."}
+                </>
+              ) : (
+                "Open Gallery"
+              )}
+            </button>
           </form>
 
           {searchActive && searchResults.length > 0 && (
