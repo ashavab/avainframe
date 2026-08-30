@@ -1160,7 +1160,7 @@ export function ClientGalleryAccess() {
                 type="text"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Example: edKOi5jYw...  or  Jasmine"
+                placeholder="Example: abC123...  or  your album name"
                 className="w-full rounded-xl border border-black/20 px-4 py-3 bg-white"
                 required
               />
