@@ -1033,20 +1033,34 @@ export function ClientGalleryAccess() {
   // Real-time refresh: poll the gallery proxy for album changes (added/removed/
   // reordered photos, album name/description) while the gallery is open, so
   // edits made in Immich show up without a manual reload + re-entering the code.
+  //
+  // Resilience: the proxy's upstream — Cloudflare in front of Immich — can
+  // rate-limit / challenge these high-frequency server fetches (Vercel's
+  // automated requests look like a bot). If a poll fails we back off
+  // (5s → 10s → 20s → 40s → 60s) instead of hammering every 5s, which would
+  // only deepen the challenge and make the gallery look "frozen". A successful
+  // poll resets the interval back to real-time.
   const REFRESH_INTERVAL_MS = 5000;
   const tokenRef = useRef(shareKey);
   tokenRef.current = shareKey;
+  const failRef = useRef(0);
 
   useEffect(() => {
     if (!shareKey) return;
     let cancelled = false;
+    let timer: number;
 
-    const fetchLatest = async () => {
+    const tick = async () => {
+      if (cancelled) return;
       // Skip background refreshes when the tab is hidden to save requests.
-      if (document.visibilityState === "hidden") return;
+      if (document.visibilityState === "hidden") {
+        timer = window.setTimeout(tick, REFRESH_INTERVAL_MS);
+        return;
+      }
       try {
         const proxyRes = await fetch(`/api/gallery?token=${tokenRef.current}`, { cache: "no-store" });
-        if (cancelled || !proxyRes.ok) return;
+        if (cancelled) return;
+        if (!proxyRes.ok) throw new Error(`status ${proxyRes.status}`);
         const albumData: any = await proxyRes.json();
 
         const fetchedAssets = albumData.assets || [];
@@ -1065,15 +1079,23 @@ export function ClientGalleryAccess() {
           for (const id of Array.from(next)) if (!ids.has(id)) next.delete(id);
           return next;
         });
+
+        failRef.current = 0;
+        timer = window.setTimeout(tick, REFRESH_INTERVAL_MS);
       } catch {
-        /* transient network error — keep current view */
+        if (cancelled) return;
+        // Transient / rate-limited — back off, then retry so we recover the
+        // moment Cloudflare stops challenging, instead of staying frozen.
+        failRef.current = Math.min(failRef.current + 1, 4);
+        const delay = REFRESH_INTERVAL_MS * Math.pow(2, failRef.current);
+        timer = window.setTimeout(tick, delay);
       }
     };
 
-    const id = window.setInterval(fetchLatest, REFRESH_INTERVAL_MS);
+    timer = window.setTimeout(tick, REFRESH_INTERVAL_MS);
     return () => {
       cancelled = true;
-      window.clearInterval(id);
+      window.clearTimeout(timer);
     };
   }, [shareKey]);
 

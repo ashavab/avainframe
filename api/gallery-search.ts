@@ -42,8 +42,18 @@ export default async function handler(req: Request) {
     const links: any[] = await linksRes.json();
     const q = query.toLowerCase();
 
-    const matches = links
-      .filter((l) => l.type === "ALBUM" && l.album && l.key)
+    // De-dup: a single album is usually exposed by TWO shared links — a raw
+    // key AND a slug — which would otherwise show the same album twice in the
+    // picker ("double albums"). Collapse to one entry per album.id, preferring
+    // the link that carries a slug (cleaner for clients to read/type).
+    const albumMap = new Map<string, any>();
+    for (const l of links) {
+      if (l.type !== "ALBUM" || !l.album?.id || !l.key) continue;
+      const existing = albumMap.get(l.album.id);
+      if (!existing || (!existing.slug && l.slug)) albumMap.set(l.album.id, l);
+    }
+
+    const matches = Array.from(albumMap.values())
       .map((l) => ({
         key: l.key as string,
         name: (l.album.albumName || "") as string,
