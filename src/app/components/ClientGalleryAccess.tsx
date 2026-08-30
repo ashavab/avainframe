@@ -57,6 +57,11 @@ export function ClientGalleryAccess() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Album-name search (clients can type the album name instead of a share code)
+  const [searchResults, setSearchResults] = useState<{ key: string; name: string; slug: string }[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchActive, setSearchActive] = useState(false);
   
   // API Gallery State
   const [assets, setAssets] = useState<ImmichAsset[]>([]);
@@ -906,18 +911,13 @@ export function ClientGalleryAccess() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-
+  // Open a gallery by its share key/slug (used by both the submit button and
+  // the album-name search picker). Returns true on success.
+  const openGallery = async (token: string): Promise<boolean> => {
+    if (!token) return false;
     if (!IMMICH_URL) {
       setError("Gallery is not configured yet. Please contact us.");
-      return;
-    }
-
-    const token = extractShareKey(password);
-    if (!token) {
-      setError("Enter a valid gallery link or share code.");
-      return;
+      return false;
     }
 
     setError("");
@@ -927,24 +927,20 @@ export function ClientGalleryAccess() {
       let albumData;
       let usedProxy = false;
 
-      // Try fetching via Vercel Edge proxy API route first to bypass CORS
       try {
-        const proxyRes = await fetch(`/api/gallery?token=${token}`);
+        const proxyRes = await fetch(`/api/gallery?token=${token}`, { cache: "no-store" });
         if (proxyRes.ok) {
           albumData = await proxyRes.json();
           setAlbumId(albumData.id || "");
           usedProxy = true;
         } else {
-          console.warn(`Proxy check returned status ${proxyRes.status}. Trying direct fetch.`);
+          console.warn(`Proxy check returned status ${proxyRes.status}.`);
         }
       } catch (proxyErr) {
-        console.warn("Proxy check failed, falling back to direct browser fetch:", proxyErr);
+        console.warn("Proxy check failed:", proxyErr);
       }
 
       if (!usedProxy) {
-        // The edge proxy (/api/gallery) is the only supported path; if it failed
-        // there is no browser-side Immich call to fall back to (keeps the gallery
-        // fully hosted on avainframe.com). Surface a clear error instead.
         throw new Error("Gallery unavailable. Please try again or contact us.");
       }
 
@@ -954,13 +950,11 @@ export function ClientGalleryAccess() {
       setAssets(fetchedAssets);
       setShareKey(albumData.shareKey || token);
 
-      // Pre-populate selections for already submitted assets
       const initiallySelected = new Set(
         fetchedAssets.filter((a: any) => a.description === "Selected").map((a: any) => a.id)
       );
       setSelectedIds(initiallySelected);
 
-      // Check GDPR Consent Status
       const gdprStatus = localStorage.getItem(`gdpr_${albumData.shareKey || token}`);
       if (gdprStatus === "signed") {
         setGdprMode("viewing");
@@ -969,12 +963,70 @@ export function ClientGalleryAccess() {
         setGdprMode("signing");
         setShowGdprModal(true);
       }
+      return true;
     } catch (err: any) {
-      // No browser-side Immich fallback: the gallery is fully hosted on
-      // avainframe.com, so any failure surfaces as a clear message.
       setError(err?.message || "Could not access gallery. Please verify your password/link.");
+      return false;
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Album-name search: query the gallery-search proxy and, if there are matches,
+  // either open the single match or show a clickable picker for multiple.
+  const runNameSearch = async (raw: string) => {
+    const q = raw.trim();
+    if (!q) return;
+    setSearching(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/gallery-search?q=${encodeURIComponent(q)}`, { cache: "no-store" });
+      if (!res.ok) {
+        setError("Search is unavailable right now. Please use your share code.");
+        return;
+      }
+      const data = await res.json();
+      const matches: { key: string; name: string; slug: string }[] = data.matches || [];
+      if (matches.length === 0) {
+        setError(`No gallery found matching "${q}". Try your share code, or check the spelling.`);
+        setSearchResults([]);
+        setSearchActive(true);
+        return;
+      }
+      if (matches.length === 1) {
+        setSearchActive(false);
+        setSearchResults([]);
+        await openGallery(matches[0].key);
+        return;
+      }
+      // Multiple matches → let the client pick.
+      setSearchResults(matches);
+      setSearchActive(true);
+    } catch {
+      setError("Search failed. Please use your share code.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    const token = extractShareKey(password);
+    if (!token) {
+      setError("Enter a valid gallery link, share code, or album name.");
+      return;
+    }
+
+    setError("");
+
+    // First try the token directly; if Immich rejects it, fall back to a
+    // name/slug search so clients can type the album name instead of a code.
+    const ok = await openGallery(token);
+    if (!ok) {
+      setSearchActive(false);
+      setSearchResults([]);
+      await runNameSearch(password);
     }
   };
 
@@ -993,7 +1045,7 @@ export function ClientGalleryAccess() {
       // Skip background refreshes when the tab is hidden to save requests.
       if (document.visibilityState === "hidden") return;
       try {
-        const proxyRes = await fetch(`/api/gallery?token=${tokenRef.current}`);
+        const proxyRes = await fetch(`/api/gallery?token=${tokenRef.current}`, { cache: "no-store" });
         if (cancelled || !proxyRes.ok) return;
         const albumData: any = await proxyRes.json();
 
@@ -1095,40 +1147,84 @@ export function ClientGalleryAccess() {
           <p className="text-xs uppercase tracking-[0.25em] text-[#7a8d7d] mb-3">Client Gallery</p>
           <h1 className="text-3xl md:text-4xl font-serif mb-3">Your Photo Collection</h1>
           <p className="text-neutral-600 mb-8">
-            Enter the gallery password we sent you. The password is the share code from your Immich link.
+            Enter the gallery share code we sent you, or search by your album name.
           </p>
 
           <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <label htmlFor="gallery-password" className="block text-sm font-medium mb-2">
-                Gallery password
+                Gallery share code or album name
               </label>
               <input
                 id="gallery-password"
                 type="text"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="Example: edKOi5jYw..."
+                placeholder="Example: edKOi5jYw...  or  Jasmine"
                 className="w-full rounded-xl border border-black/20 px-4 py-3 bg-white"
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-xl bg-[#7a8d7d] text-white px-8 py-3 font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2 justify-center transition"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                "View Gallery"
-              )}
-            </button>
+            <div className="flex items-end gap-2">
+              <button
+                type="submit"
+                disabled={loading || searching}
+                className="rounded-xl bg-[#7a8d7d] text-white px-8 py-3 font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2 justify-center transition"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Loading...
+                  </>
+                ) : searching ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Searching...
+                  </>
+                ) : (
+                  "View Gallery"
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => runNameSearch(password)}
+                disabled={loading || searching || !password.trim()}
+                className="rounded-xl border border-[#7a8d7d] text-[#7a8d7d] px-5 py-3 font-medium hover:bg-[#7a8d7d] hover:text-white disabled:opacity-40 transition"
+              >
+                Search by name
+              </button>
+            </div>
           </form>
+
+          {searchActive && searchResults.length > 0 && (
+            <div className="mt-5 rounded-2xl border border-black/10 bg-white p-4">
+              <p className="text-sm font-medium text-neutral-700 mb-3">
+                We found {searchResults.length} galleries — pick yours:
+              </p>
+              <ul className="grid gap-2">
+                {searchResults.map((m) => (
+                  <li key={m.key}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchActive(false);
+                        setSearchResults([]);
+                        setPassword(m.key);
+                        openGallery(m.key);
+                      }}
+                      className="w-full text-left rounded-xl border border-black/10 px-4 py-3 hover:bg-[#7a8d7d]/10 transition"
+                    >
+                      <span className="font-medium">{m.name}</span>
+                      {m.slug && (
+                        <span className="ml-2 text-xs text-neutral-500">@{m.slug}</span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-600 mt-4">{error}</p>}
 
