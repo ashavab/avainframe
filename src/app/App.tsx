@@ -288,9 +288,9 @@ export default function App() {
       <Marquee />
       <div className="space-y-0 bg-transparent">
         <StaggerReveal><About aboutImage="/ashleigh.jpg" profileImage="/avana.jpg"/></StaggerReveal>
+        <StaggerReveal><Portfolio /></StaggerReveal>
         <Services />
         {/* <StaggerReveal><Reviews /></StaggerReveal> */}
-        <StaggerReveal><Portfolio /></StaggerReveal>
         {/* <StaggerReveal><BlogTips /></StaggerReveal> */}
         <StaggerReveal><FAQ /></StaggerReveal>
         <Contact />
